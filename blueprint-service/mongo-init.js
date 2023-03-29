@@ -5,11 +5,11 @@ db.createUser(
         roles: [
             {
                 role: "readWrite",
-                db: "templates_db"
+                db: "blueprints_db"
             }
         ]
     }
 );
-db.createCollection('templates1')
-db.createCollection('templates2')
-db.createCollection('templates3')
+db.createCollection('blueprints1')
+db.createCollection('blueprints2')
+db.createCollection('blueprints3')

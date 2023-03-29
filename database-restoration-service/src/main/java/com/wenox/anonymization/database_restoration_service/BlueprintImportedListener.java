@@ -6,9 +6,9 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class TemplateCreatedListener {
+public class BlueprintImportedListener {
 
-    @KafkaListener(topics = "wenox-templates", groupId = "wenox")
+    @KafkaListener(topics = "wenox-blueprints", groupId = "wenox")
     public void listenGroupFoo(String message) {
         System.out.println("\n\n\n\nReceived Message in group foo: " + message);
         log.info("Exiting :-)");

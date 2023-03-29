@@ -1,4 +1,4 @@
-package com.wenox.anonymization.template_service;
+package com.wenox.anonymization.blueprint_service;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,7 +13,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @ToString
-public class Template {
+public class Blueprint {
 
     @Id
     private final String id = UUID.randomUUID().toString();
@@ -24,7 +24,7 @@ public class Template {
 
     private String title;
 
-    private String templateDatabaseName;
+    private String blueprintDatabaseName;
 
     private String description;
     private LocalDateTime createdDate;

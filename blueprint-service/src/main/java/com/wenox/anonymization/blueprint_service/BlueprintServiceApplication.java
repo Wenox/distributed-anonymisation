@@ -1,4 +1,4 @@
-package com.wenox.anonymization.template_service;
+package com.wenox.anonymization.blueprint_service;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -6,10 +6,10 @@ import org.springframework.data.mongodb.repository.config.EnableMongoRepositorie
 
 @EnableMongoRepositories
 @SpringBootApplication
-public class TemplateServiceApplication {
+public class BlueprintServiceApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(TemplateServiceApplication.class, args);
+		SpringApplication.run(BlueprintServiceApplication.class, args);
 	}
 
 }

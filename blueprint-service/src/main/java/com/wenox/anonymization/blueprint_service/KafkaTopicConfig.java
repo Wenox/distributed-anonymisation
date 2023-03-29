@@ -1,4 +1,4 @@
-package com.wenox.anonymization.template_service;
+package com.wenox.anonymization.blueprint_service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.AdminClientConfig;
@@ -29,6 +29,6 @@ public class KafkaTopicConfig {
     @Bean
     public NewTopic topic1() {
         log.info("Creating topic!!!\n\n\n");
-        return TopicBuilder.name("wenox-templates").build();
+        return TopicBuilder.name("wenox-blueprints").build();
     }
 }

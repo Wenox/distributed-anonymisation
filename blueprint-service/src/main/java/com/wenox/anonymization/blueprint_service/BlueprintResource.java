@@ -1,4 +1,4 @@
-package com.wenox.anonymization.template_service;
+package com.wenox.anonymization.blueprint_service;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -12,15 +12,15 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/templates")
-public class TemplateController {
+@RequestMapping("/api/v1/blueprints")
+public class BlueprintResource {
 
-    private final TemplateService templateService;
+    private final BlueprintService blueprintService;
 
     @PostMapping
-    public ResponseEntity<String> createTemplate(@Valid @RequestBody CreateTemplateDto createTemplateDto) {
-        log.info("Creating template. DTO : {}", createTemplateDto);
-        final String id = templateService.createTemplate(createTemplateDto);
+    public ResponseEntity<String> importBlueprint(@Valid @RequestBody ImportBlueprintRequest dto) {
+        log.info("Creating blueprint. DTO : {}", dto);
+        final String id = blueprintService.importBlueprint(dto);
         log.info("Returning id : {}", id);
         return ResponseEntity.accepted().body(id);
     }

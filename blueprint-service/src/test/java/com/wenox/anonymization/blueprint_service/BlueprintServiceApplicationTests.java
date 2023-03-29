@@ -1,10 +1,10 @@
-package com.wenox.anonymization.template_service;
+package com.wenox.anonymization.blueprint_service;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class TemplateServiceApplicationTests {
+class BlueprintServiceApplicationTests {
 
 	@Test
 	void contextLoads() {
