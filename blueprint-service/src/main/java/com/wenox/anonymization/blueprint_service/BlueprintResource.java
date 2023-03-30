@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.IOException;
+
 @Slf4j
 @RequiredArgsConstructor
 @RestController
@@ -17,7 +19,7 @@ public class BlueprintResource {
     private final BlueprintService blueprintService;
 
     @PostMapping
-    public ResponseEntity<String> importBlueprint(@Valid ImportBlueprintRequest dto) {
+    public ResponseEntity<String> importBlueprint(@Valid ImportBlueprintRequest dto) throws IOException {
         log.info("Creating blueprint. DTO : {}", dto);
         final String id = blueprintService.importBlueprint(dto);
         log.info("Returning id : {}", id);

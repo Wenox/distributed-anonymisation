@@ -5,18 +5,19 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @ToString
+@Document
 public class Blueprint {
 
     @Id
-    private final String id = UUID.randomUUID().toString();
+    private String id;
 
     private RestoreMode restoreMode;
 
@@ -28,4 +29,11 @@ public class Blueprint {
 
     private String description;
     private LocalDateTime createdDate;
+
+    private String savedDumpName;
+
+    private String originalDumpName;
+
+    private String contentType;
+    private byte[] fileContent;
 }
