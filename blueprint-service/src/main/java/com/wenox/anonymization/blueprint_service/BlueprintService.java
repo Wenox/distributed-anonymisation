@@ -1,5 +1,6 @@
 package com.wenox.anonymization.blueprint_service;
 
+import com.wenox.anonymization.KafkaConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -36,6 +37,6 @@ public class BlueprintService {
         kafkaTemplate.send("wenox-blueprints", blueprint.getBlueprintDatabaseName());
         log.info("Sent to kafka");
 
-        return blueprint.getId();
+        return blueprint.getBlueprintId();
     }
 }

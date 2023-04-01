@@ -1,6 +1,6 @@
 package com.wenox.anonymization.blueprint_service;
 
-public enum FileType {
+public enum DatabaseType {
   POSTGRESQL,
   MYSQL
 }

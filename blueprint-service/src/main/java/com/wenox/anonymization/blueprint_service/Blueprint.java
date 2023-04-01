@@ -17,11 +17,11 @@ import java.time.LocalDateTime;
 public class Blueprint {
 
     @Id
-    private String id;
+    private String blueprintId;
 
     private RestoreMode restoreMode;
 
-    private FileType type;
+    private DatabaseType databaseType;
 
     private String title;
 

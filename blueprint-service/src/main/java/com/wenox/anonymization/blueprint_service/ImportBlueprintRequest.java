@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import org.springframework.web.multipart.MultipartFile;
 
 public record ImportBlueprintRequest(@NotNull MultipartFile dumpFile,
-                                     @NotNull FileType type,
+                                     @NotNull DatabaseType databaseType,
                                      @NotNull RestoreMode restoreMode,
                                      @NotEmpty String title,
                                      String description) {
