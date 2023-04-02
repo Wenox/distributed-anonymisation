@@ -19,6 +19,8 @@ public class Blueprint {
     @Id
     private String blueprintId;
 
+    private BlueprintStatus blueprintStatus;
+
     private RestoreMode restoreMode;
 
     private DatabaseType databaseType;
@@ -27,13 +29,12 @@ public class Blueprint {
 
     private String blueprintDatabaseName;
 
+    private boolean dumpStoreSuccess;
+
     private String description;
     private LocalDateTime createdDate;
 
     private String savedDumpName;
 
     private String originalDumpName;
-
-    private String contentType;
-    private byte[] fileContent;
 }

@@ -1,5 +1,6 @@
 package com.wenox.anonymization.blueprint_service;
 
+import com.wenox.anonymization.s3_file_manager.KafkaConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.NewTopic;
@@ -29,6 +30,6 @@ public class KafkaTopicConfig {
     @Bean
     public NewTopic topic1() {
         log.info("Creating topic!!!\n\n\n");
-        return TopicBuilder.name("wenox-blueprints").build();
+        return TopicBuilder.name(KafkaConstants.TOPIC_BLUEPRINTS).build();
     }
 }
