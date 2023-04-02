@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import java.io.InputStream;
 
 @Service
-public class S3StorageService implements StorageService {
+class S3StorageService implements StorageService {
 
     private final AmazonS3 amazonS3;
 

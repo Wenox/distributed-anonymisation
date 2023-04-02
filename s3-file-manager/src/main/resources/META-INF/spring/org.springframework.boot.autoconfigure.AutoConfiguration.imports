@@ -1,0 +1,2 @@
+com.wenox.anonymization.s3_file_manager.config.S3Configuration
+com.wenox.anonymization.s3_file_manager.impl.S3StorageService

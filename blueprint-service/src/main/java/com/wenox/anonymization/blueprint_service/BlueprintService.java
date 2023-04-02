@@ -1,6 +1,7 @@
 package com.wenox.anonymization.blueprint_service;
 
-import com.wenox.anonymization.s3_file_manager.impl.S3StorageService;
+import com.wenox.anonymization.s3_file_manager.S3Constants;
+import com.wenox.anonymization.s3_file_manager.api.StorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -17,7 +18,7 @@ public class BlueprintService {
 
     private final BlueprintRepository blueprintRepository;
     private final KafkaTemplate<String, String> kafkaTemplate;
-    private final S3StorageService s3StorageService;
+    private final StorageService s3StorageService;
 
     public String importBlueprint(ImportBlueprintRequest dto) throws IOException {
         log.info("Importing blueprint service...");
@@ -33,7 +34,7 @@ public class BlueprintService {
 
 
         log.info("Uploading to s3...");
-        s3StorageService.uploadFile("blueprints-for-anonymization", blueprint.getBlueprintDatabaseName(), dto.dumpFile().getInputStream());
+        s3StorageService.uploadFile(S3Constants.BUCKET_BLUEPRINTS, blueprint.getBlueprintDatabaseName(), dto.dumpFile().getInputStream());
         log.info("Upload success");
 
 
