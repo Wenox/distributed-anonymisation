@@ -6,10 +6,10 @@ import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
-public class BlueprintImportedListener {
+public class BlueprintImportedEventListener {
 
     @KafkaListener(topics = "wenox-blueprints", groupId = "wenox")
-    public void listenGroupFoo(String message) {
+    public void onBlueprintImported(String message) {
         System.out.println("\n\n\n\nReceived Message in group foo: " + message);
         log.info("Exiting :-)");
     }
