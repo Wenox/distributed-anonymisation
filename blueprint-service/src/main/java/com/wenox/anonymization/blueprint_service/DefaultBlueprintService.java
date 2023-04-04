@@ -5,7 +5,6 @@ import com.wenox.anonymization.s3_file_manager.S3Constants;
 import com.wenox.anonymization.s3_file_manager.api.StorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,7 +17,7 @@ import java.util.concurrent.CompletableFuture;
 public class DefaultBlueprintService implements BlueprintService {
 
     private final BlueprintRepository blueprintRepository;
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final LoggingKafkaTemplate<String, String> kafkaTemplate;
     private final StorageService s3StorageService;
 
     public String importBlueprint(ImportBlueprintRequest dto) {
@@ -27,7 +26,7 @@ public class DefaultBlueprintService implements BlueprintService {
 
         CompletableFuture.runAsync(() -> uploadToS3AndUpdateBlueprint(dto, blueprint))
                 .exceptionally(ex -> {
-                    log.error("Error for blueprint {} in S3 dump upload: {}", blueprint, ex);
+                    log.error("Error for blueprint {} in S3 dump upload", blueprint, ex);
                     return null;
                 });
 
