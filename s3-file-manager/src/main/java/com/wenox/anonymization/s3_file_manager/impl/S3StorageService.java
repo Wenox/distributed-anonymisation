@@ -1,6 +1,7 @@
 package com.wenox.anonymization.s3_file_manager.impl;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.S3Object;
 import com.wenox.anonymization.s3_file_manager.api.StorageService;
 import org.springframework.stereotype.Service;
