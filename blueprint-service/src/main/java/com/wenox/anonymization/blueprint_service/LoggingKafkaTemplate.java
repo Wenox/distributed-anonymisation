@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public abstract class LoggingKafkaTemplate<K, V> {
+public class LoggingKafkaTemplate<K, V> {
 
     private final KafkaTemplate<K, V> kafkaTemplate;
 

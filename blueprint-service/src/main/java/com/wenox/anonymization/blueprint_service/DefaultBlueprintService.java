@@ -3,6 +3,7 @@ package com.wenox.anonymization.blueprint_service;
 import com.wenox.anonymization.s3_file_manager.KafkaConstants;
 import com.wenox.anonymization.s3_file_manager.S3Constants;
 import com.wenox.anonymization.s3_file_manager.api.StorageService;
+import com.wenox.anonymization.shared_events_library.BlueprintCreatedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,7 @@ import java.util.concurrent.CompletableFuture;
 public class DefaultBlueprintService implements BlueprintService {
 
     private final BlueprintRepository blueprintRepository;
-    private final LoggingKafkaTemplate<String, String> kafkaTemplate;
+    private final LoggingKafkaTemplate<String, Object> loggingKafkaTemplate;
     private final StorageService s3StorageService;
 
     public String importBlueprint(ImportBlueprintRequest dto) {
@@ -57,6 +58,6 @@ public class DefaultBlueprintService implements BlueprintService {
         }
 
         blueprintRepository.save(blueprint);
-        kafkaTemplate.send(KafkaConstants.TOPIC_BLUEPRINTS, blueprint.getBlueprintDatabaseName());
+        loggingKafkaTemplate.send(KafkaConstants.TOPIC_BLUEPRINTS, new BlueprintCreatedEvent(blueprint.getBlueprintId(), blueprint.getBlueprintDatabaseName()));
     }
 }
