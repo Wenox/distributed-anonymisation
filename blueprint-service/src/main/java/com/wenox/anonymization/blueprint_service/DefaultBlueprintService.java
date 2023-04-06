@@ -48,7 +48,7 @@ public class DefaultBlueprintService implements BlueprintService {
     private void uploadToS3AndUpdateBlueprint(ImportBlueprintRequest dto, Blueprint blueprint) {
         try {
             log.info("Uploading to S3... Dump: {}, blueprintId: {}", dto.dumpFile().getOriginalFilename(), blueprint.getBlueprintId());
-            s3StorageService.uploadFile(S3Constants.BUCKET_BLUEPRINTS, blueprint.getBlueprintDatabaseName(), dto.dumpFile().getInputStream());
+            s3StorageService.uploadFile(dto.dumpFile(), S3Constants.BUCKET_BLUEPRINTS, blueprint.getBlueprintDatabaseName());
             blueprint.setDumpStoreSuccess(true);
             blueprint.setBlueprintStatus(BlueprintStatus.DUMP_STORE_SUCCESS);
         } catch (Exception e) {

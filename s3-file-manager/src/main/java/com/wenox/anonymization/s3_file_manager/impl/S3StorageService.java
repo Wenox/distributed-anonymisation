@@ -1,30 +1,46 @@
 package com.wenox.anonymization.s3_file_manager.impl;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.S3Object;
 import com.wenox.anonymization.s3_file_manager.api.StorageService;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.core.sync.ResponseTransformer;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
+import java.io.IOException;
 import java.io.InputStream;
 
 @Service
 class S3StorageService implements StorageService {
 
-    private final AmazonS3 amazonS3;
+    private final S3Client s3Client;
 
-    public S3StorageService(AmazonS3 amazonS3) {
-        this.amazonS3 = amazonS3;
+    public S3StorageService(S3Client s3Client) {
+        this.s3Client = s3Client;
     }
 
     @Override
-    public void uploadFile(String bucketName, String objectName, InputStream inputStream) {
-        amazonS3.putObject(bucketName, objectName, inputStream, null);
+    public void uploadFile(MultipartFile file, String bucketName, String key) throws IOException {
+        try (InputStream is = file.getInputStream()) {
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .bucket(bucketName)
+                    .key(key)
+                    .build();
+
+            RequestBody requestBody = RequestBody.fromInputStream(is, file.getSize());
+            s3Client.putObject(putObjectRequest, requestBody);
+        }
     }
 
     @Override
-    public InputStream downloadFile(String bucketName, String objectName) {
-        S3Object s3Object = amazonS3.getObject(bucketName, objectName);
-        return s3Object.getObjectContent();
+    public InputStream downloadFile(String bucketName, String key) {
+        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
+                .bucket(bucketName)
+                .key(key)
+                .build();
+
+        return s3Client.getObject(getObjectRequest, ResponseTransformer.toInputStream());
     }
 }

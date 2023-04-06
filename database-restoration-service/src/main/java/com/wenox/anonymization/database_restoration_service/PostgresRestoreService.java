@@ -7,15 +7,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import com.wenox.anonymization.s3_file_manager.S3Constants;
+import com.wenox.anonymization.s3_file_manager.api.StorageService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
-import software.amazon.awssdk.core.ResponseInputStream;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectResponse;
 
 @Service
 @Slf4j
@@ -23,15 +21,14 @@ public class PostgresRestoreService implements RestoreService {
 
     private final String postgresIpAddress;
     private final String postgresHostPort;
-    
-
-    @Autowired
-    S3ClientProvider s3ClientProvider;
+    private final StorageService storageService;
 
     public PostgresRestoreService(@Value("${POSTGRES_IP_ADDRESS:localhost}") String postgresIpAddress,
-                                  @Value("${POSTGRES_HOST_PORT:5432}") String postgresHostPort) {
+                                  @Value("${POSTGRES_HOST_PORT:5432}") String postgresHostPort,
+                                  StorageService storageService) {
         this.postgresIpAddress = postgresIpAddress;
         this.postgresHostPort = postgresHostPort;
+        this.storageService = storageService;
     }
 
     @Override
@@ -72,7 +69,7 @@ public class PostgresRestoreService implements RestoreService {
 
         log.info("get object request created");
 
-        try (ResponseInputStream<GetObjectResponse> inputStream = s3ClientProvider.createS3Client().getObject(getObjectRequest)) {
+        try (InputStream inputStream = storageService.downloadFile(S3Constants.BUCKET_BLUEPRINTS, databaseName)) {
             restoreDatabaseFromInputStream(inputStream, databaseName, "postgres", "postgres", "localhost", "5432");
         }
     }
