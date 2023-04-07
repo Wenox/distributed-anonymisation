@@ -1,4 +1,4 @@
-package com.wenox.anonymization.s3_file_manager;
+package com.wenox.anonymization.shared_events_library.api;
 
 public final class KafkaConstants {
 

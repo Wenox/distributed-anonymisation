@@ -1,7 +1,7 @@
 package com.wenox.anonymization.database_restoration_service;
 
-import com.wenox.anonymization.s3_file_manager.KafkaConstants;
 import com.wenox.anonymization.shared_events_library.BlueprintCreatedEvent;
+import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;

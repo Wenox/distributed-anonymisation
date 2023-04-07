@@ -1,7 +1,8 @@
 package com.wenox.anonymization.blueprint_service;
 
-import com.wenox.anonymization.s3_file_manager.KafkaConstants;
 import com.wenox.anonymization.shared_events_library.BlueprintCreatedEvent;
+import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
+import com.wenox.anonymization.shared_events_library.api.KafkaTemplateWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class BlueprintStatusUpdater {
     private final BlueprintRepository blueprintRepository;
-    private final LoggingKafkaTemplate<String, Object> loggingKafkaTemplate;
+    private final KafkaTemplateWrapper<String, Object> loggingKafkaTemplate;
 
     public void updateBlueprintStatusOnSuccess(Blueprint blueprint) {
         blueprint.setDumpStoreSuccess(true);
