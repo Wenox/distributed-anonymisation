@@ -1,8 +1,9 @@
 version: '3.8'
 
 services:
-  mongodb:
+  blueprints_mongodb:
     image: mongo
+    container_name: blueprints_mongodb
     restart: always
     ports:
       - "27017:27017"
@@ -11,7 +12,21 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: example
       MONGO_INITDB_DATABASE: blueprints_db
     volumes:
-      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - ./blueprint-service/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+
+  metadata_mongodb:
+    image: mongo
+    container_name: metadata_mongodb
+    restart: always
+    ports:
+      - "27018:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: metadata_db
+    volumes:
+      - ./metadata-extraction-service/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+
   zookeeper:
     image: 'bitnami/zookeeper:latest'
     ports:
@@ -19,7 +34,6 @@ services:
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
   kafka:
-#    https://github.com/bitnami/containers/tree/main/bitnami/kafka:
     image: 'bitnami/kafka:latest'
     container_name: 'kafka'
     ports:
