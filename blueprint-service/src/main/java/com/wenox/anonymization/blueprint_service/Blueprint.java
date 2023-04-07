@@ -1,10 +1,7 @@
 package com.wenox.anonymization.blueprint_service;
 
 import com.wenox.anonymization.shared_events_library.api.RestoreMode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
