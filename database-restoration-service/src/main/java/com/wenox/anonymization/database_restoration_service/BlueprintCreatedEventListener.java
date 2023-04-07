@@ -19,15 +19,15 @@ public class BlueprintCreatedEventListener {
     private final RestoreFacade restoreFacade;
     private final KafkaTemplateWrapper<String, Object> loggingKafkaTemplate;
 
-    @KafkaListener(topics = KafkaConstants.TOPIC_BLUEPRINT_CREATED, groupId = "wenox")
+    @KafkaListener(topics = KafkaConstants.TOPIC_CREATE_BLUEPRINT, groupId = "wenox")
     public void onBlueprintCreated(BlueprintCreatedEvent event) {
         log.info("Received {}", event);
         try {
             restoreFacade.restore(event.getDatabaseName(), event.getRestoreMode());
-            loggingKafkaTemplate.send(KafkaConstants.TOPIC_DATABASE_RESTORED_SUCCESS, new DatabaseRestoredSuccessEvent(event.getBlueprintId(), event.getDatabaseName()));
+            loggingKafkaTemplate.send(KafkaConstants.TOPIC_RESTORE_SUCCESS, new DatabaseRestoredSuccessEvent(event.getBlueprintId(), event.getDatabaseName()));
         } catch (Exception ex) {
             log.error("Failure during database restoration for {}", event, ex);
-            loggingKafkaTemplate.send(KafkaConstants.TOPIC_DATABASE_RESTORED_FAILURE, new DatabaseRestoredFailureEvent(event.getBlueprintId(), event.getDatabaseName(), ex.getMessage(), ex));
+            loggingKafkaTemplate.send(KafkaConstants.TOPIC_RESTORE_FAILURE, new DatabaseRestoredFailureEvent(event.getBlueprintId(), event.getDatabaseName(), ex.getMessage(), ex));
         }
     }
 }

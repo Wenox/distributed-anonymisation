@@ -15,19 +15,19 @@ public class KafkaTopicConfig {
 
     @Bean
     public NewTopic topicBlueprintCreated() {
-        log.warn("Creating topic: {}", KafkaConstants.TOPIC_BLUEPRINT_CREATED);
-        return TopicBuilder.name(KafkaConstants.TOPIC_BLUEPRINT_CREATED).build();
+        log.warn("Creating topic: {}", KafkaConstants.TOPIC_CREATE_BLUEPRINT);
+        return TopicBuilder.name(KafkaConstants.TOPIC_CREATE_BLUEPRINT).build();
     }
 
     @Bean
     public NewTopic topicDatabaseRestoredSuccess() {
-        log.warn("Creating topic: {}", KafkaConstants.TOPIC_DATABASE_RESTORED_SUCCESS);
-        return TopicBuilder.name(KafkaConstants.TOPIC_DATABASE_RESTORED_SUCCESS).build();
+        log.warn("Creating topic: {}", KafkaConstants.TOPIC_RESTORE_SUCCESS);
+        return TopicBuilder.name(KafkaConstants.TOPIC_RESTORE_SUCCESS).build();
     }
 
     @Bean
     public NewTopic topicDatabaseRestoredFailure() {
-        log.warn("Creating topic: {}", KafkaConstants.TOPIC_DATABASE_RESTORED_FAILURE);
-        return TopicBuilder.name(KafkaConstants.TOPIC_DATABASE_RESTORED_FAILURE).build();
+        log.warn("Creating topic: {}", KafkaConstants.TOPIC_RESTORE_FAILURE);
+        return TopicBuilder.name(KafkaConstants.TOPIC_RESTORE_FAILURE).build();
     }
 }

@@ -18,7 +18,7 @@ public class BlueprintStatusUpdater {
         blueprint.setDumpStoreSuccess(true);
         blueprint.setBlueprintStatus(BlueprintStatus.DUMP_STORE_SUCCESS);
         blueprintRepository.save(blueprint);
-        loggingKafkaTemplate.send(KafkaConstants.TOPIC_BLUEPRINT_CREATED, new BlueprintCreatedEvent(blueprint.getBlueprintId(), blueprint.getBlueprintDatabaseName(), blueprint.getRestoreMode()));
+        loggingKafkaTemplate.send(KafkaConstants.TOPIC_CREATE_BLUEPRINT, new BlueprintCreatedEvent(blueprint.getBlueprintId(), blueprint.getBlueprintDatabaseName(), blueprint.getRestoreMode()));
     }
 
     public void updateBlueprintStatusOnFailure(Blueprint blueprint) {
