@@ -3,13 +3,9 @@ package com.wenox.anonymization.metadata_extraction_service;
 import java.sql.DatabaseMetaData;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashSet;
-import java.util.Set;
 import javax.sql.DataSource;
 
-import com.wenox.anonymization.metadata_extraction_service.domain.Column;
 import com.wenox.anonymization.metadata_extraction_service.domain.Metadata;
-import com.wenox.anonymization.metadata_extraction_service.domain.PrimaryKey;
 import com.wenox.anonymization.metadata_extraction_service.domain.Table;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,46 +28,41 @@ public class DefaultMetadataExtractor implements MetadataExtractor {
         final DatabaseMetaData extractor = dataSource.getConnection().getMetaData();
         final Metadata metadata = new Metadata();
 
-        final ResultSet tables = extractor.getTables(null, "public", null, new String[] {"TABLE"});
-        while (tables.next()) {
-            String tableName = tables.getString("TABLE_NAME");
-            Integer numberOfRows = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM " + tableName, Integer.class);
-            Integer numberOfColumns =
-                    jdbcTemplate.queryForObject(getQueryForNumberOfColumnsInTable(tableName), Integer.class);
-            Table table = new Table(tableName, numberOfRows, numberOfColumns);
-            metadata.insertTable(table);
-
-            final var PKs = extractor.getPrimaryKeys(null, "public", tableName);
-            while (PKs.next()) {
-                String columnName = PKs.getString("COLUMN_NAME");
-                String primaryKeyName = PKs.getString("PK_NAME");
-                final var pkColumnResultSet = extractor.getColumns(null, "public", tableName, columnName);
-                String type = "";
-                if (pkColumnResultSet.next()) {
-                    type = pkColumnResultSet.getString("DATA_TYPE");
-                }
-                PrimaryKey primaryKey = new PrimaryKey(columnName, type, primaryKeyName);
-                table.setPrimaryKey(primaryKey);
-            }
-
-            final Set<String> foreignKeyColumns = new HashSet<>();
-            final var importedKeys = extractor.getImportedKeys(null, "public", tableName);
-            while (importedKeys.next()) {
-                foreignKeyColumns.add(importedKeys.getString("FKCOLUMN_NAME"));
-            }
-
-            final ResultSet columns = extractor.getColumns(null, "public", tableName, null);
-            while (columns.next()) {
-                String columnName = columns.getString("COLUMN_NAME");
-                String type = columns.getString("DATA_TYPE");
-                String isNullable = columns.getString("IS_NULLABLE");
-                Column column = new Column(columnName, type, isNullable, table.getPrimaryKey().getColumnName().equals(columnName), foreignKeyColumns.contains(columnName));
-                table.insertColumn(column);
-            }
-        }
+        processTables(extractor, jdbcTemplate, metadata);
 
         log.warn("Metadata extracted successfully!");
         return metadata;
+    }
+
+    private void processTables(DatabaseMetaData extractor, JdbcTemplate jdbcTemplate, Metadata metadata) throws SQLException {
+        ResultSet tables = extractor.getTables(null, "public", null, new String[]{"TABLE"});
+        while (tables.next()) {
+            Table table = createTable(tables, jdbcTemplate);
+            metadata.insertTable(table);
+            processPrimaryKeys(extractor, table);
+            processColumns(extractor, table);
+        }
+    }
+
+    private Table createTable(ResultSet tables, JdbcTemplate jdbcTemplate) throws SQLException {
+        String tableName = tables.getString("TABLE_NAME");
+        Integer numberOfRows = jdbcTemplate.queryForObject("SELECT COUNT(*) FROM " + tableName, Integer.class);
+        Integer numberOfColumns = jdbcTemplate.queryForObject(getQueryForNumberOfColumnsInTable(tableName), Integer.class);
+        return new Table(tableName, numberOfRows, numberOfColumns);
+    }
+
+    private void processPrimaryKeys(DatabaseMetaData extractor, Table table) throws SQLException {
+        ResultSet PKs = extractor.getPrimaryKeys(null, "public", table.getTableName());
+        while (PKs.next()) {
+            table.setPrimaryKey(PrimaryKeyExtractor.extractPrimaryKey(extractor, table.getTableName(), PKs));
+        }
+    }
+
+    private void processColumns(DatabaseMetaData extractor, Table table) throws SQLException {
+        ResultSet columns = extractor.getColumns(null, "public", table.getTableName(), null);
+        while (columns.next()) {
+            table.insertColumn(ColumnExtractor.extractColumn(extractor, table, columns));
+        }
     }
 
     private String getQueryForNumberOfColumnsInTable(String tableName) {

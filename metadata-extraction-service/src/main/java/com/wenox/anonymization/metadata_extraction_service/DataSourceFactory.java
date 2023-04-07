@@ -1,7 +1,7 @@
 package com.wenox.anonymization.metadata_extraction_service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.stereotype.Component;
 
@@ -9,22 +9,10 @@ import javax.sql.DataSource;
 
 @Component
 @Slf4j
+@RequiredArgsConstructor
 public class DataSourceFactory {
 
-    private final Boolean isRunningOnCloud;
-    private final String postgresIpAddress;
-    private final String postgresHostPort;
-    private final String postgresContainerPort;
-
-    public DataSourceFactory(@Value("${server.environment.cloud}") Boolean isRunningOnCloud,
-                             @Value("${POSTGRES_IP_ADDRESS:localhost}") String postgresIpAddress,
-                             @Value("${POSTGRES_HOST_PORT:5432}") String postgresHostPort, // todo
-                             @Value("${POSTGRES_CONTAINER_PORT:5432}") String postgresContainerPort) {
-        this.isRunningOnCloud = isRunningOnCloud;
-        this.postgresIpAddress = postgresIpAddress;
-        this.postgresHostPort = postgresHostPort;
-        this.postgresContainerPort = postgresContainerPort;
-    }
+    private final DatabaseConfiguration databaseConfiguration;
 
     public DataSource getDataSource(DatabaseConnection databaseConnection) {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
@@ -32,19 +20,11 @@ public class DataSourceFactory {
         switch (databaseConnection.getDatabaseType()) {
             case POSTGRESQL -> {
                 dataSource.setDriverClassName("org.postgresql.Driver");
-                if (isRunningOnCloud) {
-                    dataSource.setUrl("jdbc:postgresql://" + postgresIpAddress + ":" + postgresContainerPort + "/" + databaseConnection.getDatabaseName());
-                } else {
-                    dataSource.setUrl("jdbc:postgresql://" + postgresIpAddress + ":" + postgresHostPort + "/" + databaseConnection.getDatabaseName());
-                }
+                dataSource.setUrl(buildUrl(databaseConnection, "jdbc:postgresql"));
             }
             case MYSQL -> {
                 dataSource.setDriverClassName("com.mysql.jdbc.Driver");
-                if (isRunningOnCloud) {
-                    dataSource.setUrl("jdbc:mysql://" + postgresIpAddress + ":" + postgresContainerPort + "/" + databaseConnection.getDatabaseName());
-                } else {
-                    dataSource.setUrl("jdbc:mysql://" + postgresIpAddress + ":" + postgresHostPort + "/" + databaseConnection.getDatabaseName());
-                }
+                dataSource.setUrl(buildUrl(databaseConnection, "jdbc:mysql"));
             }
             default -> throw new RuntimeException("Unsupported database type: " + databaseConnection.getDatabaseName());
         }
@@ -53,5 +33,11 @@ public class DataSourceFactory {
         dataSource.setPassword(databaseConnection.getPassword());
 
         return dataSource;
+    }
+
+    private String buildUrl(DatabaseConnection databaseConnection, String jdbcPrefix) {
+        String ipAddress = databaseConfiguration.getIsRunningOnCloud() ? databaseConfiguration.getPostgresIpAddress() : "localhost";
+        String port = databaseConfiguration.getIsRunningOnCloud() ? databaseConfiguration.getPostgresContainerPort() : databaseConfiguration.getPostgresHostPort();
+        return String.format("%s://%s:%s/%s", jdbcPrefix, ipAddress, port, databaseConnection.getDatabaseName());
     }
 }
