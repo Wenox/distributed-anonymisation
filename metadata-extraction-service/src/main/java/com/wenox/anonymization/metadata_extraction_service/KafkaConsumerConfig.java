@@ -1,4 +1,4 @@
-package com.wenox.anonymization.database_restoration_service;
+package com.wenox.anonymization.metadata_extraction_service;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -25,7 +25,7 @@ public class KafkaConsumerConfig {
     public ConsumerFactory<String, Object> consumerFactory() {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, "database-restoration-service-group");
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "metadata-extraction-service-group");
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
 

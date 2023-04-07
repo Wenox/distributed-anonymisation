@@ -19,7 +19,7 @@ public class BlueprintCreatedEventListener {
     private final RestoreFacade restoreFacade;
     private final KafkaTemplateWrapper<String, Object> loggingKafkaTemplate;
 
-    @KafkaListener(topics = KafkaConstants.TOPIC_CREATE_BLUEPRINT, groupId = "wenox")
+    @KafkaListener(topics = KafkaConstants.TOPIC_CREATE_BLUEPRINT, groupId = "database-restoration-service-group")
     public void onBlueprintCreated(BlueprintCreatedEvent event) {
         log.info("Received {}", event);
         try {

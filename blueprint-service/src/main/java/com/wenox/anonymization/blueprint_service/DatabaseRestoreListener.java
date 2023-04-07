@@ -16,15 +16,14 @@ public class DatabaseRestoreListener implements RestoreListener {
     private final BlueprintRepository blueprintRepository;
 
     @Override
-    @KafkaListener(topics = KafkaConstants.TOPIC_RESTORE_SUCCESS, groupId = "wenox")
+    @KafkaListener(topics = KafkaConstants.TOPIC_RESTORE_SUCCESS, groupId = "blueprint-service-group")
     public void onRestoreSuccess(DatabaseRestoredSuccessEvent event) {
         log.info("Received {}", event);
         updateBlueprintStatus(event.getBlueprintId(), BlueprintStatus.DUMP_STORE_SUCCESS);
-
     }
 
     @Override
-    @KafkaListener(topics = KafkaConstants.TOPIC_RESTORE_FAILURE, groupId = "wenox")
+    @KafkaListener(topics = KafkaConstants.TOPIC_RESTORE_FAILURE, groupId = "blueprint-service-group")
     public void onRestoreFailure(DatabaseRestoredFailureEvent event) {
         log.info("Received {}", event);
         updateBlueprintStatus(event.getBlueprintId(), BlueprintStatus.DUMP_STORE_FAILURE);
