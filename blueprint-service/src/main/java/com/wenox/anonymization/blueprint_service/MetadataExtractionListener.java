@@ -1,32 +1,32 @@
 package com.wenox.anonymization.blueprint_service;
 
-import com.wenox.anonymization.shared_events_library.DatabaseRestoredFailureEvent;
-import com.wenox.anonymization.shared_events_library.DatabaseRestoredSuccessEvent;
+import com.wenox.anonymization.shared_events_library.MetadataExtractedFailureEvent;
+import com.wenox.anonymization.shared_events_library.MetadataExtractedSuccessEvent;
 import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
+@Service
 @Slf4j
-@Component
 @RequiredArgsConstructor
-public class DatabaseRestoreListener implements RestoreListener {
+public class MetadataExtractionListener implements ExtractListener {
 
     private final BlueprintRepository blueprintRepository;
 
+    @KafkaListener(topics = KafkaConstants.TOPIC_METADATA_SUCCESS, groupId = "blueprint-service-group")
     @Override
-    @KafkaListener(topics = KafkaConstants.TOPIC_RESTORE_SUCCESS, groupId = "blueprint-service-group")
-    public void onRestoreSuccess(DatabaseRestoredSuccessEvent event) {
+    public void onExtractSuccess(MetadataExtractedSuccessEvent event) {
         log.info("Received {}", event);
-        updateBlueprintStatus(event.getBlueprintId(), BlueprintStatus.RESTORE_SUCCESS);
+        updateBlueprintStatus(event.getBlueprintId(), BlueprintStatus.METADATA_EXTRACTION_SUCCESS);
     }
 
+    @KafkaListener(topics = KafkaConstants.TOPIC_METADATA_FAILURE, groupId = "blueprint-service-group")
     @Override
-    @KafkaListener(topics = KafkaConstants.TOPIC_RESTORE_FAILURE, groupId = "blueprint-service-group")
-    public void onRestoreFailure(DatabaseRestoredFailureEvent event) {
+    public void onExtractFailure(MetadataExtractedFailureEvent event) {
         log.info("Received {}", event);
-        updateBlueprintStatus(event.getBlueprintId(), BlueprintStatus.RESTORE_FAILURE);
+        updateBlueprintStatus(event.getBlueprintId(), BlueprintStatus.METADATA_EXTRACTION_FAILURE);
     }
 
     private void updateBlueprintStatus(String blueprintId, BlueprintStatus status) {

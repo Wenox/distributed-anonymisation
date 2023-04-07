@@ -26,7 +26,7 @@ public class BlueprintCreatedEventListener {
             restoreFacade.restore(event.getDatabaseName(), event.getRestoreMode());
             loggingKafkaTemplate.send(KafkaConstants.TOPIC_RESTORE_SUCCESS, new DatabaseRestoredSuccessEvent(event.getBlueprintId(), event.getDatabaseName()));
         } catch (Exception ex) {
-            log.error("Failure during database restoration for {}", event, ex);
+            log.error("Error during database restoration for {}", event, ex);
             loggingKafkaTemplate.send(KafkaConstants.TOPIC_RESTORE_FAILURE, new DatabaseRestoredFailureEvent(event.getBlueprintId(), event.getDatabaseName(), ex.getMessage(), ex));
         }
     }
