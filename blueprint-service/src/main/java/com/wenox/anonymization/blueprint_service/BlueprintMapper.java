@@ -15,6 +15,7 @@ public class BlueprintMapper {
         blueprint.setBlueprintStatus(BlueprintStatus.CREATED);
         blueprint.setDumpStoreSuccess(false);
         blueprint.setBlueprintDatabaseName(generateDatabaseName());
+        blueprint.setRestoreMode(dto.restoreMode());
         blueprint.setTitle(dto.title());
         blueprint.setDescription(dto.description());
         blueprint.setCreatedDate(LocalDateTime.now());

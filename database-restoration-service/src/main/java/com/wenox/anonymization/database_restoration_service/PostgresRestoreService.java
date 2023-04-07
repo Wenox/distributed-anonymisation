@@ -8,6 +8,8 @@ import java.util.concurrent.TimeoutException;
 
 import com.wenox.anonymization.s3_file_manager.S3Constants;
 import com.wenox.anonymization.s3_file_manager.api.StorageService;
+import com.wenox.anonymization.shared_events_library.api.RestoreMode;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -16,27 +18,24 @@ import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 
 @Service
+@RequiredArgsConstructor
 @Slf4j
 public class PostgresRestoreService implements RestoreService {
 
-    private final String postgresIpAddress;
-    private final String postgresHostPort;
-    private final StorageService storageService;
+    @Value("${POSTGRES_IP_ADDRESS:localhost}")
+    private String postgresIpAddress;
 
-    public PostgresRestoreService(@Value("${POSTGRES_IP_ADDRESS:localhost}") String postgresIpAddress,
-                                  @Value("${POSTGRES_HOST_PORT:5432}") String postgresHostPort,
-                                  StorageService storageService) {
-        this.postgresIpAddress = postgresIpAddress;
-        this.postgresHostPort = postgresHostPort;
-        this.storageService = storageService;
-    }
+    @Value("${POSTGRES_HOST_PORT:5432}")
+    private String postgresHostPort;
+
+    private final StorageService storageService;
 
     @Override
     public void restore(String databaseName, RestoreMode restoreMode) throws IOException, InterruptedException, TimeoutException {
-        log.info("Restoring new {}...", databaseName);
-
+        log.info("restoreMode: {}", restoreMode);
         switch (restoreMode) {
             case ARCHIVE -> restoreFromArchive(databaseName);
+            default -> throw new UnsupportedRestoreModeException("Unsupported database restore mode: " + restoreMode);
         }
 
         log.info("Restored new {} successfully.", databaseName);

@@ -1,5 +1,6 @@
 package com.wenox.anonymization.blueprint_service;
 
+import com.wenox.anonymization.shared_events_library.api.RestoreMode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

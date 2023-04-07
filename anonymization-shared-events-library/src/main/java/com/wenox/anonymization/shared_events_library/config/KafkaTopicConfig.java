@@ -14,8 +14,20 @@ import org.springframework.kafka.config.TopicBuilder;
 public class KafkaTopicConfig {
 
     @Bean
-    public NewTopic topic1() {
-        log.warn("Creating topic: {}", KafkaConstants.TOPIC_BLUEPRINTS);
-        return TopicBuilder.name(KafkaConstants.TOPIC_BLUEPRINTS).build();
+    public NewTopic topicBlueprintCreated() {
+        log.warn("Creating topic: {}", KafkaConstants.TOPIC_BLUEPRINT_CREATED);
+        return TopicBuilder.name(KafkaConstants.TOPIC_BLUEPRINT_CREATED).build();
+    }
+
+    @Bean
+    public NewTopic topicDatabaseRestoredSuccess() {
+        log.warn("Creating topic: {}", KafkaConstants.TOPIC_DATABASE_RESTORED_SUCCESS);
+        return TopicBuilder.name(KafkaConstants.TOPIC_DATABASE_RESTORED_SUCCESS).build();
+    }
+
+    @Bean
+    public NewTopic topicDatabaseRestoredFailure() {
+        log.warn("Creating topic: {}", KafkaConstants.TOPIC_DATABASE_RESTORED_FAILURE);
+        return TopicBuilder.name(KafkaConstants.TOPIC_DATABASE_RESTORED_FAILURE).build();
     }
 }

@@ -1,13 +1,13 @@
 package com.wenox.anonymization.shared_events_library;
 
-import com.wenox.anonymization.shared_events_library.api.RestoreMode;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
+import lombok.Value;
 
 @Value
 @NoArgsConstructor(force = true)
 @AllArgsConstructor
-public class BlueprintCreatedEvent {
+public class DatabaseRestoredSuccessEvent {
     String blueprintId;
     String databaseName;
-    RestoreMode restoreMode;
 }
