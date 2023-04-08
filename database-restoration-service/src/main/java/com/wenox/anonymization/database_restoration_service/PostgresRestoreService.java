@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -15,7 +16,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 
 @Service
 @RequiredArgsConstructor
@@ -32,13 +32,11 @@ public class PostgresRestoreService implements RestoreService {
 
     @Override
     public void restore(String databaseName, RestoreMode restoreMode) throws IOException, InterruptedException, TimeoutException {
-        log.info("restoreMode: {}", restoreMode);
         switch (restoreMode) {
             case ARCHIVE -> restoreFromArchive(databaseName);
+            case SCRIPT -> restoreFromScript(databaseName);
             default -> throw new UnsupportedRestoreModeException("Unsupported database restore mode: " + restoreMode);
         }
-
-        log.info("Restored new {} successfully.", databaseName);
     }
 
     private void restoreFromArchive(String databaseName) throws IOException, InterruptedException, TimeoutException {
@@ -53,27 +51,42 @@ public class PostgresRestoreService implements RestoreService {
                     databaseName
         ).execute().getExitValue();
 
+        log.info("Database {} is now created.", databaseName);
+
         if (exitCode != 0) {
-            throw new RuntimeException("Create failed");
+            throw new RuntimeException(String.format("Create %s database failed", databaseName));
         }
 
-        log.info("Database is now created.");
-
-        GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-                .bucket(S3Constants.BUCKET_BLUEPRINTS)
-                .key(databaseName)
-                .build();
-
-        log.info("getobjectrequest: {}", getObjectRequest);
-
-        log.info("get object request created");
 
         try (InputStream inputStream = storageService.downloadFile(S3Constants.BUCKET_BLUEPRINTS, databaseName)) {
-            restoreDatabaseFromInputStream(inputStream, databaseName, "postgres", "postgres", "localhost", "5432");
+            restoreArchiveDumpFromInputStream(inputStream, databaseName, "postgres", "postgres", "localhost", "5432");
         }
     }
 
-    private void restoreDatabaseFromInputStream(InputStream inputStream, String dbName, String dbUsername, String dbPassword, String dbHost, String dbPort) throws IOException, InterruptedException, TimeoutException {
+    private void restoreFromScript(String databaseName) throws IOException, InterruptedException, TimeoutException {
+        log.info("Restoring {} from script.", databaseName);
+
+        int exitCode = ProcessExecutorFactory.newProcess(
+                "createdb",
+                "-h", postgresIpAddress,
+                "-p", postgresHostPort,
+                "-U", "postgres", "--no-password",
+                "-T", "template0",
+                databaseName
+        ).execute().getExitValue();
+
+        log.info("Database {} is now created.", databaseName);
+
+        if (exitCode != 0) {
+            throw new RuntimeException(String.format("Create %s database failed", databaseName));
+        }
+
+        try (InputStream inputStream = storageService.downloadFile(S3Constants.BUCKET_BLUEPRINTS, databaseName)) {
+            restoreScriptDumpFromInputStream(inputStream, databaseName, "postgres", "postgres", "localhost", "5432");
+        }
+    }
+
+    private void restoreArchiveDumpFromInputStream(InputStream inputStream, String dbName, String dbUsername, String dbPassword, String dbHost, String dbPort) throws IOException, InterruptedException, TimeoutException {
         List<String> command = Arrays.asList("pg_restore", "-h", dbHost, "-p", dbPort, "-U", dbUsername, "-d", dbName, "-v");
 
         int exitCode = new ProcessExecutor()
@@ -85,7 +98,24 @@ public class PostgresRestoreService implements RestoreService {
                 .getExitValue();
 
         if (exitCode != 0) {
-            throw new RuntimeException("Database restore failed with exit code: " + exitCode);
+            throw new RuntimeException("Database restore from archive failed with exit code: " + exitCode);
+        }
+    }
+
+    private void restoreScriptDumpFromInputStream(InputStream inputStream, String dbName, String dbUsername, String dbPassword, String dbHost, String dbPort) throws IOException, InterruptedException, TimeoutException {
+        List<String> command = Arrays.asList("psql", "-h", dbHost, "-p", dbPort, "-U", dbUsername, "-d", dbName, "-v", "ON_ERROR_STOP=1", "--echo-all");
+
+        int exitCode = new ProcessExecutor()
+                .environment(Map.of("PGPASSWORD", dbPassword))
+                .command(command)
+                .redirectInput(inputStream)
+                .redirectOutput(Slf4jStream.of(getClass()).asInfo())
+                .timeout(60, TimeUnit.SECONDS)
+                .execute()
+                .getExitValue();
+
+        if (exitCode != 0) {
+            throw new RuntimeException("Database restore from script failed with exit code: " + exitCode);
         }
     }
 }
