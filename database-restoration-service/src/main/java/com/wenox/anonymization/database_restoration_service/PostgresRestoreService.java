@@ -1,6 +1,7 @@
 package com.wenox.anonymization.database_restoration_service;
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,12 @@ public class PostgresRestoreService implements RestoreService {
 
     @Value("${POSTGRES_HOST_PORT:5432}")
     private String postgresHostPort;
+
+    @Value("${restore.command.from-archive}")
+    private String restoreFromArchiveCommand;
+
+    @Value("${restore.command.from-script}")
+    private String restoreFromScriptCommand;
 
     private final StorageService storageService;
 
@@ -57,7 +64,6 @@ public class PostgresRestoreService implements RestoreService {
             throw new RuntimeException(String.format("Create %s database failed", databaseName));
         }
 
-
         try (InputStream inputStream = storageService.downloadFile(S3Constants.BUCKET_BLUEPRINTS, databaseName)) {
             restoreArchiveDumpFromInputStream(inputStream, databaseName, "postgres", "postgres", "localhost", "5432");
         }
@@ -87,9 +93,10 @@ public class PostgresRestoreService implements RestoreService {
     }
 
     private void restoreArchiveDumpFromInputStream(InputStream inputStream, String dbName, String dbUsername, String dbPassword, String dbHost, String dbPort) throws IOException, InterruptedException, TimeoutException {
-        List<String> command = Arrays.asList("pg_restore", "-h", dbHost, "-p", dbPort, "-U", dbUsername, "-d", dbName, "-v");
+        List<String> command = buildCommand(restoreFromArchiveCommand, dbHost, dbPort, dbUsername, dbName);
 
         int exitCode = new ProcessExecutor()
+                .environment(Map.of("PGPASSWORD", dbPassword))
                 .command(command)
                 .redirectInput(inputStream)
                 .redirectOutput(Slf4jStream.of(getClass()).asInfo())
@@ -103,7 +110,7 @@ public class PostgresRestoreService implements RestoreService {
     }
 
     private void restoreScriptDumpFromInputStream(InputStream inputStream, String dbName, String dbUsername, String dbPassword, String dbHost, String dbPort) throws IOException, InterruptedException, TimeoutException {
-        List<String> command = Arrays.asList("psql", "-h", dbHost, "-p", dbPort, "-U", dbUsername, "-d", dbName, "-v", "ON_ERROR_STOP=1", "--echo-all");
+        List<String> command = buildCommand(restoreFromScriptCommand, dbHost, dbPort, dbUsername, dbName);
 
         int exitCode = new ProcessExecutor()
                 .environment(Map.of("PGPASSWORD", dbPassword))
@@ -117,6 +124,11 @@ public class PostgresRestoreService implements RestoreService {
         if (exitCode != 0) {
             throw new RuntimeException("Database restore from script failed with exit code: " + exitCode);
         }
+    }
+
+    private List<String> buildCommand(String commandTemplate, String dbHost, String dbPort, String dbUsername, String dbName) {
+        String formattedCommand = MessageFormat.format(commandTemplate, dbHost, dbPort, dbUsername, dbName);
+        return Arrays.asList(formattedCommand.split("\\s+"));
     }
 }
 
