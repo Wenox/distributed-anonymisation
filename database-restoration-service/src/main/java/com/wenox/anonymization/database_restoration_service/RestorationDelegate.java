@@ -5,7 +5,7 @@ import com.wenox.anonymization.shared_events_library.api.RestoreMode;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
-public interface RestoreFacade {
+public interface RestorationDelegate {
 
-    void restore(String databaseName, RestoreMode restoreMode) throws IOException, InterruptedException, TimeoutException;
+    void restore(final String databaseName, final RestoreMode restoreMode) throws IOException, InterruptedException, TimeoutException;
 }

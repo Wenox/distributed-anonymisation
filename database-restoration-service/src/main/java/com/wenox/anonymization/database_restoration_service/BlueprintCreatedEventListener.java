@@ -16,14 +16,14 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class BlueprintCreatedEventListener {
 
-    private final RestoreFacade restoreFacade;
+    private final RestorationDelegate restorationDelegate;
     private final KafkaTemplateWrapper<String, Object> loggingKafkaTemplate;
 
     @KafkaListener(topics = KafkaConstants.TOPIC_CREATE_BLUEPRINT, groupId = "database-restoration-service-group")
     public void onBlueprintCreated(BlueprintCreatedEvent event) {
         log.info("Received {}", event);
         try {
-            restoreFacade.restore(event.getDatabaseName(), event.getRestoreMode());
+            restorationDelegate.restore(event.getDatabaseName(), event.getRestoreMode());
             loggingKafkaTemplate.send(KafkaConstants.TOPIC_RESTORE_SUCCESS, new DatabaseRestoredSuccessEvent(event.getBlueprintId(), event.getDatabaseName()));
         } catch (Exception ex) {
             log.error("Error during database restoration for {}", event, ex);
