@@ -16,11 +16,11 @@ public class PostgresRestorationDelegate implements RestorationDelegate {
     private final DatabaseCreationService databaseCreationService;
 
     @Override
-    public void restore(String databaseName, RestoreMode restoreMode) throws IOException, InterruptedException, TimeoutException {
+    public void restore(String dbName, RestoreMode restoreMode) throws IOException, InterruptedException, TimeoutException {
         switch (restoreMode) {
-            case ARCHIVE -> restoreFromArchive(databaseName);
-            case SCRIPT -> restoreFromScript(databaseName);
-            default -> throw new UnsupportedRestoreModeException("Unsupported database restore mode: " + restoreMode);
+            case ARCHIVE -> restoreFromArchive(dbName);
+            case SCRIPT -> restoreFromScript(dbName);
+            default -> throw new UnsupportedRestoreModeException(String.format("Error restoring database: %s because of unsupported database restore mode: %s", dbName, restoreMode));
         }
     }
 

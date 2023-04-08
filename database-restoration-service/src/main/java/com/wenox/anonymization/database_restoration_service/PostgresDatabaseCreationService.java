@@ -19,6 +19,8 @@ public class PostgresDatabaseCreationService implements DatabaseCreationService 
     private final CommandFactory commandFactory;
 
     public void createDatabase(String dbName) throws IOException, InterruptedException, TimeoutException {
+        log.info("Creating database {}", dbName);
+
         List<String> command = commandFactory.generateCreateDatabaseCommand(dbName);
 
         int exitCode = new ProcessExecutor()
@@ -28,10 +30,10 @@ public class PostgresDatabaseCreationService implements DatabaseCreationService 
                 .execute()
                 .getExitValue();
 
-        log.info("Database {} is now created.", dbName);
-
         if (exitCode != 0) {
-            throw new RuntimeException(String.format("Create %s database failed with exit code: %d", dbName, exitCode));
+            throw new RuntimeException(String.format("Create %s database using command %s failed with exit code: %d", dbName, command, exitCode));
         }
+
+        log.info("Successfully created database {} using command %s", dbName);
     }
 }

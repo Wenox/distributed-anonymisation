@@ -3,7 +3,7 @@ package com.wenox.anonymization.database_restoration_service;
 import com.wenox.anonymization.s3_file_manager.S3Constants;
 import com.wenox.anonymization.s3_file_manager.api.StorageService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Qualifier;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class PostgresRestorationService implements RestorationService {
 
@@ -22,18 +23,20 @@ public class PostgresRestorationService implements RestorationService {
     private final CommandFactory commandFactory;
 
     public void restoreScriptDump(String dbName) throws IOException, InterruptedException, TimeoutException {
+        log.info("Restoring database {} from script", dbName);
         try (InputStream inputStream = storageService.downloadFile(S3Constants.BUCKET_BLUEPRINTS, dbName)) {
-            restoreDumpFromInputStream(inputStream, dbName, commandFactory.generateRestoreFromScriptCommand(dbName));
+            restoreDumpFromInputStream(inputStream, commandFactory.generateRestoreFromScriptCommand(dbName));
         }
     }
 
     public void restoreArchiveDump(String dbName) throws IOException, InterruptedException, TimeoutException {
+        log.info("Restoring database {} from archive", dbName);
         try (InputStream inputStream = storageService.downloadFile(S3Constants.BUCKET_BLUEPRINTS, dbName)) {
-            restoreDumpFromInputStream(inputStream, dbName, commandFactory.generateRestoreFromArchiveCommand(dbName));
+            restoreDumpFromInputStream(inputStream, commandFactory.generateRestoreFromArchiveCommand(dbName));
         }
     }
 
-    private void restoreDumpFromInputStream(InputStream inputStream, String dbName, List<String> command) throws IOException, InterruptedException, TimeoutException {
+    private void restoreDumpFromInputStream(InputStream inputStream, List<String> command) throws IOException, InterruptedException, TimeoutException {
         int exitCode = new ProcessExecutor()
                 .command(command)
                 .redirectInput(inputStream)
@@ -43,7 +46,9 @@ public class PostgresRestorationService implements RestorationService {
                 .getExitValue();
 
         if (exitCode != 0) {
-            throw new RuntimeException("Database restore failed with exit code: " + exitCode);
+            throw new RuntimeException(String.format("Database restoration using command %s failed with exit code: %s", command, exitCode));
         }
+
+        log.info("Successfully restored database using command {}", command);
     }
 }
