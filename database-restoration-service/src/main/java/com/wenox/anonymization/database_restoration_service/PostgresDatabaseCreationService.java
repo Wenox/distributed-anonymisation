@@ -14,12 +14,12 @@ import java.util.concurrent.TimeoutException;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class CreateDatabaseService {
+public class PostgresDatabaseCreationService implements DatabaseCreationService {
 
     private final CommandFactory commandFactory;
 
     public void createDatabase(String dbName) throws IOException, InterruptedException, TimeoutException {
-        List<String> command = commandFactory.getCreateDatabaseCommand(dbName);
+        List<String> command = commandFactory.generateCreateDatabaseCommand(dbName);
 
         int exitCode = new ProcessExecutor()
                 .command(command)
@@ -31,7 +31,7 @@ public class CreateDatabaseService {
         log.info("Database {} is now created.", dbName);
 
         if (exitCode != 0) {
-            throw new RuntimeException(String.format("Create %s database failed", dbName));
+            throw new RuntimeException(String.format("Create %s database failed with exit code: %d", dbName, exitCode));
         }
     }
 }
