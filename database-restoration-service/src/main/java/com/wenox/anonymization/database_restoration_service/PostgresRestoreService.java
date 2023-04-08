@@ -29,10 +29,10 @@ public class PostgresRestoreService implements RestoreService {
     @Value("${POSTGRES_HOST_PORT:5432}")
     private String postgresHostPort;
 
-    @Value("${restore.command.from-archive}")
+    @Value("${restore-command.from-archive.v1}")
     private String restoreFromArchiveCommand;
 
-    @Value("${restore.command.from-script}")
+    @Value("${restore-command.from-script.v1}")
     private String restoreFromScriptCommand;
 
     private final StorageService storageService;
