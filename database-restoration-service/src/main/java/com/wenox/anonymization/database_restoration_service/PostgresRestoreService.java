@@ -23,17 +23,14 @@ import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 @Slf4j
 public class PostgresRestoreService implements RestoreService {
 
-    @Value("${POSTGRES_IP_ADDRESS:localhost}")
-    private String postgresIpAddress;
+    @Value("${command.create-database.v1}")
+    private String commandCreateDatabase;
 
-    @Value("${POSTGRES_HOST_PORT:5432}")
-    private String postgresHostPort;
+    @Value("${command.restore-dump.from-archive.v1}")
+    private String commandRestoreFromArchive;
 
-    @Value("${restore-command.from-archive.v1}")
-    private String restoreFromArchiveCommand;
-
-    @Value("${restore-command.from-script.v1}")
-    private String restoreFromScriptCommand;
+    @Value("${command.restore-dump.from-script.v1}")
+    private String commandRestoreFromScript;
 
     private final StorageService storageService;
 
@@ -49,20 +46,7 @@ public class PostgresRestoreService implements RestoreService {
     private void restoreFromArchive(String databaseName) throws IOException, InterruptedException, TimeoutException {
         log.info("Restoring {} from archive.", databaseName);
 
-        int exitCode = ProcessExecutorFactory.newProcess(
-                    "createdb",
-                    "-h", postgresIpAddress,
-                    "-p", postgresHostPort,
-                    "-U", "postgres", "--no-password",
-                    "-T", "template0",
-                    databaseName
-        ).execute().getExitValue();
-
-        log.info("Database {} is now created.", databaseName);
-
-        if (exitCode != 0) {
-            throw new RuntimeException(String.format("Create %s database failed", databaseName));
-        }
+        createDatabase(databaseName);
 
         try (InputStream inputStream = storageService.downloadFile(S3Constants.BUCKET_BLUEPRINTS, databaseName)) {
             restoreArchiveDumpFromInputStream(inputStream, databaseName, "postgres", "postgres", "localhost", "5432");
@@ -72,28 +56,32 @@ public class PostgresRestoreService implements RestoreService {
     private void restoreFromScript(String databaseName) throws IOException, InterruptedException, TimeoutException {
         log.info("Restoring {} from script.", databaseName);
 
-        int exitCode = ProcessExecutorFactory.newProcess(
-                "createdb",
-                "-h", postgresIpAddress,
-                "-p", postgresHostPort,
-                "-U", "postgres", "--no-password",
-                "-T", "template0",
-                databaseName
-        ).execute().getExitValue();
-
-        log.info("Database {} is now created.", databaseName);
-
-        if (exitCode != 0) {
-            throw new RuntimeException(String.format("Create %s database failed", databaseName));
-        }
+        createDatabase(databaseName);
 
         try (InputStream inputStream = storageService.downloadFile(S3Constants.BUCKET_BLUEPRINTS, databaseName)) {
             restoreScriptDumpFromInputStream(inputStream, databaseName, "postgres", "postgres", "localhost", "5432");
         }
     }
 
+    private void createDatabase(String databaseName) throws IOException, InterruptedException, TimeoutException {
+        List<String> command = buildCreateDatabaseCommand(commandCreateDatabase, "localhost", "5432", "postgres", databaseName);
+
+        int exitCode = new ProcessExecutor()
+                .command(command)
+                .redirectOutput(Slf4jStream.of(getClass()).asInfo())
+                .timeout(60, TimeUnit.SECONDS)
+                .execute()
+                .getExitValue();
+
+        log.info("Database {} is now created.", databaseName);
+
+        if (exitCode != 0) {
+            throw new RuntimeException(String.format("Create %s database failed", databaseName));
+        }
+    }
+
     private void restoreArchiveDumpFromInputStream(InputStream inputStream, String dbName, String dbUsername, String dbPassword, String dbHost, String dbPort) throws IOException, InterruptedException, TimeoutException {
-        List<String> command = buildCommand(restoreFromArchiveCommand, dbHost, dbPort, dbUsername, dbName);
+        List<String> command = buildRestoreCommand(commandRestoreFromArchive, dbHost, dbPort, dbUsername, dbName);
 
         int exitCode = new ProcessExecutor()
                 .environment(Map.of("PGPASSWORD", dbPassword))
@@ -110,7 +98,7 @@ public class PostgresRestoreService implements RestoreService {
     }
 
     private void restoreScriptDumpFromInputStream(InputStream inputStream, String dbName, String dbUsername, String dbPassword, String dbHost, String dbPort) throws IOException, InterruptedException, TimeoutException {
-        List<String> command = buildCommand(restoreFromScriptCommand, dbHost, dbPort, dbUsername, dbName);
+        List<String> command = buildRestoreCommand(commandRestoreFromScript, dbHost, dbPort, dbUsername, dbName);
 
         int exitCode = new ProcessExecutor()
                 .environment(Map.of("PGPASSWORD", dbPassword))
@@ -126,7 +114,12 @@ public class PostgresRestoreService implements RestoreService {
         }
     }
 
-    private List<String> buildCommand(String commandTemplate, String dbHost, String dbPort, String dbUsername, String dbName) {
+    private List<String> buildCreateDatabaseCommand(String commandTemplate, String dbHost, String dbPort, String dbUsername, String dbName) {
+        String formattedCommand = MessageFormat.format(commandTemplate, dbHost, dbPort, dbUsername, dbName);
+        return Arrays.asList(formattedCommand.split("\\s+"));
+    }
+
+    private List<String> buildRestoreCommand(String commandTemplate, String dbHost, String dbPort, String dbUsername, String dbName) {
         String formattedCommand = MessageFormat.format(commandTemplate, dbHost, dbPort, dbUsername, dbName);
         return Arrays.asList(formattedCommand.split("\\s+"));
     }
