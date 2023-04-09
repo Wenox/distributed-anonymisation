@@ -25,7 +25,59 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: example
       MONGO_INITDB_DATABASE: metadata_db
     volumes:
-      - ./metadata-extraction-service/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - ./metadata-extraction-service/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+
+  restoration_mongodb:
+    image: mongo
+    container_name: restoration_mongodb
+    restart: always
+    ports:
+      - "27019:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: restorations_db
+    volumes:
+      - ./database-restoration-service/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+
+  worksheet_mongodb:
+    image: mongo
+    container_name: worksheet_mongodb
+    restart: always
+    ports:
+      - "27020:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: worksheets_db
+    volumes:
+      - ./worksheet-service/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+
+  anonymization_mongodb:
+    image: mongo
+    container_name: anonymization_mongodb
+    restart: always
+    ports:
+      - "27021:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: anonymization_db
+    volumes:
+      - ./anonymization-service/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+
+  outcomes_mongodb:
+    image: mongo
+    container_name: outcomes_mongodb
+    restart: always
+    ports:
+      - "27022:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: outcomes_db
+    volumes:
+      - ./outcome-service/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
 
   zookeeper:
     image: 'bitnami/zookeeper:latest'
