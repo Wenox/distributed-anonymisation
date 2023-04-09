@@ -1,4 +1,4 @@
-package com.wenox.anonymization.metadata_extraction_service.configuration;
+package com.wenox.anonymization.logging;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -14,7 +14,6 @@ import org.springframework.web.filter.AbstractRequestLoggingFilter;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import java.io.IOException;
-
 
 @Slf4j
 @Component
@@ -66,19 +65,34 @@ public class LoggingFilter extends AbstractRequestLoggingFilter {
                 String responseBody = new String(wrappedResponse.getContentAsByteArray());
                 int status = wrappedResponse.getStatus();
                 HttpStatus httpStatus = HttpStatus.valueOf(status);
-                log.info("<----- Response (HTTP {} {}):\n{}", status, httpStatus.getReasonPhrase(), prettyPrintJson(responseBody));
-                wrappedResponse.copyBodyToResponse();
+                if (isJson(responseBody)) {
+                    log.info("<----- Response (HTTP {} {}):\n{}", status, httpStatus.getReasonPhrase(), prettyPrintJson(responseBody));
+                } else {
+                    log.info("<----- Response (HTTP {} {}): {}", status, httpStatus.getReasonPhrase(), responseBody);
+                }
             }
+            wrappedResponse.copyBodyToResponse();
+        }
+    }
+
+    private boolean isJson(String content) {
+        try {
+            objectMapper.readValue(content, Object.class);
+            return true;
+        } catch (IOException e) {
+            return false;
         }
     }
 
     private String prettyPrintJson(String json) {
-        try {
-            Object jsonObject = objectMapper.readValue(json, Object.class);
-            return objectMapper.writeValueAsString(jsonObject);
-        } catch (IOException e) {
-            log.warn("Failed to pretty-print JSON: {}", json, e);
-            return json;
+        if (isJson(json)) {
+            try {
+                Object jsonObject = objectMapper.readValue(json, Object.class);
+                return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(jsonObject);
+            } catch (IOException e) {
+                log.warn("Failed to pretty-print JSON: {}", json, e);
+            }
         }
+        return json;
     }
 }
