@@ -13,6 +13,7 @@ public class MetadataService {
     private final MetadataRepository metadataRepository;
 
     public Metadata getMetadataByBlueprintId(String blueprintId) {
-        return metadataRepository.findByBlueprintId(blueprintId).orElseThrow();
+        return metadataRepository.findByBlueprintId(blueprintId)
+                .orElseThrow(() -> new MetadataNotFoundException("Metadata not found for blueprintId: " + blueprintId));
     }
 }
