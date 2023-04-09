@@ -1,6 +1,9 @@
 package com.wenox.anonymization.worksheet_service;
 
+import com.wenox.anonymization.worksheet_service.domain.Blueprint;
+import com.wenox.anonymization.worksheet_service.domain.CreateWorksheetResponse;
 import com.wenox.anonymization.worksheet_service.domain.Metadata;
+import com.wenox.anonymization.worksheet_service.domain.Restoration;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.reactor.circuitbreaker.operator.CircuitBreakerOperator;
 import io.github.resilience4j.reactor.retry.RetryOperator;
@@ -13,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
@@ -28,9 +32,9 @@ public class DefaultWorksheetService {
     private WebClient.Builder webClientBuilder;
 
     public CreateWorksheetResponse createWorksheet(CreateWorksheetRequest dto) {
-        log.info("Creating worksheet. DTO : {}", dto);
-        String extractionServiceUrl = "http://localhost:8300/api/v1/metadata/{id}";
-        String restorationServiceUrl = "http://localhost:8200/api/v1/restorations/{id}";
+        String extractionServiceUrl = "http://localhost:8300/api/v1/metadata";
+        String restorationServiceUrl = "http://localhost:8200/api/v1/restorations";
+        String blueprintServiceUrl = "http://localhost:8100/api/v1/blueprints";
 
         // Configure Retry policy
         RetryConfig retryConfig = RetryConfig.custom()
@@ -47,34 +51,42 @@ public class DefaultWorksheetService {
         // Configure CircuitBreaker
         CircuitBreaker circuitBreaker = CircuitBreaker.ofDefaults("worksheetServiceCircuitBreaker");
 
-        log.info("Calling {}", extractionServiceUrl);
-        // Make parallel calls to extraction-service and blueprint-service with resilience patterns
-        Metadata metadataResponseMono = webClientBuilder.build()
+        Mono<Blueprint> blueprintResponse = webClientBuilder.build()
                 .get()
-                .uri(extractionServiceUrl, dto.blueprintId())
+                .uri(UriComponentsBuilder.fromHttpUrl(blueprintServiceUrl).queryParam("blueprint_id", dto.blueprintId()).toUriString())
+                .retrieve()
+                .bodyToMono(Blueprint.class)
+                .transformDeferred(TimeLimiterOperator.of(timeLimiter))
+                .transformDeferred(RetryOperator.of(retryPolicy))
+                .transformDeferred(CircuitBreakerOperator.of(circuitBreaker));
+
+        Mono<Restoration> restorationResponse = webClientBuilder.build()
+                .get()
+                .uri(UriComponentsBuilder.fromHttpUrl(restorationServiceUrl).queryParam("blueprint_id", dto.blueprintId()).toUriString())
+                .retrieve()
+                .bodyToMono(Restoration.class)
+                .transformDeferred(TimeLimiterOperator.of(timeLimiter))
+                .transformDeferred(RetryOperator.of(retryPolicy))
+                .transformDeferred(CircuitBreakerOperator.of(circuitBreaker));
+
+        Mono<Metadata> metadataResponseMono = webClientBuilder.build()
+                .get()
+                .uri(UriComponentsBuilder.fromHttpUrl(extractionServiceUrl).queryParam("blueprint_id", dto.blueprintId()).toUriString())
                 .retrieve()
                 .bodyToMono(Metadata.class)
                 .transformDeferred(TimeLimiterOperator.of(timeLimiter))
                 .transformDeferred(RetryOperator.of(retryPolicy))
-                .transformDeferred(CircuitBreakerOperator.of(circuitBreaker))
-                .block();
+                .transformDeferred(CircuitBreakerOperator.of(circuitBreaker));
 
-        Metadata metadataResponseMono2 = webClientBuilder.build()
-                .get()
-                .uri(extractionServiceUrl, dto.blueprintId())
-                .retrieve()
-                .bodyToMono(Metadata.class)
-                .transformDeferred(TimeLimiterOperator.of(timeLimiter))
-                .transformDeferred(RetryOperator.of(retryPolicy))
-                .transformDeferred(CircuitBreakerOperator.of(circuitBreaker))
-                .block();
 
-        try {
-            log.info("Sleeping for 1s");
-            Thread.sleep(1000);
-        } catch (Exception ex) {}
-        log.info("Successful call. Response metadata mono : {}", metadataResponseMono);
-        log.info("Successful call. Response metadata : {}", metadataResponseMono);
-        return null;
+        return Mono.zip(blueprintResponse, restorationResponse, metadataResponseMono)
+                .flatMap(tuple -> {
+                    Blueprint blueprint = tuple.getT1();
+                    Restoration restoration = tuple.getT2();
+                    Metadata metadata = tuple.getT3();
+
+                    return Mono.just(new CreateWorksheetResponse(blueprint, restoration, metadata));
+                })
+                .block();
     }
 }

@@ -32,7 +32,6 @@ public class Blueprint {
     private String description;
     private LocalDateTime createdDate;
 
-    private String savedDumpName;
 
     private String originalDumpName;
 }

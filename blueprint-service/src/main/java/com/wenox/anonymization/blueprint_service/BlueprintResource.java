@@ -2,10 +2,9 @@ package com.wenox.anonymization.blueprint_service;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -17,5 +16,15 @@ public class BlueprintResource {
     @PostMapping
     public ResponseEntity<String> importBlueprint(@Valid ImportBlueprintRequest dto) {
         return ResponseEntity.accepted().body(blueprintService.importBlueprint(dto));
+    }
+
+    @GetMapping
+    public ResponseEntity<Blueprint> getBlueprint(@RequestParam("blueprint_id") String blueprintId) {
+        return ResponseEntity.ok(blueprintService.getBlueprint(blueprintId));
+    }
+
+    @ExceptionHandler(BlueprintNotFoundException.class)
+    public ResponseEntity<String> handleBlueprintNotFoundException(BlueprintNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 }

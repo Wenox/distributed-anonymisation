@@ -34,4 +34,10 @@ public class DefaultBlueprintService implements BlueprintService {
 
         return blueprint.getBlueprintId();
     }
+
+    @Override
+    public Blueprint getBlueprint(String blueprintId) {
+        return blueprintRepository.findById(blueprintId)
+                .orElseThrow(() -> new BlueprintNotFoundException("Blueprint not found for blueprintId: " + blueprintId));
+    }
 }
