@@ -19,7 +19,7 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.wenox.anonymization</groupId>
-			<artifactId>anonymization-shared-events-library</artifactId>
+			<artifactId>shared-events-library</artifactId>
 			<version>1.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>

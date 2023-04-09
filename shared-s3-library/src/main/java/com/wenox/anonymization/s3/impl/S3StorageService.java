@@ -1,6 +1,6 @@
-package com.wenox.anonymization.s3_file_manager.impl;
+package com.wenox.anonymization.s3.impl;
 
-import com.wenox.anonymization.s3_file_manager.api.StorageService;
+import com.wenox.anonymization.s3.api.StorageService;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.sync.RequestBody;

@@ -1,7 +1,7 @@
 package com.wenox.anonymization.database_restoration_service;
 
-import com.wenox.anonymization.s3_file_manager.S3Constants;
-import com.wenox.anonymization.s3_file_manager.api.StorageService;
+import com.wenox.anonymization.s3.S3Constants;
+import com.wenox.anonymization.s3.api.StorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

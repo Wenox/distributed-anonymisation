@@ -1,4 +1,4 @@
-package com.wenox.anonymization.s3_file_manager.api;
+package com.wenox.anonymization.s3.api;
 
 import org.springframework.web.multipart.MultipartFile;
 

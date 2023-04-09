@@ -1,4 +1,4 @@
-package com.wenox.anonymization.s3_file_manager.config;
+package com.wenox.anonymization.s3.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;

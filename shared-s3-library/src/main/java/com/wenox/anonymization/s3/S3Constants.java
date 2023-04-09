@@ -1,4 +1,4 @@
-package com.wenox.anonymization.s3_file_manager;
+package com.wenox.anonymization.s3;
 
 public final class S3Constants {
 
