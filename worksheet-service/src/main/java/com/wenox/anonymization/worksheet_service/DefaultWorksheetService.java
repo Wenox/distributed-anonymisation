@@ -30,6 +30,7 @@ public class DefaultWorksheetService {
     public CreateWorksheetResponse createWorksheet(CreateWorksheetRequest dto) {
         log.info("Creating worksheet. DTO : {}", dto);
         String extractionServiceUrl = "http://localhost:8300/api/v1/metadata/{id}";
+        String restorationServiceUrl = "http://localhost:8200/api/v1/restorations/{id}";
 
         // Configure Retry policy
         RetryConfig retryConfig = RetryConfig.custom()
@@ -49,6 +50,16 @@ public class DefaultWorksheetService {
         log.info("Calling {}", extractionServiceUrl);
         // Make parallel calls to extraction-service and blueprint-service with resilience patterns
         Metadata metadataResponseMono = webClientBuilder.build()
+                .get()
+                .uri(extractionServiceUrl, dto.blueprintId())
+                .retrieve()
+                .bodyToMono(Metadata.class)
+                .transformDeferred(TimeLimiterOperator.of(timeLimiter))
+                .transformDeferred(RetryOperator.of(retryPolicy))
+                .transformDeferred(CircuitBreakerOperator.of(circuitBreaker))
+                .block();
+
+        Metadata metadataResponseMono2 = webClientBuilder.build()
                 .get()
                 .uri(extractionServiceUrl, dto.blueprintId())
                 .retrieve()

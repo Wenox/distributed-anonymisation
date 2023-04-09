@@ -17,8 +17,7 @@ import org.springframework.stereotype.Component;
 public class BlueprintCreatedEventListener {
 
     private final RestorationDelegate restorationDelegate;
-    private final RestorationRepository restorationRepository;
-    private final RestorationMapper restorationMapper;
+    private final RestorationService restorationService;
     private final KafkaTemplateWrapper<String, Object> loggingKafkaTemplate;
 
     @KafkaListener(topics = KafkaConstants.TOPIC_CREATE_BLUEPRINT, groupId = "database-restoration-service-group")
@@ -26,11 +25,11 @@ public class BlueprintCreatedEventListener {
         log.info("Received {}", event);
         try {
             restorationDelegate.restore(event.getDatabaseName(), event.getRestoreMode());
-            restorationRepository.save(restorationMapper.toActiveRestoration(event));
+            restorationService.saveActiveRestoration(event);
             loggingKafkaTemplate.send(KafkaConstants.TOPIC_RESTORE_SUCCESS, new DatabaseRestoredSuccessEvent(event.getBlueprintId(), event.getDatabaseName()));
         } catch (Exception ex) {
             log.error("Error during database restoration for {}", event, ex);
-            restorationRepository.save(restorationMapper.toInactiveRestoration(event));
+            restorationService.saveInactiveRestoration(event);
             loggingKafkaTemplate.send(KafkaConstants.TOPIC_RESTORE_FAILURE, new DatabaseRestoredFailureEvent(event.getBlueprintId(), event.getDatabaseName(), ex.getMessage(), ex));
         }
     }

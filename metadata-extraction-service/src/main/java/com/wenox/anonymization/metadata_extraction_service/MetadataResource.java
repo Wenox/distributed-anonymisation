@@ -14,8 +14,8 @@ public class MetadataResource {
 
     private final MetadataService metadataService;
 
-    @GetMapping("/{blueprintId}")
-    public ResponseEntity<Metadata> getMetadata(@PathVariable("blueprintId") String blueprintId) {
+    @GetMapping
+    public ResponseEntity<Metadata> getMetadataByBlueprintId(@RequestParam("blueprint_id") String blueprintId) {
         log.info("Retrieving metadata by blueprintId : {}", blueprintId);
         return ResponseEntity.ok(metadataService.getMetadataByBlueprintId(blueprintId));
     }

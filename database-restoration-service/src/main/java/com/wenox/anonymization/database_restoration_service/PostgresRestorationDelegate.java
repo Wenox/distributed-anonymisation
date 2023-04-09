@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service;
 @Slf4j
 public class PostgresRestorationDelegate implements RestorationDelegate {
 
-    private final RestorationService restorationService;
-    private final DatabaseCreationService databaseCreationService;
+    private final RestorationHandler restorationHandler;
+    private final DatabaseCreationHandler databaseCreationHandler;
 
     @Override
     public void restore(String dbName, RestoreMode restoreMode) throws IOException, InterruptedException, TimeoutException {
@@ -25,13 +25,13 @@ public class PostgresRestorationDelegate implements RestorationDelegate {
     }
 
     private void restoreFromArchive(String dbName) throws IOException, InterruptedException, TimeoutException {
-        databaseCreationService.createDatabase(dbName);
-        restorationService.restoreArchiveDump(dbName);
+        databaseCreationHandler.createDatabase(dbName);
+        restorationHandler.restoreArchiveDump(dbName);
     }
 
     private void restoreFromScript(String dbName) throws IOException, InterruptedException, TimeoutException {
-        databaseCreationService.createDatabase(dbName);
-        restorationService.restoreScriptDump(dbName);
+        databaseCreationHandler.createDatabase(dbName);
+        restorationHandler.restoreScriptDump(dbName);
     }
 }
 

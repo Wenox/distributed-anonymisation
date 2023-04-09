@@ -14,7 +14,7 @@ import java.util.concurrent.TimeoutException;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class PostgresDatabaseCreationService implements DatabaseCreationService {
+public class PostgresDatabaseCreationHandler implements DatabaseCreationHandler {
 
     private final CommandFactory commandFactory;
 
