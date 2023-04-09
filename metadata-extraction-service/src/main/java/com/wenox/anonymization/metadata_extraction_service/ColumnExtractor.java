@@ -17,7 +17,7 @@ public class ColumnExtractor {
         String isNullable = columns.getString("IS_NULLABLE");
         boolean isPrimaryKey = table.getPrimaryKey().getColumnName().equals(columnName);
         boolean isForeignKey = checkForeignKey(extractor, table, columnName);
-        return new Column(columnName, type, isNullable, isPrimaryKey, isForeignKey);
+        return new Column(columnName, type, "YES".equals(isNullable), isPrimaryKey, isForeignKey);
     }
 
     private static boolean checkForeignKey(DatabaseMetaData extractor, Table table, String columnName) throws SQLException {

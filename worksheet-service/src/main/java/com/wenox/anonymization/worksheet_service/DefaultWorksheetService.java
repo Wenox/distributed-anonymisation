@@ -1,5 +1,6 @@
 package com.wenox.anonymization.worksheet_service;
 
+import com.wenox.anonymization.worksheet_service.domain.Metadata;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.reactor.circuitbreaker.operator.CircuitBreakerOperator;
 import io.github.resilience4j.reactor.retry.RetryOperator;
@@ -27,8 +28,8 @@ public class DefaultWorksheetService {
     private WebClient.Builder webClientBuilder;
 
     public CreateWorksheetResponse createWorksheet(CreateWorksheetRequest dto) {
-        String extractionServiceUrl = "http://localhost:8080/api/v1/metadata/{id}";
-        String blueprintServiceUrl = "http://localhost:8081/api/v1/blueprint/{id}";
+        log.info("Creating worksheet. DTO : {}", dto);
+        String extractionServiceUrl = "http://localhost:8300/api/v1/metadata/{id}";
 
         // Configure Retry policy
         RetryConfig retryConfig = RetryConfig.custom()
@@ -45,17 +46,24 @@ public class DefaultWorksheetService {
         // Configure CircuitBreaker
         CircuitBreaker circuitBreaker = CircuitBreaker.ofDefaults("worksheetServiceCircuitBreaker");
 
+        log.info("Calling {}", extractionServiceUrl);
         // Make parallel calls to extraction-service and blueprint-service with resilience patterns
-        Mono<MetadataResponse> metadataResponseMono = webClientBuilder.build()
+        Metadata metadataResponseMono = webClientBuilder.build()
                 .get()
-                .uri(extractionServiceUrl, 1)
+                .uri(extractionServiceUrl, dto.blueprintId())
                 .retrieve()
-                .bodyToMono(MetadataResponse.class)
+                .bodyToMono(Metadata.class)
                 .transformDeferred(TimeLimiterOperator.of(timeLimiter))
                 .transformDeferred(RetryOperator.of(retryPolicy))
-                .transformDeferred(CircuitBreakerOperator.of(circuitBreaker));
+                .transformDeferred(CircuitBreakerOperator.of(circuitBreaker))
+                .block();
 
-
+        try {
+            log.info("Sleeping for 1s");
+            Thread.sleep(1000);
+        } catch (Exception ex) {}
+        log.info("Successful call. Response metadata mono : {}", metadataResponseMono);
+        log.info("Successful call. Response metadata : {}", metadataResponseMono);
         return null;
     }
 }

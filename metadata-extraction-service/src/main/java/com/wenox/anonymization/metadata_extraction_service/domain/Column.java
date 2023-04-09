@@ -2,16 +2,16 @@ package com.wenox.anonymization.metadata_extraction_service.domain;
 
 public class Column {
 
-  private final String columnName;
-  private final String type; // todo: enum
-  private final boolean nullable;
-  private final boolean primaryKey;
-  private final boolean foreignKey;
+  private String columnName;
+  private String type; // todo: enum
+  private boolean nullable;
+  private boolean primaryKey;
+  private boolean foreignKey;
 
-  public Column(String columnName, String type, String nullable, boolean primaryKey, boolean foreignKey) {
+  public Column(String columnName, String type, boolean nullable, boolean primaryKey, boolean foreignKey) {
     this.columnName = columnName;
     this.type = type;
-    this.nullable = "YES".equals(nullable);
+    this.nullable = nullable;
     this.primaryKey = primaryKey;
     this.foreignKey = foreignKey;
   }
@@ -34,5 +34,25 @@ public class Column {
 
   public boolean isForeignKey() {
     return foreignKey;
+  }
+
+  public void setColumnName(String columnName) {
+    this.columnName = columnName;
+  }
+
+  public void setType(String type) {
+    this.type = type;
+  }
+
+  public void setNullable(boolean nullable) {
+    this.nullable = nullable;
+  }
+
+  public void setPrimaryKey(boolean primaryKey) {
+    this.primaryKey = primaryKey;
+  }
+
+  public void setForeignKey(boolean foreignKey) {
+    this.foreignKey = foreignKey;
   }
 }

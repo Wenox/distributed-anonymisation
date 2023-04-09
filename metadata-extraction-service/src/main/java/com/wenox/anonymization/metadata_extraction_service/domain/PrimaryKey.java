@@ -4,7 +4,7 @@ public class PrimaryKey extends Column {
   private String primaryKeyName;
 
   public PrimaryKey(String columnName, String type, String primaryKeyName) {
-    super(columnName, type, "NO", true, false);
+    super(columnName, type, false, true, false);
     this.primaryKeyName = primaryKeyName;
   }
 

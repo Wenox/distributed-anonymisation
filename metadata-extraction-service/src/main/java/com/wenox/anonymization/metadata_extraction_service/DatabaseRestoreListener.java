@@ -28,6 +28,7 @@ public class DatabaseRestoreListener implements RestoreListener {
         DatabaseConnection connection = DatabaseConnection.forPostgres(event.getDatabaseName());
         try {
             final Metadata metadata = metadataExtractor.extractMetadata(connection);
+            metadata.setBlueprintId(event.getBlueprintId());
             log.info("Saving metadata: {}", metadata);
             metadataRepository.save(metadata);
             loggingKafkaTemplate.send(KafkaConstants.TOPIC_METADATA_SUCCESS, new MetadataExtractedSuccessEvent(event.getBlueprintId()));

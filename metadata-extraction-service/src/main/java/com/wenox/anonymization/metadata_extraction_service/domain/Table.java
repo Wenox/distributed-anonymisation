@@ -4,10 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Table {
-  private final String tableName;
-  private final Integer numberOfRows;
-  private final Integer numberOfColumns;
-  private final Map<String, Column> columns = new HashMap<>();
+  private String tableName;
+  private Integer numberOfRows;
+  private Integer numberOfColumns;
+  private Map<String, Column> columns = new HashMap<>();
   private PrimaryKey primaryKey;
 
   public Table(String tableName, Integer numberOfRows, Integer numberOfColumns) {
@@ -42,5 +42,21 @@ public class Table {
 
   public void setPrimaryKey(PrimaryKey primaryKey) {
     this.primaryKey = primaryKey;
+  }
+
+  public void setColumns(Map<String, Column> columns) {
+    this.columns = columns;
+  }
+
+  public void setTableName(String tableName) {
+    this.tableName = tableName;
+  }
+
+  public void setNumberOfRows(Integer numberOfRows) {
+    this.numberOfRows = numberOfRows;
+  }
+
+  public void setNumberOfColumns(Integer numberOfColumns) {
+    this.numberOfColumns = numberOfColumns;
   }
 }
