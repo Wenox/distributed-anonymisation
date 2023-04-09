@@ -23,5 +23,4 @@ public class BlueprintResource {
         log.info("Returning id : {}", id);
         return ResponseEntity.accepted().body(id);
     }
-
 }
