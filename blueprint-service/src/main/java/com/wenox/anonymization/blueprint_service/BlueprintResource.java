@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,7 +17,7 @@ public class BlueprintResource {
     private final BlueprintService blueprintService;
 
     @PostMapping
-    public ResponseEntity<String> importBlueprint(@Valid @RequestBody ImportBlueprintRequest dto) {
+    public ResponseEntity<String> importBlueprint(@Valid ImportBlueprintRequest dto) {
         log.info("Creating blueprint. DTO : {}", dto);
         final String id = blueprintService.importBlueprint(dto);
         log.info("Returning id : {}", id);
