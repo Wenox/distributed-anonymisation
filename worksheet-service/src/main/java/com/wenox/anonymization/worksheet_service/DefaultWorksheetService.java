@@ -12,9 +12,9 @@ import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple3;
@@ -78,22 +78,19 @@ public class DefaultWorksheetService {
         // Configure CircuitBreaker
         CircuitBreaker circuitBreaker = CircuitBreaker.ofDefaults("worksheetServiceCircuitBreaker");
 
-            // ... (Retry policy, TimeLimiter, and CircuitBreaker configuration remain the same)
-
         return webClient.get()
                 .uri(UriComponentsBuilder.fromHttpUrl(url).queryParam("blueprint_id", dto.blueprintId()).toUriString())
                 .retrieve()
-                .onStatus(HttpStatusCode::isError, clientResponse -> clientResponse.bodyToMono(String.class)
-                        .flatMap(responseBody -> {
-                            String errorMessage = String.format("%s Error occurred when calling %s: %s", clientResponse.statusCode(), url, responseBody);
-                            log.error(errorMessage);
-                            return Mono.error(new RuntimeException(errorMessage));
-                        })
-                )
                 .bodyToMono(responseType)
                 .map(Either::<String, T>right)
                 .onErrorResume(throwable -> {
-                    String errorMessage = "Error occurred when calling " + url + ": " + throwable.getMessage();
+                    String errorMessage;
+                    if (throwable instanceof WebClientResponseException exception) {
+                        String responseBody = exception.getResponseBodyAsString();
+                        errorMessage = String.format("%s Error occurred when calling %s: %s", exception.getStatusCode(), url, responseBody);
+                    } else {
+                        errorMessage = "Error occurred when calling " + url + ": " + throwable.getMessage();
+                    }
                     log.error(errorMessage);
                     return Mono.just(Either.left(errorMessage));
                 })
