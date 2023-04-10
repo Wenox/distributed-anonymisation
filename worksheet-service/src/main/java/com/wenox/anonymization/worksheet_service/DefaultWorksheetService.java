@@ -11,7 +11,6 @@ import io.github.resilience4j.timelimiter.TimeLimiter;
 import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
@@ -21,7 +20,9 @@ import reactor.util.function.Tuple3;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -30,8 +31,7 @@ public class DefaultWorksheetService {
 
     private final WorksheetRepository worksheetRepository;
 
-    @Autowired
-    private WebClient.Builder webClientBuilder;
+    private final WebClient.Builder webClientBuilder;
 
     public Either<FailureResponse, CreateWorksheetResponse> createWorksheet(CreateWorksheetRequest dto) {
         String extractionServiceUrl = "http://localhost:8300/api/v1/metadata";
@@ -44,59 +44,85 @@ public class DefaultWorksheetService {
         Mono<Either<String, Restoration>> restorationResponse = getResponseWithResilience(webClient, restorationServiceUrl, dto, Restoration.class);
         Mono<Either<String, Metadata>> metadataResponse = getResponseWithResilience(webClient, extractionServiceUrl, dto, Metadata.class);
 
-        Tuple3<Either<String, Blueprint>, Either<String, Restoration>, Either<String, Metadata>> responseTuple =
-                Mono.zip(blueprintResponse, restorationResponse, metadataResponse).block();
+        return buildResponseFromServices(blueprintResponse, restorationResponse, metadataResponse);
+    }
+    private Either<FailureResponse, CreateWorksheetResponse> buildResponseFromServices(Mono<Either<String, Blueprint>> blueprintResponse,
+                                                                                       Mono<Either<String, Restoration>> restorationResponse,
+                                                                                       Mono<Either<String, Metadata>> metadataResponse) {
 
-        List<String> errors = new ArrayList<>();
-        responseTuple.getT1().peekLeft(errors::add);
-        responseTuple.getT2().peekLeft(errors::add);
-        responseTuple.getT3().peekLeft(errors::add);
+        Optional<Tuple3<Either<String, Blueprint>, Either<String, Restoration>, Either<String, Metadata>>> responseTupleOptional = Mono
+                .zip(blueprintResponse, restorationResponse, metadataResponse)
+                .blockOptional();
+
+        if (responseTupleOptional.isEmpty()) {
+            return Either.left(new FailureResponse(Collections.singletonList("Unable to retrieve necessary data.")));
+        }
+
+        Tuple3<Either<String, Blueprint>, Either<String, Restoration>, Either<String, Metadata>> responseTuple = responseTupleOptional.get();
+        List<String> errors = collectErrors(responseTuple);
 
         if (!errors.isEmpty()) {
             return Either.left(new FailureResponse(errors));
         }
 
-        CreateWorksheetResponse response = new CreateWorksheetResponse(
+        return Either.right(new CreateWorksheetResponse(
                 responseTuple.getT1().get(),
                 responseTuple.getT2().get(),
                 responseTuple.getT3().get()
-        );
-        return Either.right(response);
+        ));
     }
 
     private <T> Mono<Either<String, T>> getResponseWithResilience(WebClient webClient, String url, CreateWorksheetRequest dto, Class<T> responseType) {
-        // Configure Retry policy
-        RetryConfig retryConfig = RetryConfig.custom()
-                .maxAttempts(3)
-                .waitDuration(Duration.ofMillis(500))
-                .build();
+
+        RetryConfig retryConfig = createRetryConfig();
         Retry retryPolicy = Retry.of("worksheetServiceRetry", retryConfig);
-
-        // Configure TimeLimiter
-        TimeLimiter timeLimiter = TimeLimiter.of(Duration.ofSeconds(2));
-
-        // Configure CircuitBreaker
-        CircuitBreaker circuitBreaker = CircuitBreaker.ofDefaults("worksheetServiceCircuitBreaker");
+        TimeLimiter timeLimiter = createTimeLimiter();
+        CircuitBreaker circuitBreaker = createCircuitBreaker();
 
         return webClient.get()
                 .uri(UriComponentsBuilder.fromHttpUrl(url).queryParam("blueprint_id", dto.blueprintId()).toUriString())
                 .retrieve()
                 .bodyToMono(responseType)
                 .map(Either::<String, T>right)
-                .onErrorResume(throwable -> {
-                    String errorMessage;
-                    if (throwable instanceof WebClientResponseException exception) {
-                        String responseBody = exception.getResponseBodyAsString();
-                        errorMessage = String.format("%s Error occurred when calling %s: %s", exception.getStatusCode(), url, responseBody);
-                    } else {
-                        errorMessage = "Error occurred when calling " + url + ": " + throwable.getMessage();
-                    }
-                    log.error(errorMessage);
-                    return Mono.just(Either.left(errorMessage));
-                })
+                .onErrorResume(throwable -> handleWebClientError(url, throwable))
                 .transformDeferred(TimeLimiterOperator.of(timeLimiter))
                 .transformDeferred(RetryOperator.of(retryPolicy))
                 .transformDeferred(CircuitBreakerOperator.of(circuitBreaker));
+    }
+
+    private <T> Mono<Either<String, T>> handleWebClientError(String url, Throwable throwable) {
+        String errorMessage;
+        if (throwable instanceof WebClientResponseException exception) {
+            String responseBody = exception.getResponseBodyAsString();
+            errorMessage = String.format("%s Error occurred when calling %s: %s", exception.getStatusCode(), url, responseBody);
+        } else {
+            errorMessage = "Error occurred when calling " + url + ": " + throwable.getMessage();
+        }
+        log.error(errorMessage);
+        return Mono.just(Either.left(errorMessage));
+    }
+
+    private List<String> collectErrors(Tuple3<Either<String, Blueprint>, Either<String, Restoration>, Either<String, Metadata>> responseTuple) {
+        List<String> errors = new ArrayList<>();
+        responseTuple.getT1().peekLeft(errors::add);
+        responseTuple.getT2().peekLeft(errors::add);
+        responseTuple.getT3().peekLeft(errors::add);
+        return errors;
+    }
+
+    private RetryConfig createRetryConfig() {
+        return RetryConfig.custom()
+                .maxAttempts(3)
+                .waitDuration(Duration.ofMillis(500))
+                .build();
+    }
+
+    private TimeLimiter createTimeLimiter() {
+        return TimeLimiter.of(Duration.ofSeconds(2));
+    }
+
+    private CircuitBreaker createCircuitBreaker() {
+        return CircuitBreaker.ofDefaults("worksheetServiceCircuitBreaker");
     }
 
 }
