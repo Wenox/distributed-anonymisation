@@ -20,7 +20,8 @@ public class BlueprintResource {
 
     @GetMapping
     public ResponseEntity<Blueprint> getBlueprint(@RequestParam("blueprint_id") String blueprintId) {
-        return ResponseEntity.ok(blueprintService.getBlueprint(blueprintId));
+        throw new BlueprintNotFoundException("Blueprint not found with blueprintId: " + blueprintId);
+//        return ResponseEntity.ok(blueprintService.getBlueprint(blueprintId));
     }
 
     @ExceptionHandler(BlueprintNotFoundException.class)

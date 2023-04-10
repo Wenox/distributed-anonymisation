@@ -15,7 +15,7 @@ public class RestorationService {
 
     public Restoration getRestorationByBlueprintId(String blueprintId) {
         return restorationRepository.findByBlueprintId(blueprintId)
-                .orElseThrow(() -> new RestorationNotFoundException("Restoration not found for blueprintId: " + blueprintId));
+                .orElseThrow(() -> new RestorationNotFoundException("Restoration not found with blueprintId: " + blueprintId));
     }
 
     public void saveActiveRestoration(BlueprintCreatedEvent event) {
