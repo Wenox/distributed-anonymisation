@@ -1,6 +1,7 @@
 package com.wenox.anonymization.worksheet_service;
 
 import com.wenox.anonymization.worksheet_service.domain.*;
+import com.wenox.anonymization.worksheet_service.exception.InactiveRestorationException;
 import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,7 @@ import java.util.stream.Stream;
 public class DefaultWorksheetService {
 
     private final WorksheetRepository worksheetRepository;
+    private final WorksheetMapper worksheetMapper;
     private final BlueprintServiceHandler blueprintServiceHandler;
     private final RestorationServiceHandler restorationServiceHandler;
     private final MetadataServiceHandler metadataServiceHandler;
@@ -25,10 +27,10 @@ public class DefaultWorksheetService {
     public Either<FailureResponse, CreateWorksheetResponse> retrieveCreateWorksheetDependencies(CreateWorksheetRequest dto) {
         Tuple3<Either<ErrorInfo, Blueprint>, Either<ErrorInfo, Restoration>, Either<ErrorInfo, Metadata>> responseTuple =
                 Mono.zip(
-                        blueprintServiceHandler.getResponse(dto),
-                        restorationServiceHandler.getResponse(dto),
-                        metadataServiceHandler.getResponse(dto))
-                .block();
+                                blueprintServiceHandler.getResponse(dto),
+                                restorationServiceHandler.getResponse(dto),
+                                metadataServiceHandler.getResponse(dto))
+                        .block();
 
         List<ErrorInfo> errors = collectErrors(responseTuple);
 
@@ -44,20 +46,19 @@ public class DefaultWorksheetService {
         return Either.right(response);
     }
 
-    public Either<FailureResponse, CreateWorksheetResponse> createWorksheet(CreateWorksheetRequest dto) {
-        Either<FailureResponse, CreateWorksheetResponse> eitherResponse = retrieveCreateWorksheetDependencies(dto);
-        return eitherResponse.flatMap(createWorksheetResponse -> {
-            try {
-                Worksheet worksheet = new Worksheet();
-                worksheet.setMetadata(createWorksheetResponse.metadata());
-                worksheet.setBlueprintId(null);
-                worksheet.setDatabaseName(createWorksheetResponse.blueprint().blueprintDatabaseName());
-                worksheetRepository.save(worksheet);
-                return Either.right(createWorksheetResponse);
-            } catch (Exception ex) {
-                log.error("Error while saving the worksheet: {}", ex.getMessage(), ex);
-                return Either.left(new FailureResponse(List.of())); // todo
+    public Either<FailureResponse, CreateWorksheetResponse> createWorksheet(CreateWorksheetRequest request) {
+        Either<FailureResponse, CreateWorksheetResponse> eitherResponse = retrieveCreateWorksheetDependencies(request);
+        return eitherResponse.flatMap(response -> {
+
+            log.info("Retrieved dependencies for worksheet create: {}, worksheet request: {}", response, request);
+
+            if (!response.restoration().isActive()) {
+                log.error("Error: inactive restoration found while creating worksheet from dto : {}", request);
+                throw new InactiveRestorationException("Inactive restoration " + response.restoration());
             }
+
+            worksheetRepository.save(worksheetMapper.toWorksheet(request, response));
+            return Either.right(response);
         });
     }
 

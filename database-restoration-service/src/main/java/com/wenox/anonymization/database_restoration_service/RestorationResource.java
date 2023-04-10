@@ -14,7 +14,6 @@ public class RestorationResource {
 
     @GetMapping
     public ResponseEntity<Restoration> getRestorationByBlueprintId(@RequestParam("blueprint_id") String blueprintId) {
-        try { Thread.sleep(70000L); } catch (Exception ex) { }
         return ResponseEntity.ok(restorationService.getRestorationByBlueprintId(blueprintId));
     }
 

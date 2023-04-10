@@ -1,15 +1,13 @@
 package com.wenox.anonymization.worksheet_service;
 
 import com.wenox.anonymization.worksheet_service.domain.CreateWorksheetResponse;
+import com.wenox.anonymization.worksheet_service.exception.InactiveRestorationException;
 import io.vavr.control.Either;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
@@ -25,5 +23,10 @@ public class WorksheetResource {
                 failureResponse -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body(failureResponse),
                 ResponseEntity::ok
         );
+    }
+
+    @ExceptionHandler(InactiveRestorationException.class)
+    public ResponseEntity<String> handleInactiveRestorationException(InactiveRestorationException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
     }
 }
