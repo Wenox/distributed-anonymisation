@@ -17,8 +17,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple3;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -37,30 +40,31 @@ public class DefaultWorksheetService {
 
         WebClient webClient = webClientBuilder.build();
 
-        Mono<Blueprint> blueprintResponse = getResponseWithResilience(webClient, blueprintServiceUrl, dto, Blueprint.class);
-        Mono<Restoration> restorationResponse = getResponseWithResilience(webClient, restorationServiceUrl, dto, Restoration.class);
-        Mono<Metadata> metadataResponse = getResponseWithResilience(webClient, extractionServiceUrl, dto, Metadata.class);
+        Mono<Either<String, Blueprint>> blueprintResponse = getResponseWithResilience(webClient, blueprintServiceUrl, dto, Blueprint.class);
+        Mono<Either<String, Restoration>> restorationResponse = getResponseWithResilience(webClient, restorationServiceUrl, dto, Restoration.class);
+        Mono<Either<String, Metadata>> metadataResponse = getResponseWithResilience(webClient, extractionServiceUrl, dto, Metadata.class);
 
-        CreateWorksheetResponse response = Mono.zip(blueprintResponse, restorationResponse, metadataResponse)
-                .flatMap(tuple -> {
-                    Blueprint blueprint = tuple.getT1();
-                    Restoration restoration = tuple.getT2();
-                    Metadata metadata = tuple.getT3();
-                    return Mono.just(new CreateWorksheetResponse(blueprint, restoration, metadata));
-                })
-                .block();
+        Tuple3<Either<String, Blueprint>, Either<String, Restoration>, Either<String, Metadata>> responseTuple =
+                Mono.zip(blueprintResponse, restorationResponse, metadataResponse).block();
 
-        log.info("Is this called??");
-        log.info("Is this called??");
-        log.info("Is this called??");
-        log.info("Is this called??");
-        log.info("Is this called??");
-        log.info("Is this called??");
+        List<String> errors = new ArrayList<>();
+        responseTuple.getT1().peekLeft(errors::add);
+        responseTuple.getT2().peekLeft(errors::add);
+        responseTuple.getT3().peekLeft(errors::add);
 
-        return response;
+        if (!errors.isEmpty()) {
+            return Either.left(new FailureResponse(errors));
+        }
+
+        CreateWorksheetResponse response = new CreateWorksheetResponse(
+                responseTuple.getT1().get(),
+                responseTuple.getT2().get(),
+                responseTuple.getT3().get()
+        );
+        return Either.right(response);
     }
 
-    private <T> Mono<T> getResponseWithResilience(WebClient webClient, String url, CreateWorksheetRequest dto, Class<T> responseType) {
+    private <T> Mono<Either<String, T>> getResponseWithResilience(WebClient webClient, String url, CreateWorksheetRequest dto, Class<T> responseType) {
         // Configure Retry policy
         RetryConfig retryConfig = RetryConfig.custom()
                 .maxAttempts(3)
@@ -74,6 +78,8 @@ public class DefaultWorksheetService {
         // Configure CircuitBreaker
         CircuitBreaker circuitBreaker = CircuitBreaker.ofDefaults("worksheetServiceCircuitBreaker");
 
+            // ... (Retry policy, TimeLimiter, and CircuitBreaker configuration remain the same)
+
         return webClient.get()
                 .uri(UriComponentsBuilder.fromHttpUrl(url).queryParam("blueprint_id", dto.blueprintId()).toUriString())
                 .retrieve()
@@ -85,8 +91,15 @@ public class DefaultWorksheetService {
                         })
                 )
                 .bodyToMono(responseType)
+                .map(Either::<String, T>right)
+                .onErrorResume(throwable -> {
+                    String errorMessage = "Error occurred when calling " + url + ": " + throwable.getMessage();
+                    log.error(errorMessage);
+                    return Mono.just(Either.left(errorMessage));
+                })
                 .transformDeferred(TimeLimiterOperator.of(timeLimiter))
                 .transformDeferred(RetryOperator.of(retryPolicy))
                 .transformDeferred(CircuitBreakerOperator.of(circuitBreaker));
     }
+
 }
