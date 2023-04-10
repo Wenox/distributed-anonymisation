@@ -53,7 +53,7 @@ public abstract class AbstractServiceHandler<T> {
             errorInfo.setStatus(exception.getStatusCode().value());
             errorInfo.setPhrase(HttpStatus.resolve(exception.getStatusCode().value()).getReasonPhrase());
         }
-        log.error("error info: {}", errorInfo);
+
         return Mono.just(Either.left(errorInfo));
     }
 
