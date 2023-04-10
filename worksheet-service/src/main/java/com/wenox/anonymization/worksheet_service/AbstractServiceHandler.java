@@ -3,14 +3,13 @@ package com.wenox.anonymization.worksheet_service;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.reactor.circuitbreaker.operator.CircuitBreakerOperator;
 import io.github.resilience4j.reactor.retry.RetryOperator;
-import io.github.resilience4j.reactor.timelimiter.TimeLimiterOperator;
 import io.github.resilience4j.retry.Retry;
 import io.github.resilience4j.retry.RetryConfig;
-import io.github.resilience4j.timelimiter.TimeLimiter;
 import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.reactivestreams.Publisher;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -28,7 +27,7 @@ public abstract class AbstractServiceHandler<T> {
     protected abstract String getServiceUrl();
     protected abstract Class<T> getResponseType();
 
-    public Mono<Either<String, T>> getResponse(CreateWorksheetRequest dto) {
+    public Mono<Either<ErrorInfo, T>> getResponse(CreateWorksheetRequest dto) {
         WebClient webClient = webClientBuilder.build();
         String url = getServiceUrl();
 
@@ -36,31 +35,34 @@ public abstract class AbstractServiceHandler<T> {
                 .uri(UriComponentsBuilder.fromHttpUrl(url).queryParam("blueprint_id", dto.blueprintId()).toUriString())
                 .retrieve()
                 .bodyToMono(getResponseType())
-                .map(Either::<String, T>right)
+                .timeout(Duration.ofSeconds(2))
+                .map(Either::<ErrorInfo, T>right)
                 .onErrorResume(this::handleError)
                 .transformDeferred(this::applyResilience);
     }
 
-    private Mono<Either<String, T>> handleError(Throwable throwable) {
-        String errorMessage;
+    private Mono<Either<ErrorInfo, T>> handleError(Throwable throwable) {
+
+        ErrorInfo errorInfo = new ErrorInfo();
+        errorInfo.setDescription("Error occurred when calling " + getServiceUrl());
+        errorInfo.setReason(throwable.getMessage());
+        errorInfo.setException(throwable.getClass().getSimpleName());
+
         if (throwable instanceof WebClientResponseException exception) {
-            String responseBody = exception.getResponseBodyAsString();
-            errorMessage = String.format("%s Error occurred when calling %s: %s", exception.getStatusCode(), getServiceUrl(), responseBody);
-        } else {
-            errorMessage = "Error occurred when calling " + getServiceUrl() + ": " + throwable.getMessage();
+            errorInfo.setReason(exception.getResponseBodyAsString());
+            errorInfo.setStatus(exception.getStatusCode().value());
+            errorInfo.setPhrase(HttpStatus.resolve(exception.getStatusCode().value()).getReasonPhrase());
         }
-        log.error(errorMessage);
-        return Mono.just(Either.left(errorMessage));
+        log.error("error info: {}", errorInfo);
+        return Mono.just(Either.left(errorInfo));
     }
 
-    private Publisher<Either<String, T>> applyResilience(Publisher<Either<String, T>> publisher) {
+    private Publisher<Either<ErrorInfo, T>> applyResilience(Publisher<Either<ErrorInfo, T>> publisher) {
         RetryConfig retryConfig = createRetryConfig();
         Retry retryPolicy = Retry.of("worksheetServiceRetry", retryConfig);
-        TimeLimiter timeLimiter = createTimeLimiter();
         CircuitBreaker circuitBreaker = createCircuitBreaker();
 
         return Flux.from(publisher)
-                .transformDeferred(TimeLimiterOperator.of(timeLimiter))
                 .transformDeferred(RetryOperator.of(retryPolicy))
                 .transformDeferred(CircuitBreakerOperator.of(circuitBreaker));
     }
@@ -70,10 +72,6 @@ public abstract class AbstractServiceHandler<T> {
                 .maxAttempts(3)
                 .waitDuration(Duration.ofMillis(500))
                 .build();
-    }
-
-    private TimeLimiter createTimeLimiter() {
-        return TimeLimiter.of(Duration.ofSeconds(2));
     }
 
     private CircuitBreaker createCircuitBreaker() {

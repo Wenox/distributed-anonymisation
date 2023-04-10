@@ -22,15 +22,15 @@ public class DefaultWorksheetService {
     private final RestorationServiceHandler restorationServiceHandler;
     private final MetadataServiceHandler metadataServiceHandler;
 
-    public Either<FailureResponse, CreateWorksheetResponse> createWorksheet(CreateWorksheetRequest dto) {
-        Tuple3<Either<String, Blueprint>, Either<String, Restoration>, Either<String, Metadata>> responseTuple =
+    public Either<FailureResponse, CreateWorksheetResponse> retrieveCreateWorksheetDependencies(CreateWorksheetRequest dto) {
+        Tuple3<Either<ErrorInfo, Blueprint>, Either<ErrorInfo, Restoration>, Either<ErrorInfo, Metadata>> responseTuple =
                 Mono.zip(
-                                blueprintServiceHandler.getResponse(dto),
-                                restorationServiceHandler.getResponse(dto),
-                                metadataServiceHandler.getResponse(dto))
-                        .block();
+                        blueprintServiceHandler.getResponse(dto),
+                        restorationServiceHandler.getResponse(dto),
+                        metadataServiceHandler.getResponse(dto))
+                .block();
 
-        List<String> errors = collectErrors(responseTuple);
+        List<ErrorInfo> errors = collectErrors(responseTuple);
 
         if (!errors.isEmpty()) {
             return Either.left(new FailureResponse(errors));
@@ -44,7 +44,24 @@ public class DefaultWorksheetService {
         return Either.right(response);
     }
 
-    private List<String> collectErrors(Tuple3<Either<String, Blueprint>, Either<String, Restoration>, Either<String, Metadata>> responseTuple) {
+    public Either<FailureResponse, CreateWorksheetResponse> createWorksheet(CreateWorksheetRequest dto) {
+        Either<FailureResponse, CreateWorksheetResponse> eitherResponse = retrieveCreateWorksheetDependencies(dto);
+        return eitherResponse.flatMap(createWorksheetResponse -> {
+            try {
+                Worksheet worksheet = new Worksheet();
+                worksheet.setMetadata(createWorksheetResponse.metadata());
+                worksheet.setBlueprintId(null);
+                worksheet.setDatabaseName(createWorksheetResponse.blueprint().blueprintDatabaseName());
+                worksheetRepository.save(worksheet);
+                return Either.right(createWorksheetResponse);
+            } catch (Exception ex) {
+                log.error("Error while saving the worksheet: {}", ex.getMessage(), ex);
+                return Either.left(new FailureResponse(List.of())); // todo
+            }
+        });
+    }
+
+    private List<ErrorInfo> collectErrors(Tuple3<Either<ErrorInfo, Blueprint>, Either<ErrorInfo, Restoration>, Either<ErrorInfo, Metadata>> responseTuple) {
         return Stream.of(responseTuple.getT1(), responseTuple.getT2(), responseTuple.getT3())
                 .filter(Either::isLeft)
                 .map(Either::getLeft)

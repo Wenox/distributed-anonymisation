@@ -13,6 +13,8 @@ public class MetadataServiceHandler extends AbstractServiceHandler<Metadata> {
 
     @Override
     protected String getServiceUrl() {
+        // todo:
+        // Consul or Kubernetes
         return "http://localhost:8300/api/v1/metadata";
     }
 

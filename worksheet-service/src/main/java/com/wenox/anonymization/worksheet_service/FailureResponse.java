@@ -13,5 +13,5 @@ import java.util.List;
 @ToString
 public class FailureResponse {
 
-    List<String> errors;
+    List<ErrorInfo> errors;
 }

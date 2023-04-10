@@ -13,6 +13,8 @@ public class BlueprintServiceHandler extends AbstractServiceHandler<Blueprint> {
 
     @Override
     protected String getServiceUrl() {
+        // todo:
+        // Consul or Kubernetes
         return "http://localhost:8100/api/v1/blueprints";
     }
 
