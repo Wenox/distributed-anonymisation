@@ -1,6 +1,26 @@
 version: '3.8'
 
 services:
+  cassandra:
+    image: cassandra:4.1.1
+    container_name: cassandra
+    ports:
+      - "9042:9042"
+    volumes:
+      - ./suppression-service:/docker-entrypoint-initdb.d/
+    environment:
+      - CASSANDRA_CLUSTER_NAME=MyCassandraCluster
+      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+      - CQLSH_INIT_FILE=/docker-entrypoint-initdb.d/init.cql
+  cassandra-init:
+    image: cassandra:4.1.1
+    container_name: cassandra-init
+    depends_on:
+      - cassandra
+    volumes:
+      - ./suppression-service:/suppression-service
+    command: /bin/bash -c 'for i in `seq 1 60`; do cqlsh cassandra -e "describe cluster" && break || sleep 5; done && cqlsh cassandra -f /suppression-service/init.cql'
+
   blueprints_mongodb:
     image: mongo
     container_name: blueprints_mongodb
