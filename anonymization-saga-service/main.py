@@ -36,7 +36,7 @@ def step5():
 @flow
 async def workflow():
     step1()
-    await step2()
+    step2()
     step3()
     step4()
     step5()
@@ -50,4 +50,4 @@ class TriggerRequest(BaseModel):
 async def trigger_workflow(body: TriggerRequest):
     print('Request body:', body)
     await asyncio.create_task(workflow())
-    return {"Hello": "World"}
+    return {"service": "anonymization-saga-service"}
