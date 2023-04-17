@@ -15,7 +15,6 @@ public class MetadataResource {
 
     @GetMapping
     public ResponseEntity<Metadata> getMetadataByBlueprintId(@RequestParam("blueprint_id") String blueprintId) {
-//        throw new MetadataNotFoundException("Metadata not found with blueprintId: " + blueprintId);
         return ResponseEntity.ok(metadataService.getMetadataByBlueprintId(blueprintId));
     }
 

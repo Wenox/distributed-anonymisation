@@ -11,11 +11,21 @@ public class WorksheetMapper {
 
     public Worksheet toWorksheet(CreateWorksheetRequest request, CreateWorksheetResponse response) {
         Worksheet worksheet = new Worksheet();
-        worksheet.setMetadata(response.metadata());
+        worksheet.setMetadata(response.getMetadata());
         worksheet.setBlueprintId(request.blueprintId());
         worksheet.setWorksheetName(request.worksheetName());
-        worksheet.setDatabaseName(response.blueprint().blueprintDatabaseName());
+        worksheet.setDatabaseName(response.getBlueprint().blueprintDatabaseName());
         log.info("Creating worksheet : {}", worksheet);
         return worksheet;
+    }
+
+    public WorksheetResponse toResponse(Worksheet worksheet) {
+        return WorksheetResponse.builder()
+                .worksheetId(worksheet.getWorksheetId())
+                .blueprintId(worksheet.getBlueprintId())
+                .metadata(worksheet.getMetadata())
+                .worksheetName(worksheet.getWorksheetName())
+                .databaseName(worksheet.getDatabaseName())
+                .build();
     }
 }

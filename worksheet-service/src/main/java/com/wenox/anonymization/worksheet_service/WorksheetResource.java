@@ -2,6 +2,7 @@ package com.wenox.anonymization.worksheet_service;
 
 import com.wenox.anonymization.worksheet_service.domain.CreateWorksheetResponse;
 import com.wenox.anonymization.worksheet_service.exception.InactiveRestorationException;
+import com.wenox.anonymization.worksheet_service.exception.WorksheetNotFoundException;
 import io.vavr.control.Either;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +26,18 @@ public class WorksheetResource {
         );
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<WorksheetResponse> getWorksheet(@PathVariable("id") String worksheetId) {
+        return ResponseEntity.ok(defaultWorksheetService.getWorksheet(worksheetId));
+    }
+
     @ExceptionHandler(InactiveRestorationException.class)
     public ResponseEntity<String> handleInactiveRestorationException(InactiveRestorationException ex) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(WorksheetNotFoundException.class)
+    public ResponseEntity<String> handleWorksheetNotFoundException(WorksheetNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 }

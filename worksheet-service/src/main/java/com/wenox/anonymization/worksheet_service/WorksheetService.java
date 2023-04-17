@@ -6,4 +6,6 @@ import io.vavr.control.Either;
 public interface WorksheetService {
 
     Either<FailureResponse, CreateWorksheetResponse> createWorksheet(CreateWorksheetRequest request);
+
+    WorksheetResponse getWorksheet(String worksheetId);
 }
