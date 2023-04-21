@@ -27,9 +27,9 @@ public class OperationMapper {
                 .columnType(Optional.ofNullable(worksheet.getMetadata())
                         .map(Metadata::tables)
                         .map(tables -> tables.get(request.getTable()))
-                        .map(Table::columns)
+                        .map(Table::getColumns)
                         .map(columns -> columns.get(request.getColumn()))
-                        .map(Column::type)
+                        .map(Column::getType)
                         .orElse(null))
                 .build();
     }

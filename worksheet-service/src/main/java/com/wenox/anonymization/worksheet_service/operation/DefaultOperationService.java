@@ -38,7 +38,7 @@ public class DefaultOperationService implements OperationService {
         }
 
         Optional<Column> columnOptional = tableOptional
-                .map(Table::columns)
+                .map(Table::getColumns)
                 .map(columns -> columns.get(request.getColumn()));
 
         if (columnOptional.isEmpty()) {
