@@ -12,19 +12,19 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class OperationMapper {
+public class OperationMapper<T extends AddOperationRequest> {
 
     private final WorksheetMapper worksheetMapper;
     private final ObjectMapper objectMapper;
 
-    public Operation toOperation(Worksheet worksheet, AddSuppressionRequest request) {
+    public Operation toOperation(Worksheet worksheet, T request) {
         try {
             return Operation.builder()
                     .key(Operation.Key.builder()
                             .worksheetId(worksheet.getWorksheetId())
                             .tableName(request.getTable())
                             .columnName(request.getColumn())
-                            .operationType(OperationType.SUPPRESSION)
+                            .operationType(request.getOperationType())
                             .build())
                     .settings(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(request.getSettings()))
                     .build();

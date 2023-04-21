@@ -2,6 +2,7 @@ package com.wenox.anonymization.worksheet_service.operation;
 
 import com.wenox.anonymization.worksheet_service.exception.InactiveRestorationException;
 import com.wenox.anonymization.worksheet_service.exception.WorksheetNotFoundException;
+import com.wenox.anonymization.worksheet_service.operation.shuffle.AddShuffleRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,7 +18,15 @@ public class OperationResource {
 
     @PutMapping("/{id}/suppression")
     public ResponseEntity<?> addSuppression(@PathVariable("id") String worksheetId, @Valid @RequestBody AddSuppressionRequest dto) {
-        return operationService.addSuppression(worksheetId, dto).fold(
+        return operationService.addOperation(worksheetId, dto, OperationType.SUPPRESSION).fold(
+                failureResponse -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body(failureResponse),
+                ResponseEntity::ok
+        );
+    }
+
+    @PutMapping("/{id}/shuffle")
+    public ResponseEntity<?> addShuffle(@PathVariable("id") String worksheetId, @Valid @RequestBody AddShuffleRequest dto) {
+        return operationService.addOperation(worksheetId, dto, OperationType.SHUFFLE).fold(
                 failureResponse -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body(failureResponse),
                 ResponseEntity::ok
         );

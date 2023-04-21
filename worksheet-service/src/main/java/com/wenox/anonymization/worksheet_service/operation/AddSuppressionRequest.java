@@ -12,4 +12,14 @@ public class AddSuppressionRequest extends AddOperationRequest {
     @NotNull
     @Valid
     private SuppressionSettings settings;
+
+    @Override
+    public OperationType getOperationType() {
+        return OperationType.SUPPRESSION;
+    }
+
+    @Override
+    public SuppressionSettings getSettings() {
+        return settings;
+    }
 }

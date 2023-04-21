@@ -4,6 +4,7 @@ import com.wenox.anonymization.worksheet_service.FailureResponse;
 import com.wenox.anonymization.worksheet_service.WorksheetRepository;
 import com.wenox.anonymization.worksheet_service.domain.*;
 import com.wenox.anonymization.worksheet_service.exception.WorksheetNotFoundException;
+import com.wenox.anonymization.worksheet_service.operation.shuffle.AddShuffleRequest;
 import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,8 +21,7 @@ public class DefaultOperationService implements OperationService {
     private final WorksheetRepository worksheetRepository;
     private final OperationMapper operationMapper;
 
-    @Override
-    public Either<FailureResponse, AddOperationResponse> addSuppression(String worksheetId, AddSuppressionRequest request) {
+    public <T extends AddOperationRequest> Either<FailureResponse, AddOperationResponse> addOperation(String worksheetId, T request, OperationType operationType) {
         Worksheet worksheet = worksheetRepository.findById(worksheetId)
                 .orElseThrow(() -> new WorksheetNotFoundException("Worksheet not found with worksheetId: " + worksheetId));
 
@@ -45,6 +45,28 @@ public class DefaultOperationService implements OperationService {
             return Either.left(FailureResponse.toColumnNotFound(worksheetId, request.getTable(), request.getColumn()));
         }
 
+        // Customize the operation based on the operation type
+        customizeOperation(request, operationType);
+
+        // Save the operation and return the response
+        return saveOperationAndReturnResponse(worksheet, request);
+    }
+
+    private <T extends AddOperationRequest> void customizeOperation(T request, OperationType operationType) {
+        switch (operationType) {
+            case SUPPRESSION:
+                // Implement customization for suppression operation
+                break;
+            case SHUFFLE:
+                // Implement customization for shuffle operation
+                break;
+            // Add more cases for other operation types
+            default:
+                throw new IllegalStateException("Unsupported operation type: " + operationType);
+        }
+    }
+
+    private <T extends AddOperationRequest> Either<FailureResponse, AddOperationResponse> saveOperationAndReturnResponse(Worksheet worksheet, T request) {
         Operation operation = operationMapper.toOperation(worksheet, request);
         operationRepository.save(operation);
         return Either.right(operationMapper.toResponse(operation, worksheet));
