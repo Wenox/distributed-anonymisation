@@ -1,6 +1,7 @@
 package com.wenox.anonymization.worksheet_service.operation;
 
 import com.wenox.anonymization.worksheet_service.exception.WorksheetNotFoundException;
+import com.wenox.anonymization.worksheet_service.operation.generalisation.AddGeneralisationRequest;
 import com.wenox.anonymization.worksheet_service.operation.shuffle.AddShuffleRequest;
 import com.wenox.anonymization.worksheet_service.operation.suppression.AddSuppressionRequest;
 import jakarta.validation.Valid;
@@ -27,6 +28,14 @@ public class OperationResource {
     @PutMapping("/{id}/shuffle")
     public ResponseEntity<?> addShuffle(@PathVariable("id") String worksheetId, @Valid @RequestBody AddShuffleRequest dto) {
         return operationService.addOperation(worksheetId, dto, OperationType.SHUFFLE).fold(
+                failureResponse -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body(failureResponse),
+                ResponseEntity::ok
+        );
+    }
+
+    @PutMapping("/{id}/generalisation")
+    public ResponseEntity<?> addGeneralisation(@PathVariable("id") String worksheetId, @Valid @RequestBody AddGeneralisationRequest dto) {
+        return operationService.addOperation(worksheetId, dto, OperationType.GENERALISATION).fold(
                 failureResponse -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body(failureResponse),
                 ResponseEntity::ok
         );

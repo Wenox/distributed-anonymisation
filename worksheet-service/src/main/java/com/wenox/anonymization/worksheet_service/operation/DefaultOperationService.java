@@ -45,22 +45,16 @@ public class DefaultOperationService implements OperationService {
             return Either.left(FailureResponse.toColumnNotFound(worksheetId, request.getTable(), request.getColumn()));
         }
 
-        // Customize the operation based on the operation type
-        customizeOperation(request, operationType);
+        // possible side effect extension point with per-operation-type capabilities...
+        sideEffectNotImplemented(request, operationType);
 
-        // Save the operation and return the response
         return saveOperationAndReturnResponse(worksheet, request);
     }
 
-    private <T extends AddOperationRequest> void customizeOperation(T request, OperationType operationType) {
+    private <T extends AddOperationRequest> void sideEffectNotImplemented(T request, OperationType operationType) {
         switch (operationType) {
-            case SUPPRESSION:
-                // Implement customization for suppression operation
+            case SUPPRESSION, SHUFFLE, GENERALISATION:
                 break;
-            case SHUFFLE:
-                // Implement customization for shuffle operation
-                break;
-            // Add more cases for other operation types
             default:
                 throw new IllegalStateException("Unsupported operation type: " + operationType);
         }
