@@ -24,4 +24,6 @@ public class Worksheet {
     private String databaseName;
 
     private Metadata metadata;
+
+    private WorksheetStatus worksheetStatus;
 }

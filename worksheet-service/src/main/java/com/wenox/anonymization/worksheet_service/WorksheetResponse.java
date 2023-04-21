@@ -1,6 +1,7 @@
 package com.wenox.anonymization.worksheet_service;
 
 import com.wenox.anonymization.worksheet_service.domain.Metadata;
+import com.wenox.anonymization.worksheet_service.domain.WorksheetStatus;
 import lombok.*;
 
 @Getter
@@ -12,6 +13,8 @@ public class WorksheetResponse {
     private String worksheetId;
 
     private String blueprintId;
+
+    private WorksheetStatus worksheetStatus;
 
     private String worksheetName;
 

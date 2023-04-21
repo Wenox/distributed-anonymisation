@@ -1,13 +1,13 @@
 package com.wenox.anonymization.worksheet_service;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 @Data
 @ToString
 @NoArgsConstructor
+@Builder
+@AllArgsConstructor
 public class ErrorInfo {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer status;
