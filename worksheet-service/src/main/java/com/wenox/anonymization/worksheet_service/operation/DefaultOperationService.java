@@ -4,7 +4,7 @@ import com.wenox.anonymization.worksheet_service.FailureResponse;
 import com.wenox.anonymization.worksheet_service.WorksheetRepository;
 import com.wenox.anonymization.worksheet_service.domain.*;
 import com.wenox.anonymization.worksheet_service.exception.WorksheetNotFoundException;
-import com.wenox.anonymization.worksheet_service.operation.shuffle.AddShuffleRequest;
+import com.wenox.anonymization.worksheet_service.operation.base.AddOperationRequest;
 import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

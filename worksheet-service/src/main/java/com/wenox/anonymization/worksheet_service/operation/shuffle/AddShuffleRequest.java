@@ -1,6 +1,6 @@
 package com.wenox.anonymization.worksheet_service.operation.shuffle;
 
-import com.wenox.anonymization.worksheet_service.operation.AddOperationRequest;
+import com.wenox.anonymization.worksheet_service.operation.base.AddOperationRequest;
 import com.wenox.anonymization.worksheet_service.operation.OperationType;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;

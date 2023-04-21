@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wenox.anonymization.worksheet_service.WorksheetMapper;
 import com.wenox.anonymization.worksheet_service.domain.Worksheet;
+import com.wenox.anonymization.worksheet_service.operation.base.AddOperationRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

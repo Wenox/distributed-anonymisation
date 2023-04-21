@@ -1,8 +1,8 @@
 package com.wenox.anonymization.worksheet_service.operation;
 
-import com.wenox.anonymization.worksheet_service.exception.InactiveRestorationException;
 import com.wenox.anonymization.worksheet_service.exception.WorksheetNotFoundException;
 import com.wenox.anonymization.worksheet_service.operation.shuffle.AddShuffleRequest;
+import com.wenox.anonymization.worksheet_service.operation.suppression.AddSuppressionRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;

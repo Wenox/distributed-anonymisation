@@ -1,7 +1,7 @@
 package com.wenox.anonymization.worksheet_service.operation;
 
 import com.wenox.anonymization.worksheet_service.FailureResponse;
-import com.wenox.anonymization.worksheet_service.operation.shuffle.AddShuffleRequest;
+import com.wenox.anonymization.worksheet_service.operation.base.AddOperationRequest;
 import io.vavr.control.Either;
 
 public interface OperationService {
