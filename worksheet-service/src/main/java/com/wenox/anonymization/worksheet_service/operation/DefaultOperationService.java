@@ -19,7 +19,7 @@ public class DefaultOperationService implements OperationService {
 
     private final OperationRepository operationRepository;
     private final WorksheetRepository worksheetRepository;
-    private final OperationMapper operationMapper;
+    private final OperationMapper<AddOperationRequest> operationMapper;
 
     public <T extends AddOperationRequest> Either<FailureResponse, AddOperationResponse> addOperation(String worksheetId, T request, OperationType operationType) {
         Worksheet worksheet = worksheetRepository.findById(worksheetId)
