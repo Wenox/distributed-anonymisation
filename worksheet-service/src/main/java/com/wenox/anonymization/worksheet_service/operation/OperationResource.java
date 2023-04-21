@@ -23,11 +23,6 @@ public class OperationResource {
         );
     }
 
-    @ExceptionHandler(InactiveRestorationException.class)
-    public ResponseEntity<String> handleInactiveRestorationException(InactiveRestorationException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
-    }
-
     @ExceptionHandler(WorksheetNotFoundException.class)
     public ResponseEntity<String> handleWorksheetNotFoundException(WorksheetNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());

@@ -19,7 +19,7 @@ public class AddOperationResponse {
 
     private String columnType;
 
-    private String settings;
+    private Object settings;
 
     WorksheetResponse worksheet;
 }
