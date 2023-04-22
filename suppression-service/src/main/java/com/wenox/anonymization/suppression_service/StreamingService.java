@@ -34,66 +34,62 @@ public class StreamingService {
     }
 
     private void startStreamingQuery() {
-        lock.lock();
-        try {
-            if (streamingQuery == null || streamingQuery.exception().isDefined()) {
-                processStreamingDataFromKafka();
-            }
-        } finally {
-            lock.unlock();
+        if (streamingQuery == null || streamingQuery.exception().isDefined()) {
+            processStreamingDataFromKafka();
         }
     }
 
     @Scheduled(fixedDelayString = "${streaming.restartInterval:60000}")
     public void checkAndRestartStreamingQuery() {
-        startStreamingQuery();
+        lock.lock();
+        try {
+            startStreamingQuery();
+        } finally {
+            lock.unlock();
+        }
     }
 
     public void processStreamingDataFromKafka() {
-        lock.lock();
+        Dataset<Row> df = readFromSource();
+
+        Dataset<SuppressionTask> events = df.selectExpr("CAST(value AS STRING) AS value")
+                .as(Encoders.STRING())
+                .map(new AbstractFunction1<>() {
+                    @Override
+                    public SuppressionTask apply(String value) {
+                        return deserializeJson(value);
+                    }
+                }, Encoders.bean(SuppressionTask.class));
+
+        // Extract step
+        Dataset<Column2> extractedColumn2 = events.map(
+                (MapFunction<SuppressionTask, Column2>) extractService::extract,
+                Encoders.bean(Column2.class)
+        );
+
+        // Transform – step 1 – anonymization
+        Dataset<Column2> anonymizedColumn2 = extractedColumn2.map(
+                (MapFunction<Column2, Column2>) transformService::anonymize,
+                Encoders.bean(Column2.class)
+        );
+
+        // Transform – step 2 – SQL script
+        Dataset<Column2Script> column2Scripts = anonymizedColumn2.map(
+                (MapFunction<Column2, Column2Script>) transformService::createColumn2Script,
+                Encoders.bean(Column2Script.class)
+        );
+
+        // Load step
+        Dataset<SuccessEvent> successEvents = column2Scripts.map(
+                (MapFunction<Column2Script, SuccessEvent>) loadService::load,
+                Encoders.bean(SuccessEvent.class)
+        );
+
         try {
-            Dataset<Row> df = readFromSource();
-
-            Dataset<SuppressionTask> events = df.selectExpr("CAST(value AS STRING) AS value")
-                    .as(Encoders.STRING())
-                    .map(new AbstractFunction1<>() {
-                        @Override
-                        public SuppressionTask apply(String value) {
-                            return deserializeJson(value);
-                        }
-                    }, Encoders.bean(SuppressionTask.class));
-
-            // Extract step
-            Dataset<Column2> extractedColumn2 = events.map(
-                    (MapFunction<SuppressionTask, Column2>) extractService::extract,
-                    Encoders.bean(Column2.class)
-            );
-
-            // Transform – step 1 – anonymization
-            Dataset<Column2> anonymizedColumn2 = extractedColumn2.map(
-                    (MapFunction<Column2, Column2>) transformService::anonymize,
-                    Encoders.bean(Column2.class)
-            );
-
-            // Transform – step 2 – SQL script
-            Dataset<Column2Script> column2Scripts = anonymizedColumn2.map(
-                    (MapFunction<Column2, Column2Script>) transformService::createColumn2Script,
-                    Encoders.bean(Column2Script.class)
-            );
-
-            // Load step
-            Dataset<SuccessEvent> successEvents = column2Scripts.map(
-                    (MapFunction<Column2Script, SuccessEvent>) loadService::load,
-                    Encoders.bean(SuccessEvent.class)
-            );
-
             streamingQuery = writeToSink(successEvents);
-
         } catch (Exception ex) {
             log.error("Exception occurred during processing.", ex);
             ex.printStackTrace();
-        } finally {
-            lock.unlock();
         }
     }
 
