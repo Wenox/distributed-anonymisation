@@ -1,3 +1,0 @@
-com.wenox.anonymization.shared_events_library.config.KafkaProducerConfig
-com.wenox.anonymization.shared_events_library.config.KafkaTopicConfig
-com.wenox.anonymization.shared_events_library.impl.LoggingKafkaTemplate

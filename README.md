@@ -1,1 +1,3 @@
-# distributed-anonymization
+# Anonymisation platform
+
+Projekt AiTSI / Engineering / Masters.
