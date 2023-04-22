@@ -1,4 +1,4 @@
-import { Role } from '../api/requests/shared.types';
+import {Role} from '../api/requests/shared.types';
 import {
   AccountCircle,
   Groups,
@@ -12,7 +12,7 @@ import {
   TableView,
   UploadFile,
 } from '@mui/icons-material';
-import { ROUTES } from './routes';
+import {ROUTES} from './routes';
 
 export interface NavigationItemDescription {
   path: string;
@@ -73,7 +73,7 @@ export const NAVIGATION_ITEMS: NavigationItemDescription[] = [
   {
     path: ROUTES.HELP,
     name: 'Help',
-    roles: [],
+    roles: [Role.ADMIN, Role.UNVERIFIED_USER, Role.VERIFIED_USER],
     icon: HelpOutline,
   },
   {
