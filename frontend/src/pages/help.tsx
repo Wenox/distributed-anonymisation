@@ -101,7 +101,6 @@ const requirements = [
         description: 'Platforma w mojej subiektywnej ocenie spełnia to wymaganie.',
         statusIcon: <CheckCircleOutlineIcon style={{ color: 'green', fontSize: 64 }} />,
     }
-    // Dodaj kolejne wymagania tutaj
 ];
 
 
@@ -401,7 +400,7 @@ const Help = () => {
 
             <img
                 src={accessibilityImg}
-                alt="Accessibility tests illustration"
+                alt="Accessibility tests illustrations"
                 style={{width: '100%', maxWidth: '900px', height: 'auto'}}
             />
 

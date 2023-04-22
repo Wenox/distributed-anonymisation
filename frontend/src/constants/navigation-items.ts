@@ -73,7 +73,7 @@ export const NAVIGATION_ITEMS: NavigationItemDescription[] = [
   {
     path: ROUTES.HELP,
     name: 'Help',
-    roles: [Role.VERIFIED_USER, Role.ADMIN],
+    roles: [],
     icon: HelpOutline,
   },
   {
