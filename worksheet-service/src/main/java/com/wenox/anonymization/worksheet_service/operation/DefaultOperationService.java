@@ -60,7 +60,7 @@ public class DefaultOperationService implements OperationService {
         }
     }
 
-    private <T extends AddOperationRequest> Either<FailureResponse, AddOperationResponse> saveOperationAndReturnResponse(Worksheet worksheet, T request) {
+    public <T extends AddOperationRequest> Either<FailureResponse, AddOperationResponse> saveOperationAndReturnResponse(Worksheet worksheet, T request) {
         Operation operation = operationMapper.toOperation(worksheet, request);
         operationRepository.save(operation);
         return Either.right(operationMapper.toResponse(operation, worksheet));
