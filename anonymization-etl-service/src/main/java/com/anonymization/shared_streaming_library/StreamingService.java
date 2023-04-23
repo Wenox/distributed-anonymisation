@@ -2,7 +2,6 @@ package com.anonymization.shared_streaming_library;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.spark.api.java.function.MapFunction;
@@ -13,11 +12,11 @@ import org.springframework.stereotype.Service;
 import scala.Tuple2;
 import scala.runtime.AbstractFunction1;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.function.Function;
 
 @Service
 @RequiredArgsConstructor
