@@ -30,4 +30,22 @@ public class KafkaTopicConfig {
         log.warn("Creating topic: {}", KafkaConstants.TOPIC_RESTORE_FAILURE);
         return TopicBuilder.name(KafkaConstants.TOPIC_RESTORE_FAILURE).build();
     }
+
+    @Bean
+    public NewTopic topicOperations() {
+        log.warn("Creating topic: {}", KafkaConstants.TOPIC_OPERATIONS);
+        return TopicBuilder.name(KafkaConstants.TOPIC_OPERATIONS).build();
+    }
+
+    @Bean
+    public NewTopic topicOperationSuccess() {
+        log.warn("Creating topic: {}", KafkaConstants.TOPIC_OPERATION_SUCCESS);
+        return TopicBuilder.name(KafkaConstants.TOPIC_OPERATION_SUCCESS).build();
+    }
+
+    @Bean
+    public NewTopic topicOperationFailure() {
+        log.warn("Creating topic: {}", KafkaConstants.TOPIC_OPERATION_FAILURE);
+        return TopicBuilder.name(KafkaConstants.TOPIC_OPERATION_FAILURE).build();
+    }
 }

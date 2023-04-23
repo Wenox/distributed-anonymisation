@@ -2,8 +2,10 @@ package com.anonymization.shared_streaming_library;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.spark.api.java.function.MapFunction;
 import org.apache.spark.sql.*;
 import org.apache.spark.sql.streaming.StreamingQuery;
@@ -18,15 +20,15 @@ import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-@Service
+//@Service
 @RequiredArgsConstructor
 @Slf4j
-public abstract class StreamingService {
+public class StreamingService {
 
     private final ExtractService extractService;
-    private final TransformService transformService;
-    private final Column2ScriptService column2ScriptService;
-    private final LoadService loadService;
+//    private final TransformService transformService;
+//    private final Column2ScriptService column2ScriptService;
+//    private final LoadService loadService;
 
     private final SparkSession spark;
     private StreamingQuery streamingQuery;
@@ -63,7 +65,11 @@ public abstract class StreamingService {
     public void process() {
         Dataset<Row> df = readFromSource();
 
-        Dataset<AnonymizationTask> events = df.selectExpr("CAST(value AS STRING) AS value")
+        log.info("Printing schema: ");
+        df.printSchema();
+
+        log.info("Trying to execute selectExpr");
+        Dataset<AnonymizationTask> anonymizationTasks = df.selectExpr("CAST(value AS STRING) as json")
                 .as(Encoders.STRING())
                 .map(new AbstractFunction1<>() {
                     @Override
@@ -73,28 +79,29 @@ public abstract class StreamingService {
                 }, Encoders.bean(AnonymizationTask.class));
 
         // Extract step
-        Dataset<Tuple2<Column2, AnonymizationTask>> extractedTuple = events.map(
+        Dataset<Tuple2<Column2, AnonymizationTask>> extractedTuple = anonymizationTasks.map(
                 (MapFunction<AnonymizationTask, Tuple2<Column2, AnonymizationTask>>) extractService::extract,
                 Encoders.tuple(Encoders.bean(Column2.class), Encoders.bean(AnonymizationTask.class))
         );
 
         // Transform - step 1 - anonymization
-        Dataset<Tuple2<Column2, AnonymizationTask>> anonymizedTuple = transformService.anonymize(extractedTuple);
+//        Dataset<Tuple2<Column2, AnonymizationTask>> anonymizedTuple = transformService.anonymize(extractedTuple);
 
         // Transform – step 2 – SQL script
-        Dataset<Tuple2<Column2Script, AnonymizationTask>> scriptTuple = anonymizedTuple.map(
-                (MapFunction<Tuple2<Column2, AnonymizationTask>, Tuple2<Column2Script, AnonymizationTask>>) column2ScriptService::create,
-                Encoders.tuple(Encoders.bean(Column2Script.class), Encoders.bean(AnonymizationTask.class))
-        );
+//        Dataset<Tuple2<Column2Script, AnonymizationTask>> scriptTuple = anonymizedTuple.map(
+//                (MapFunction<Tuple2<Column2, AnonymizationTask>, Tuple2<Column2Script, AnonymizationTask>>) column2ScriptService::create,
+//                Encoders.tuple(Encoders.bean(Column2Script.class), Encoders.bean(AnonymizationTask.class))
+//        );
 
         // Load step
-        Dataset<SuccessEvent> successEvents = scriptTuple.map(
-                (MapFunction<Tuple2<Column2Script, AnonymizationTask>, SuccessEvent>) loadService::load,
-                Encoders.bean(SuccessEvent.class)
-        );
+//        Dataset<SuccessEvent> successEvents = scriptTuple.map(
+//                (MapFunction<Tuple2<Column2Script, AnonymizationTask>, SuccessEvent>) loadService::load,
+//                Encoders.bean(SuccessEvent.class)
+//        );
 
         try {
-            writeToSink(successEvents);
+            writeToSink(extractedTuple);
+//            writeToSink(successEvents);
         } catch (Exception ex) {
             log.error("Exception occurred during processing.", ex);
             ex.printStackTrace();
@@ -105,18 +112,25 @@ public abstract class StreamingService {
         return spark
                 .readStream()
                 .format("kafka")
-                .option("kafka.bootstrap.servers", "localhost:9092")
-                .option("subscribe", "suppression_topic")
+                .option("kafka.bootstrap.servers", "localhost:9093")
+                .option("subscribe", KafkaConstants.TOPIC_OPERATIONS)
+                .option("key.deserializer", StringDeserializer.class.getName())
+                .option("value.deserializer", StringDeserializer.class.getName())
+                .option("auto.offset.reset", "earliest")
+                .option("enable.auto.commit", false)
+                .option("subscribe", KafkaConstants.TOPIC_OPERATIONS)
                 .option("startingOffsets", "earliest")
                 .load();
     }
 
-    private StreamingQuery writeToSink(Dataset<SuccessEvent> events) throws TimeoutException {
+    private StreamingQuery writeToSink(Dataset<Tuple2<Column2, AnonymizationTask>> events) throws TimeoutException {
+//    private StreamingQuery writeToSink(Dataset<SuccessEvent> events) throws TimeoutException {
         return events.writeStream()
                 .format("kafka")
                 .outputMode("update")
-                .option("kafka.bootstrap.servers", "localhost:9092")
-                .option("topic", "success_topic")
+                .option("checkpointLocation", "path/to/HDFS/dir")
+                .option("kafka.bootstrap.servers", "localhost:9093")
+                .option("topic", KafkaConstants.TOPIC_OPERATION_SUCCESS)
                 .start();
     }
 
@@ -142,6 +156,7 @@ public abstract class StreamingService {
     }
 
     public <T> T deserializeJson(String value, Class<T> targetClass) {
+        log.info("Deserializing json");
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             return objectMapper.readValue(value, targetClass);

@@ -7,6 +7,9 @@ public final class KafkaConstants {
     }
 
     public static final String TOPIC_CREATE_BLUEPRINT = "create-blueprint";
+    public static final String TOPIC_OPERATIONS = "operations";
+    public static final String TOPIC_OPERATION_SUCCESS = "operation-success";
+    public static final String TOPIC_OPERATION_FAILURE = "operation-failure";
     public static final String TOPIC_RESTORE_SUCCESS = "restore-success";
     public static final String TOPIC_RESTORE_FAILURE = "restore-failure";
     public static final String TOPIC_METADATA_SUCCESS = "metadata-success";
