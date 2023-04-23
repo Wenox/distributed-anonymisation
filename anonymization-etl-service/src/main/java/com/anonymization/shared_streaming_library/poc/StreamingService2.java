@@ -1,28 +1,18 @@
 package com.anonymization.shared_streaming_library.poc;
 
-import com.anonymization.shared_streaming_library.AnonymizationTask;
-import com.fasterxml.jackson.databind.JsonNode;
+import com.anonymization.shared_streaming_library.*;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.spark.api.java.function.MapFunction;
 import org.apache.spark.api.java.function.VoidFunction2;
 import org.apache.spark.sql.*;
-import org.apache.spark.sql.catalyst.encoders.RowEncoder;
-import org.apache.spark.sql.streaming.StreamingQuery;
 import org.apache.spark.sql.streaming.StreamingQueryException;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import scala.Tuple2;
-import scala.runtime.AbstractFunction1;
 
-import javax.annotation.PostConstruct;
-import java.io.IOException;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 @Service
 @RequiredArgsConstructor
@@ -30,10 +20,14 @@ import java.util.concurrent.locks.ReentrantLock;
 public class StreamingService2 {
 
     private final SparkSession sparkSession;
+    private final ExtractService extractService;
+    private final TransformService transformService;
+    private final Column2ScriptService column2ScriptService;
+    private final LoadService loadService;
 
-    public void processAnimalTask() throws TimeoutException, StreamingQueryException {
+    public void processAnonymizationTasks() throws TimeoutException, StreamingQueryException {
         // Read the Kafka stream
-        Dataset<AnimalTask> inputDF = sparkSession.readStream()
+        Dataset<AnonymizationTask> inputDF = sparkSession.readStream()
                 .format("kafka")
                 .option("kafka.bootstrap.servers", "localhost:9093")
                 .option("subscribe", KafkaConstants.TOPIC_OPERATIONS)
@@ -41,33 +35,36 @@ public class StreamingService2 {
                 .load()
                 .selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
                 .as(Encoders.tuple(Encoders.STRING(), Encoders.STRING()))
-                .map((MapFunction<Tuple2<String, String>, AnimalTask>) tuple -> {
+                .map((MapFunction<Tuple2<String, String>, AnonymizationTask>) tuple -> {
                     ObjectMapper objectMapper = new ObjectMapper();
-                    return objectMapper.readValue(tuple._2, AnimalTask.class);
-                }, Encoders.bean(AnimalTask.class));
+                    return objectMapper.readValue(tuple._2, AnonymizationTask.class);
+                }, Encoders.bean(AnonymizationTask.class));
 
-        // Process the input DataFrame
-        Dataset<AnimalTask> processedDF = inputDF.map((MapFunction<AnimalTask, AnimalTask>) animalTask -> {
-            String animalId = animalTask.getAnimalId();
-            String animalName = animalTask.getAnimalName();
-            Integer age = animalTask.getAge();
+        // Extract step
+        Dataset<Tuple2<Column2, AnonymizationTask>> extractedTuple = inputDF.map(
+                (MapFunction<AnonymizationTask, Tuple2<Column2, AnonymizationTask>>) extractService::extract,
+                Encoders.tuple(Encoders.bean(Column2.class), Encoders.bean(AnonymizationTask.class))
+        );
 
-            // Increment the age and reverse the animal name
-            Integer newAge = age + 1;
-            String reversedAnimalName = new StringBuilder(animalName).reverse().toString();
+        // Transform - step 1 - anonymization
+        Dataset<Tuple2<Column2, AnonymizationTask>> anonymizedTuple = extractedTuple.map(
+                (MapFunction<Tuple2<Column2, AnonymizationTask>, Tuple2<Column2, AnonymizationTask>>) transformService::anonymize,
+                Encoders.tuple(Encoders.bean(Column2.class), Encoders.bean(AnonymizationTask.class))
+        );
 
-            AnimalTask processedTask = new AnimalTask();
-            processedTask.setAnimalId(animalId);
-            processedTask.setAnimalName(reversedAnimalName);
-            processedTask.setAge(newAge);
+        // Transform – step 2 – SQL script
+        Dataset<Tuple2<Column2Script, AnonymizationTask>> scriptTuple = anonymizedTuple.map(
+                (MapFunction<Tuple2<Column2, AnonymizationTask>, Tuple2<Column2Script, AnonymizationTask>>) column2ScriptService::create,
+                Encoders.tuple(Encoders.bean(Column2Script.class), Encoders.bean(AnonymizationTask.class))
+        );
 
-            log.info("Returning processed task: {}", processedTask);
+        // Load step
+        Dataset<SuccessEvent> successEvents = scriptTuple.map(
+                (MapFunction<Tuple2<Column2Script, AnonymizationTask>, SuccessEvent>) loadService::load,
+                Encoders.bean(SuccessEvent.class)
+        );
 
-            return processedTask;
-        }, Encoders.bean(AnimalTask.class));
-
-
-        processedDF.selectExpr("CAST(animalId AS STRING) AS key", "to_json(struct(*)) AS value")
+        successEvents.selectExpr("CAST(taskId AS STRING) AS key", "to_json(struct(*)) AS value")
                 .writeStream()
                 .foreachBatch((VoidFunction2<Dataset<Row>, Long>) this::processBatch)
                 .option("checkpointLocation", "<your_checkpoint_location>")
@@ -76,10 +73,9 @@ public class StreamingService2 {
     }
 
     private void processBatch(Dataset<Row> batch, long batchId) {
-        // Convert the DataFrame to a Dataset of SuccessEvent objects
         Dataset<SuccessEvent> successEvents = batch.map((MapFunction<Row, SuccessEvent>) row -> {
             SuccessEvent successEvent = new SuccessEvent();
-            successEvent.setAnimalId(row.getAs("key"));
+            successEvent.setTaskId(row.getAs("key"));
             successEvent.setCount(1); // Set the initial count to 1
             return successEvent;
         }, Encoders.bean(SuccessEvent.class));
@@ -89,7 +85,7 @@ public class StreamingService2 {
         log.info("BatchId: {}, successEvent: {}", batchId, successEvents);
 
         // Write the Dataset of SuccessEvent objects to Kafka
-        successEvents.selectExpr("CAST(animalId AS STRING) AS key", "to_json(struct(*)) AS value")
+        successEvents.selectExpr("CAST(taskId AS STRING) AS key", "to_json(struct(*)) AS value")
                 .write()
                 .format("kafka")
                 .option("kafka.bootstrap.servers", "localhost:9093")

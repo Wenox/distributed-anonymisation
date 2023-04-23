@@ -5,5 +5,5 @@ import scala.Tuple2;
 
 public interface TransformService {
 
-    Dataset<Tuple2<Column2, AnonymizationTask>> anonymize(Dataset<Tuple2<Column2, AnonymizationTask>> input);
+    Tuple2<Column2, AnonymizationTask> anonymize(Tuple2<Column2, AnonymizationTask> input);
 }
