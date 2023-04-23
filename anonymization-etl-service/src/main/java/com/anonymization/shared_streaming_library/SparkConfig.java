@@ -1,4 +1,4 @@
-package com.wenox.anonymization.suppression_service;
+package com.anonymization.shared_streaming_library;
 
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;

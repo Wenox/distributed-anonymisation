@@ -1,4 +1,4 @@
-package com.wenox.anonymization.suppression_service;
+package com.anonymization.shared_streaming_library;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,14 +1,14 @@
-package com.wenox.anonymization.suppression_service;
+package com.anonymization.shared_streaming_library;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-@EnableScheduling
 @SpringBootApplication
-public class SuppressionServiceApplication {
+@EnableScheduling
+public class AnonymizationEtlService {
 
     public static void main(String[] args) {
-        SpringApplication.run(SuppressionServiceApplication.class, args);
+        SpringApplication.run(AnonymizationEtlService.class, args);
     }
 }
