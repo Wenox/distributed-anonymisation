@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.spark.api.java.function.MapFunction;
 import org.apache.spark.sql.*;
-import org.apache.spark.sql.streaming.StreamingQuery;
 import org.apache.spark.sql.streaming.StreamingQueryException;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -25,7 +24,7 @@ import java.util.concurrent.locks.ReentrantLock;
 @RequiredArgsConstructor
 @Slf4j
 @DependsOn("anonymizationTaskSimulator")
-public class AnonymizationEtlStreamingService implements Serializable {
+public class AnonymizationEtlStreamingService implements EtlStreamingService, Serializable {
 
     private final StreamingSource streamingSource;
     private final StreamingSink streamingSink;
@@ -34,64 +33,61 @@ public class AnonymizationEtlStreamingService implements Serializable {
     private final Column2ScriptService column2ScriptService;
     private final LoadService loadService;
 
-    private StreamingQuery streamingQuery;
     private final Lock lock = new ReentrantLock();
 
     @PostConstruct
     public void init() {
-        startStreamingQuery();
+        startEtlStreamingQuery();
     }
 
-    private void startStreamingQuery() {
-        if (streamingQuery == null || streamingQuery.exception().isDefined()) {
-            try {
-                processAnonymizationTasks();
-            } catch (Exception ex) {
-                log.error("Error occurred during processing", ex);
-            }
+    private void startEtlStreamingQuery() {
+        try {
+            processEtlStreaming();
+        } catch (Exception ex) {
+            log.error("Error occurred during ETL processing", ex);
         }
     }
 
     @Scheduled(fixedDelayString = "${streaming.restartInterval:60000}")
-    public void checkAndRestartStreamingQuery() throws InterruptedException {
+    public void checkAndRestartEtlStreamingQuery() throws InterruptedException {
         if (lock.tryLock(5, TimeUnit.SECONDS)) {
             try {
-                startStreamingQuery();
+                startEtlStreamingQuery();
             } finally {
                 lock.unlock();
             }
         }
     }
 
-    public void processAnonymizationTasks() throws TimeoutException, StreamingQueryException {
-        // Step 0: Read the Kafka stream
+    public void processEtlStreaming() throws TimeoutException, StreamingQueryException {
+        // Step 1: Read the Kafka stream
         Dataset<AnonymizationTask> inputDF = streamingSource.fetchTasks();
 
-        // Step 1: Extract
+        // Step 2: Extract
         Dataset<Tuple2<Column2, AnonymizationTask>> extractedTuple = inputDF.map(
                 (MapFunction<AnonymizationTask, Tuple2<Column2, AnonymizationTask>>) extractService::extract,
                 Encoders.tuple(Encoders.bean(Column2.class), Encoders.bean(AnonymizationTask.class))
         );
 
-        // Step 2: Transform - anonymization
+        // Step 3: Transform - Anonymization
         Dataset<Tuple2<Column2, AnonymizationTask>> anonymizedTuple = extractedTuple.map(
                 (MapFunction<Tuple2<Column2, AnonymizationTask>, Tuple2<Column2, AnonymizationTask>>) transformService::anonymize,
                 Encoders.tuple(Encoders.bean(Column2.class), Encoders.bean(AnonymizationTask.class))
         );
 
-        // Step 3: Transform – SQL script
+        // Step 4: Transform – SQL script
         Dataset<Tuple2<Column2Script, AnonymizationTask>> scriptTuple = anonymizedTuple.map(
                 (MapFunction<Tuple2<Column2, AnonymizationTask>, Tuple2<Column2Script, AnonymizationTask>>) column2ScriptService::create,
                 Encoders.tuple(Encoders.bean(Column2Script.class), Encoders.bean(AnonymizationTask.class))
         );
 
-        // Step 4: Load
+        // Step 5: Load
         Dataset<SuccessEvent> successEvents = scriptTuple.map(
                 (MapFunction<Tuple2<Column2Script, AnonymizationTask>, SuccessEvent>) loadService::load,
                 Encoders.bean(SuccessEvent.class)
         );
 
-        // Step 5: Sink
+        // Step 6: Sink
         streamingSink.sink(successEvents);
     }
 }
