@@ -1,5 +1,7 @@
-package com.anonymization.shared_streaming_library;
+package com.anonymization.shared_streaming_library.source;
 
+import com.anonymization.shared_streaming_library.AnonymizationTask;
+import com.anonymization.shared_streaming_library.OperationType;
 import com.anonymization.shared_streaming_library.poc.tasks.ShuffleTask;
 import com.anonymization.shared_streaming_library.poc.tasks.SuppressionTask;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -20,7 +22,7 @@ import java.io.Serializable;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class TasksProviderService implements Serializable {
+public class KafkaStreamingSource implements StreamingSource, Serializable {
 
     private final SparkSession sparkSession;
 
