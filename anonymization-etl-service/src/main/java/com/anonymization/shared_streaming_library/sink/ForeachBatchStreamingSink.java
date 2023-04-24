@@ -15,14 +15,14 @@ import java.util.concurrent.TimeoutException;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class BatchStreamingSink implements StreamingSink, Serializable {
+public class ForeachBatchStreamingSink implements StreamingSink, Serializable {
 
-    private final KafkaBatchProcess kafkaBatchProcess;
+    private final BatchProcess batchProcess;
 
     public void sink(Dataset<SuccessEvent> successEvents) throws TimeoutException, StreamingQueryException {
         successEvents.selectExpr("CAST(taskId AS STRING) AS key", "to_json(struct(*)) AS value")
                 .writeStream()
-                .foreachBatch((VoidFunction2<Dataset<Row>, Long>) kafkaBatchProcess::processBatch)
+                .foreachBatch((VoidFunction2<Dataset<Row>, Long>) batchProcess::process)
                 .option("checkpointLocation", "<your_checkpoint_location>")
                 .start()
                 .awaitTermination();

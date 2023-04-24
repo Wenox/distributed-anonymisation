@@ -16,6 +16,7 @@ import scala.Tuple2;
 
 import javax.annotation.PostConstruct;
 import java.io.Serializable;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -38,14 +39,11 @@ public class AnonymizationEtlStreamingService implements Serializable {
 
     @PostConstruct
     public void init() {
-        log.info("Inside init - postconstruct");
         startStreamingQuery();
     }
 
     private void startStreamingQuery() {
-        log.info("Inside startStreamingQuery");
         if (streamingQuery == null || streamingQuery.exception().isDefined()) {
-            log.info("Calling process");
             try {
                 processAnonymizationTasks();
             } catch (Exception ex) {
@@ -55,16 +53,13 @@ public class AnonymizationEtlStreamingService implements Serializable {
     }
 
     @Scheduled(fixedDelayString = "${streaming.restartInterval:60000}")
-    public void checkAndRestartStreamingQuery() {
-        log.info("Called checkAndRestart");
-        log.info("Lock lock");
-        lock.lock();
-        try {
-            log.info("Calling startStreamingQuery");
-            startStreamingQuery();
-        } finally {
-            log.info("Lock unlock");
-            lock.unlock();
+    public void checkAndRestartStreamingQuery() throws InterruptedException {
+        if (lock.tryLock(5, TimeUnit.SECONDS)) {
+            try {
+                startStreamingQuery();
+            } finally {
+                lock.unlock();
+            }
         }
     }
 

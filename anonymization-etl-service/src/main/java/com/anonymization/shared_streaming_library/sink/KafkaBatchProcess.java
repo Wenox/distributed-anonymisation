@@ -15,9 +15,9 @@ import java.io.Serializable;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class KafkaBatchProcess implements Serializable {
+public class KafkaBatchProcess implements BatchProcess, Serializable {
 
-    public void processBatch(Dataset<Row> batch, long batchId) {
+    public void process(Dataset<Row> batch, long batchId) {
         Dataset<SuccessEvent> successEvents = batch.map((MapFunction<Row, SuccessEvent>) row -> {
             SuccessEvent successEvent = new SuccessEvent();
             successEvent.setTaskId(row.getAs("key"));
