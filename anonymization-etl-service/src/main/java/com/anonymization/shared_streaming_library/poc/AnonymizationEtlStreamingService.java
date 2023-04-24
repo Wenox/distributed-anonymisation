@@ -1,10 +1,6 @@
 package com.anonymization.shared_streaming_library.poc;
 
 import com.anonymization.shared_streaming_library.*;
-import com.anonymization.shared_streaming_library.poc.tasks.ShuffleTask;
-import com.anonymization.shared_streaming_library.poc.tasks.SuppressionTask;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +15,6 @@ import org.springframework.stereotype.Service;
 import scala.Tuple2;
 
 import javax.annotation.PostConstruct;
-import java.io.IOException;
 import java.io.Serializable;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.locks.Lock;
@@ -32,6 +27,7 @@ import java.util.concurrent.locks.ReentrantLock;
 public class AnonymizationEtlStreamingService implements Serializable {
 
     private final SparkSession sparkSession;
+    private final TasksProviderService tasksProviderService;
     private final ExtractService extractService;
     private final TransformService transformService;
     private final Column2ScriptService column2ScriptService;
@@ -74,15 +70,7 @@ public class AnonymizationEtlStreamingService implements Serializable {
 
     public void processAnonymizationTasks() throws TimeoutException, StreamingQueryException {
         // Step 0: Read the Kafka stream
-        Dataset<AnonymizationTask> inputDF = sparkSession.readStream()
-                .format("kafka")
-                .option("kafka.bootstrap.servers", "localhost:9093")
-                .option("subscribe", KafkaConstants.TOPIC_OPERATIONS)
-                .option("startingOffsets", "earliest")
-                .load()
-                .selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
-                .as(Encoders.tuple(Encoders.STRING(), Encoders.STRING()))
-                .map((MapFunction<Tuple2<String, String>, AnonymizationTask>) tuple -> deserializeAnonymizationTask(tuple._2), Encoders.bean(AnonymizationTask.class));
+        Dataset<AnonymizationTask> inputDF = tasksProviderService.fetchTasks();
 
         // Step 1: Extract
         Dataset<Tuple2<Column2, AnonymizationTask>> extractedTuple = inputDF.map(
@@ -141,41 +129,6 @@ public class AnonymizationEtlStreamingService implements Serializable {
     private void printDataset(Dataset<?> dataset, String title) {
         System.out.println(title);
         dataset.show(false);
-    }
-
-    public AnonymizationTask deserializeAnonymizationTask(String value) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode rootNode;
-
-        try {
-            rootNode = objectMapper.readTree(value);
-        } catch (IOException e) {
-            log.error("Error reading JSON", e);
-            throw new RuntimeException("Error reading JSON", e);
-        }
-
-        OperationType type = OperationType.valueOf(rootNode.get("type").asText().toUpperCase());
-
-        switch (type) {
-            case SUPPRESSION:
-                log.info("Deserializing into suppression... {}", value);
-                return deserializeJson(value, SuppressionTask.class);
-            case SHUFFLE:
-                log.info("Deserializing into shuffle... {}", value);
-                return deserializeJson(value, ShuffleTask.class);
-            default:
-                throw new RuntimeException("Unknown task type: " + type);
-        }
-    }
-
-    public <T> T deserializeJson(String value, Class<T> targetClass) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            return objectMapper.readValue(value, targetClass);
-        } catch (IOException e) {
-            log.error("Error deserializing JSON", e);
-            throw new RuntimeException("Error deserializing JSON", e);
-        }
     }
 }
 

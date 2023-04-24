@@ -1,45 +1,39 @@
 package com.anonymization.shared_streaming_library;
 
+import com.anonymization.shared_streaming_library.poc.tasks.ShuffleTask;
 import com.anonymization.shared_streaming_library.poc.tasks.SuppressionTask;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.spark.api.java.function.MapFunction;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Encoders;
-import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import org.springframework.stereotype.Service;
-import scala.runtime.AbstractFunction1;
+import scala.Tuple2;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 @Slf4j
 @Service
-public class TasksProviderService {
+@RequiredArgsConstructor
+public class TasksProviderService implements Serializable {
 
-    public Dataset<AnonymizationTask> retrieveTasks(SparkSession spark, String topic) {
-        Dataset<Row> df = readFromTopic(spark, topic);
+    private final SparkSession sparkSession;
 
-        Dataset<AnonymizationTask> events = df.selectExpr("CAST(value AS STRING) AS value")
-                .as(Encoders.STRING())
-                .map(new AbstractFunction1<>() {
-                    @Override
-                    public AnonymizationTask apply(String value) {
-                        return deserializeAnonymizationTask(value);
-                    }
-                }, Encoders.bean(AnonymizationTask.class));
-
-        return events;
-    }
-
-    private Dataset<Row> readFromTopic(SparkSession spark, String topic) {
-        return spark
-                .readStream()
+    public Dataset<AnonymizationTask> fetchTasks() {
+        return sparkSession.readStream()
                 .format("kafka")
-                .option("kafka.bootstrap.servers", "localhost:9092")
-                .option("subscribe", topic)
+                .option("kafka.bootstrap.servers", "localhost:9093")
+                .option("subscribe", KafkaConstants.TOPIC_OPERATIONS)
                 .option("startingOffsets", "earliest")
-                .load();
+                .load()
+                .selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
+                .as(Encoders.tuple(Encoders.STRING(), Encoders.STRING()))
+                .map((MapFunction<Tuple2<String, String>, AnonymizationTask>) tuple -> deserializeAnonymizationTask(tuple._2), Encoders.bean(AnonymizationTask.class));
     }
 
     public AnonymizationTask deserializeAnonymizationTask(String value) {
@@ -57,7 +51,11 @@ public class TasksProviderService {
 
         switch (type) {
             case SUPPRESSION:
+                log.info("Deserializing into suppression... {}", value);
                 return deserializeJson(value, SuppressionTask.class);
+            case SHUFFLE:
+                log.info("Deserializing into shuffle... {}", value);
+                return deserializeJson(value, ShuffleTask.class);
             default:
                 throw new RuntimeException("Unknown task type: " + type);
         }
