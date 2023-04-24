@@ -9,6 +9,7 @@ import org.apache.spark.api.java.function.MapFunction;
 import org.apache.spark.sql.*;
 import org.apache.spark.sql.streaming.StreamingQueryException;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import scala.Tuple2;
@@ -28,6 +29,7 @@ public class AnonymizationEtlStreamingService implements EtlStreamingService, Se
 
     private final StreamingSource streamingSource;
     private final StreamingSink streamingSink;
+    private final RetryTemplate retryTemplate;
     private final ExtractService extractService;
     private final TransformService transformService;
     private final Column2ScriptService column2ScriptService;
@@ -42,7 +44,10 @@ public class AnonymizationEtlStreamingService implements EtlStreamingService, Se
 
     private void startEtlStreamingQuery() {
         try {
-            processEtlStreaming();
+            retryTemplate.execute(retryContext -> {
+                processEtlStreaming();
+                return null;
+            });
         } catch (Exception ex) {
             log.error("Error occurred during ETL processing", ex);
         }
