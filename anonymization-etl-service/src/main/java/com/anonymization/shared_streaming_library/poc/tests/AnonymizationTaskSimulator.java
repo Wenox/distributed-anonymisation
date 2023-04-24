@@ -1,21 +1,29 @@
-package com.anonymization.shared_streaming_library.poc;
+package com.anonymization.shared_streaming_library.poc.tests;
 
 import com.anonymization.shared_streaming_library.OperationType;
 import com.anonymization.shared_streaming_library.poc.tasks.ShuffleTask;
 import com.anonymization.shared_streaming_library.poc.tasks.SuppressionTask;
+import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import java.io.Serializable;
 import java.util.UUID;
 
 @Service
 @Slf4j
-public class AnonymizationTaskSimulator {
+public class AnonymizationTaskSimulator implements Serializable {
 
     @Autowired
     private KafkaTemplate<String, Object> kafkaTemplate2;
+
+    @PostConstruct
+    public void init() {
+        this.sendAnonymizationTasks(10, KafkaConstants.TOPIC_OPERATIONS);
+    }
 
     public void sendAnonymizationTasks(int numberOfTasks, String topic) {
         for (int i = 0; i < numberOfTasks; i++) {

@@ -1,5 +1,6 @@
 package com.anonymization.shared_streaming_library;
 
+import com.anonymization.shared_streaming_library.poc.tasks.SuppressionTask;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;

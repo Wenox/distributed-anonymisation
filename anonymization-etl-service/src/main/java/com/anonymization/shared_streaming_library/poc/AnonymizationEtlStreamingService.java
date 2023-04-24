@@ -11,24 +11,66 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.spark.api.java.function.MapFunction;
 import org.apache.spark.api.java.function.VoidFunction2;
 import org.apache.spark.sql.*;
+import org.apache.spark.sql.streaming.StreamingQuery;
 import org.apache.spark.sql.streaming.StreamingQueryException;
+import org.springframework.context.annotation.DependsOn;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import scala.Tuple2;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.concurrent.TimeoutException;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class StreamingService2 implements Serializable {
+@DependsOn("anonymizationTaskSimulator")
+public class AnonymizationEtlStreamingService implements Serializable {
 
     private final SparkSession sparkSession;
     private final ExtractService extractService;
     private final TransformService transformService;
     private final Column2ScriptService column2ScriptService;
     private final LoadService loadService;
+
+    private StreamingQuery streamingQuery;
+    private final Lock lock = new ReentrantLock();
+
+    @PostConstruct
+    public void init() {
+        log.info("Inside init - postconstruct");
+        startStreamingQuery();
+    }
+
+    private void startStreamingQuery() {
+        log.info("Inside startStreamingQuery");
+        if (streamingQuery == null || streamingQuery.exception().isDefined()) {
+            log.info("Calling process");
+            try {
+                processAnonymizationTasks();
+            } catch (Exception ex) {
+                log.error("Error occurred during processing", ex);
+            }
+        }
+    }
+
+    @Scheduled(fixedDelayString = "${streaming.restartInterval:60000}")
+    public void checkAndRestartStreamingQuery() {
+        log.info("Called checkAndRestart");
+        log.info("Lock lock");
+        lock.lock();
+        try {
+            log.info("Calling startStreamingQuery");
+            startStreamingQuery();
+        } finally {
+            log.info("Lock unlock");
+            lock.unlock();
+        }
+    }
 
     public void processAnonymizationTasks() throws TimeoutException, StreamingQueryException {
         // Step 0: Read the Kafka stream
