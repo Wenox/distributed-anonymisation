@@ -65,7 +65,7 @@ public class AnonymizationEtlStreamingService implements EtlStreamingService, Se
     }
 
     public void processEtlStreaming() {
-        CircuitBreaker circuitBreaker = circuitBreakerRegistry.circuitBreaker("etlStreamingCircuitBreaker");
+        CircuitBreaker circuitBreaker = getCircuitBreaker();
 
         Try<Void> result = Try.run(() -> {
 
@@ -105,6 +105,13 @@ public class AnonymizationEtlStreamingService implements EtlStreamingService, Se
         });
 
         circuitBreaker.executeSupplier(() -> result);
+    }
+
+    private CircuitBreaker getCircuitBreaker() {
+        CircuitBreaker circuitBreaker = circuitBreakerRegistry.circuitBreaker("etlStreamingCircuitBreaker");
+        circuitBreaker.getEventPublisher()
+                .onStateTransition(event -> log.info("Circuit breaker state transition: {}", event));
+        return circuitBreaker;
     }
 }
 
