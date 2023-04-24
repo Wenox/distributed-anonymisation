@@ -1,6 +1,6 @@
 package com.anonymization.etl.sink;
 
-import com.anonymization.etl.poc.SuccessEvent;
+import com.anonymization.etl.domain.SuccessEvent;
 import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

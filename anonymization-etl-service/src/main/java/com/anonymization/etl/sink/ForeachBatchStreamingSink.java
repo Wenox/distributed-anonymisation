@@ -1,6 +1,6 @@
 package com.anonymization.etl.sink;
 
-import com.anonymization.etl.poc.SuccessEvent;
+import com.anonymization.etl.domain.SuccessEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.spark.api.java.function.VoidFunction2;

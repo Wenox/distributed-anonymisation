@@ -1,6 +1,6 @@
 package com.anonymization.etl.sink;
 
-import com.anonymization.etl.poc.SuccessEvent;
+import com.anonymization.etl.domain.SuccessEvent;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.streaming.StreamingQueryException;
 

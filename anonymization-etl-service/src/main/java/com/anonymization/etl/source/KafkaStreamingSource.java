@@ -1,9 +1,9 @@
 package com.anonymization.etl.source;
 
-import com.anonymization.etl.AnonymizationTask;
-import com.anonymization.etl.OperationType;
-import com.anonymization.etl.poc.tasks.ShuffleTask;
-import com.anonymization.etl.poc.tasks.SuppressionTask;
+import com.anonymization.etl.domain.tasks.AnonymizationTask;
+import com.anonymization.etl.domain.OperationType;
+import com.anonymization.etl.domain.tasks.ShuffleTask;
+import com.anonymization.etl.domain.tasks.SuppressionTask;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
