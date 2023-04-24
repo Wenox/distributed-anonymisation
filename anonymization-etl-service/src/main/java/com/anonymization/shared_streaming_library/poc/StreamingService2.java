@@ -1,6 +1,9 @@
 package com.anonymization.shared_streaming_library.poc;
 
 import com.anonymization.shared_streaming_library.*;
+import com.anonymization.shared_streaming_library.poc.tasks.ShuffleTask;
+import com.anonymization.shared_streaming_library.poc.tasks.SuppressionTask;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
 import lombok.RequiredArgsConstructor;
@@ -12,12 +15,14 @@ import org.apache.spark.sql.streaming.StreamingQueryException;
 import org.springframework.stereotype.Service;
 import scala.Tuple2;
 
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.concurrent.TimeoutException;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class StreamingService2 {
+public class StreamingService2 implements Serializable {
 
     private final SparkSession sparkSession;
     private final ExtractService extractService;
@@ -26,7 +31,7 @@ public class StreamingService2 {
     private final LoadService loadService;
 
     public void processAnonymizationTasks() throws TimeoutException, StreamingQueryException {
-        // Read the Kafka stream
+        // Step 0: Read the Kafka stream
         Dataset<AnonymizationTask> inputDF = sparkSession.readStream()
                 .format("kafka")
                 .option("kafka.bootstrap.servers", "localhost:9093")
@@ -35,35 +40,33 @@ public class StreamingService2 {
                 .load()
                 .selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
                 .as(Encoders.tuple(Encoders.STRING(), Encoders.STRING()))
-                .map((MapFunction<Tuple2<String, String>, AnonymizationTask>) tuple -> {
-                    ObjectMapper objectMapper = new ObjectMapper();
-                    return objectMapper.readValue(tuple._2, AnonymizationTask.class);
-                }, Encoders.bean(AnonymizationTask.class));
+                .map((MapFunction<Tuple2<String, String>, AnonymizationTask>) tuple -> deserializeAnonymizationTask(tuple._2), Encoders.bean(AnonymizationTask.class));
 
-        // Extract step
+        // Step 1: Extract
         Dataset<Tuple2<Column2, AnonymizationTask>> extractedTuple = inputDF.map(
                 (MapFunction<AnonymizationTask, Tuple2<Column2, AnonymizationTask>>) extractService::extract,
                 Encoders.tuple(Encoders.bean(Column2.class), Encoders.bean(AnonymizationTask.class))
         );
 
-        // Transform - step 1 - anonymization
+        // Step 2: Transform - anonymization
         Dataset<Tuple2<Column2, AnonymizationTask>> anonymizedTuple = extractedTuple.map(
                 (MapFunction<Tuple2<Column2, AnonymizationTask>, Tuple2<Column2, AnonymizationTask>>) transformService::anonymize,
                 Encoders.tuple(Encoders.bean(Column2.class), Encoders.bean(AnonymizationTask.class))
         );
 
-        // Transform – step 2 – SQL script
+        // Step 3: Transform – SQL script
         Dataset<Tuple2<Column2Script, AnonymizationTask>> scriptTuple = anonymizedTuple.map(
                 (MapFunction<Tuple2<Column2, AnonymizationTask>, Tuple2<Column2Script, AnonymizationTask>>) column2ScriptService::create,
                 Encoders.tuple(Encoders.bean(Column2Script.class), Encoders.bean(AnonymizationTask.class))
         );
 
-        // Load step
+        // Step 4: Load
         Dataset<SuccessEvent> successEvents = scriptTuple.map(
                 (MapFunction<Tuple2<Column2Script, AnonymizationTask>, SuccessEvent>) loadService::load,
                 Encoders.bean(SuccessEvent.class)
         );
 
+        // Step 5: Sink
         successEvents.selectExpr("CAST(taskId AS STRING) AS key", "to_json(struct(*)) AS value")
                 .writeStream()
                 .foreachBatch((VoidFunction2<Dataset<Row>, Long>) this::processBatch)
@@ -96,6 +99,41 @@ public class StreamingService2 {
     private void printDataset(Dataset<?> dataset, String title) {
         System.out.println(title);
         dataset.show(false);
+    }
+
+    public AnonymizationTask deserializeAnonymizationTask(String value) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode rootNode;
+
+        try {
+            rootNode = objectMapper.readTree(value);
+        } catch (IOException e) {
+            log.error("Error reading JSON", e);
+            throw new RuntimeException("Error reading JSON", e);
+        }
+
+        OperationType type = OperationType.valueOf(rootNode.get("type").asText().toUpperCase());
+
+        switch (type) {
+            case SUPPRESSION:
+                log.info("Deserializing into suppression... {}", value);
+                return deserializeJson(value, SuppressionTask.class);
+            case SHUFFLE:
+                log.info("Deserializing into shuffle... {}", value);
+                return deserializeJson(value, ShuffleTask.class);
+            default:
+                throw new RuntimeException("Unknown task type: " + type);
+        }
+    }
+
+    public <T> T deserializeJson(String value, Class<T> targetClass) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.readValue(value, targetClass);
+        } catch (IOException e) {
+            log.error("Error deserializing JSON", e);
+            throw new RuntimeException("Error deserializing JSON", e);
+        }
     }
 }
 
