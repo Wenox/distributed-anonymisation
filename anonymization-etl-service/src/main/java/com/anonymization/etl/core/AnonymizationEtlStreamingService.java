@@ -20,6 +20,7 @@ import org.apache.spark.api.java.function.MapPartitionsFunction;
 import org.apache.spark.sql.*;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.retry.support.RetryTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import scala.Tuple2;
@@ -51,7 +52,7 @@ public class AnonymizationEtlStreamingService implements EtlStreamingService, Se
 
     @PostConstruct
     public void init() {
-        startEtlStreamingQuery();
+        new Thread(this::startEtlStreamingQuery).start();
     }
 
     private void startEtlStreamingQuery() {
@@ -72,6 +73,7 @@ public class AnonymizationEtlStreamingService implements EtlStreamingService, Se
         }
     }
 
+    @Async
     public void processEtlStreaming() {
         CircuitBreaker circuitBreaker = getCircuitBreaker();
 

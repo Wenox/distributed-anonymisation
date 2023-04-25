@@ -8,9 +8,8 @@ import io.lettuce.core.api.sync.RedisCommands;
 
 public class RedisUtils {
 
-    public static RedisCommands<String, ColumnTuple> buildRedisCommands(String redisUrl) {
+    public static StatefulRedisConnection<String, ColumnTuple> buildRedisCommands(String redisUrl) {
         RedisClient redisClient = RedisClient.create(redisUrl);
-        StatefulRedisConnection<String, ColumnTuple> connection = redisClient.connect(new ColumnTupleRedisCodec());
-        return connection.sync();
+        return redisClient.connect(new ColumnTupleRedisCodec());
     }
 }

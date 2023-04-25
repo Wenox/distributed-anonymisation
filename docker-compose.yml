@@ -36,6 +36,14 @@ services:
     ports:
       - "6379:6379"
 
+  redisinsight:
+    image: redislabs/redisinsight:latest
+    container_name: redisinsight
+    ports:
+      - "8011:8001"
+    volumes:
+      - ./redisinsight:/db
+
   cassandra:
     image: cassandra:4.1.1
     container_name: cassandra

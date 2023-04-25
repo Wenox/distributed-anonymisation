@@ -24,6 +24,8 @@ public class DefaultColumnTupleService implements ColumnTupleService {
             throw new InactiveRestorationException("Unable to get column data: Restoration is inactive! Restoraion: " + restoration);
         }
 
+        log.info("Querying db: {}", restoration.getDatabaseName());
+
         DatabaseConnection connection = DatabaseConnection.forPostgres(restoration.getDatabaseName());
         QuerySelector querySelector = new JdbcTemplateQuerySelector(dataSourceFactory.getDataSource(connection));
 

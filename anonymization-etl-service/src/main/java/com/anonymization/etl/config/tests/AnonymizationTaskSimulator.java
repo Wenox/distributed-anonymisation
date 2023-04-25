@@ -7,6 +7,7 @@ import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,13 +29,20 @@ public class AnonymizationTaskSimulator implements Serializable {
 
     @PostConstruct
     public void init() {
-        this.sendAnonymizationTasks("6448171aeb6d0664feabcc8a", 10, KafkaConstants.TOPIC_OPERATIONS);
+        this.sendAnonymizationTasks("644847fce7e330525a716748", 0, KafkaConstants.TOPIC_OPERATIONS);
     }
 
     @PostMapping("/start")
     public void send(@RequestParam("blueprint_id") String blueprintId, @RequestParam("number_of_tasks") Integer numberOfTasks) {
         sendAnonymizationTasks(blueprintId, numberOfTasks, KafkaConstants.TOPIC_OPERATIONS);
     }
+
+    @Scheduled(fixedDelayString = "20000")
+    public void trigggggger() {
+        log.info("TRIGGGGGGGGERING");
+//        sendAnonymizationTasks("644847fce7e330525a716748", 50, KafkaConstants.TOPIC_OPERATIONS);
+    }
+
     public void sendAnonymizationTasks(String blueprintId, int numberOfTasks, String topic) {
         for (int i = 0; i < numberOfTasks; i++) {
             SuppressionTask suppressionTask = new SuppressionTask();

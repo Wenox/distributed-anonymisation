@@ -4,6 +4,7 @@ import com.anonymization.etl.config.RedisConfig;
 import com.anonymization.etl.core.RedisUtils;
 import com.anonymization.etl.domain.ColumnTuple;
 import com.anonymization.etl.domain.tasks.AnonymizationTask;
+import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,52 +21,57 @@ import java.util.List;
 
 @Service
 @Slf4j
-@RequiredArgsConstructor
 public class ExtractService implements Serializable {
 
-    @Value("${redis.url}")
-    private String redisUrl;
+    private final String redisUrl;
+
+    public ExtractService(@Value("${redis.url}") String redisUrl) {
+        this.redisUrl = redisUrl;
+    }
 
     public Iterator<Tuple2<ColumnTuple, AnonymizationTask>> extract(Iterator<AnonymizationTask> tasks) {
-        RedisCommands<String, ColumnTuple> redisCommands = RedisUtils.buildRedisCommands(redisUrl);
-        WebClient webClient = WebClient.create("http://localhost:8200");
-
         List<Tuple2<ColumnTuple, AnonymizationTask>> result = new ArrayList<>();
 
-        tasks.forEachRemaining(task -> {
-            String redisKey = task.getTableName() + ":" + task.getColumnName() + task.getWorksheetId();
-            log.info("Generated Redis key: {}", redisKey);
+        try (StatefulRedisConnection<String, ColumnTuple> redisCommands = RedisUtils.buildRedisCommands(redisUrl)) {
+            WebClient webClient = WebClient.create("http://localhost:8200");
 
-            ColumnTuple columnTuple = redisCommands.get(redisKey);
-            log.info("Value retrieved from Redis with key: {}, value: {}", redisKey, columnTuple);
+            tasks.forEachRemaining(task -> {
+                String redisKey = task.getTableName() + ":" + task.getColumnName() + ":" + task.getBlueprintId();
+                log.info("Generated Redis key: {}", redisKey);
 
-            if (columnTuple == null) {
-                log.info("Not found in redis, calling get to restoration service");
+                ColumnTuple columnTuple = redisCommands.sync().get(redisKey);
+                log.info("Value retrieved from Redis with key: {}, value: {}", redisKey, columnTuple);
 
-                columnTuple = webClient.get()
-                        .uri(uriBuilder -> uriBuilder.path("/api/v1/restorations/column-tuple")
-                                .queryParam("blueprint_id", task.getBlueprintId())
-                                .queryParam("table", task.getTableName())
-                                .queryParam("column", task.getColumnName())
-                                .build())
-                        .retrieve()
-                        .bodyToMono(ColumnTuple.class)
-                        .publishOn(Schedulers.boundedElastic())
-                        .block();
+                if (columnTuple == null) {
+                    log.info("Not found in Redis, calling get to restoration service");
 
-                log.info("Retrieved using GET: {}", columnTuple);
+                    columnTuple = webClient.get()
+                            .uri(uriBuilder -> uriBuilder.path("/api/v1/restorations/column-tuple")
+                                    .queryParam("blueprint_id", task.getBlueprintId())
+                                    .queryParam("table", task.getTableName())
+                                    .queryParam("column", task.getColumnName())
+                                    .build())
+                            .retrieve()
+                            .bodyToMono(ColumnTuple.class)
+                            .publishOn(Schedulers.boundedElastic())
+                            .block();
 
-                redisCommands.set(redisKey, columnTuple);
-                log.info("Value stored in Redis with key: {}, value: {}", redisKey, columnTuple);
-            } else {
-                log.info("Found in redis: {}", columnTuple);
-            }
+                    log.info("Retrieved using GET: {}", columnTuple);
 
-            result.add(Tuple2.apply(columnTuple, task));
-        });
+                    redisCommands.sync().set(redisKey, columnTuple);
+                    log.info("Value stored in Redis with key: {}, value: {}", redisKey, columnTuple);
+                } else {
+                    log.info("@@@@@@@@@@@@@@@ !!!!!!! Found in Redis: {}", columnTuple);
+                }
+
+                result.add(Tuple2.apply(columnTuple, task));
+            });
+        }
 
         return result.iterator();
     }
+}
+
 
 //    public Tuple2<ColumnTuple, AnonymizationTask> extract(AnonymizationTask task) {
 //        WebClient webClient = WebClient.create("http://localhost:8200");
@@ -100,4 +106,3 @@ public class ExtractService implements Serializable {
 //
 //        return Tuple2.apply(columnTuple, task);
 //    }
-}
