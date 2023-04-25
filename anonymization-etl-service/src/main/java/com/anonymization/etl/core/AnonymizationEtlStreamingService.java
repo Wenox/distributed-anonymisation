@@ -1,6 +1,6 @@
 package com.anonymization.etl.core;
 
-import com.anonymization.etl.domain.Column2;
+import com.anonymization.etl.domain.ColumnTuple;
 import com.anonymization.etl.domain.SuccessEvent;
 import com.anonymization.etl.domain.tasks.AnonymizationTask;
 import com.anonymization.etl.extract.ExtractService;
@@ -16,6 +16,7 @@ import io.vavr.control.Try;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.spark.api.java.function.MapFunction;
+import org.apache.spark.api.java.function.MapPartitionsFunction;
 import org.apache.spark.sql.*;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.retry.support.RetryTemplate;
@@ -30,16 +31,16 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 @DependsOn("anonymizationTaskSimulator")
+@RequiredArgsConstructor
 public class AnonymizationEtlStreamingService implements EtlStreamingService, Serializable {
 
     private final StreamingSource streamingSource;
     private final StreamingSink streamingSink;
 
-    private final CircuitBreakerRegistry circuitBreakerRegistry;
-    private final RetryTemplate retryTemplate;
+    private transient final CircuitBreakerRegistry circuitBreakerRegistry;
+    private transient final RetryTemplate retryTemplate;
 
     private final ExtractService extractService;
     private final TransformService transformService;
@@ -80,20 +81,20 @@ public class AnonymizationEtlStreamingService implements EtlStreamingService, Se
             Dataset<AnonymizationTask> inputDF = streamingSource.fetchTasks();
 
             // Step 2: Extract
-            Dataset<Tuple2<Column2, AnonymizationTask>> extractedTuple = inputDF.map(
-                    (MapFunction<AnonymizationTask, Tuple2<Column2, AnonymizationTask>>) extractService::extract,
-                    Encoders.tuple(Encoders.bean(Column2.class), Encoders.bean(AnonymizationTask.class))
+            Dataset<Tuple2<ColumnTuple, AnonymizationTask>> extractedTuple = inputDF.mapPartitions(
+                    (MapPartitionsFunction<AnonymizationTask, Tuple2<ColumnTuple, AnonymizationTask>>) tasks -> extractService.extract(tasks),
+                    Encoders.tuple(Encoders.bean(ColumnTuple.class), Encoders.bean(AnonymizationTask.class))
             );
 
             // Step 3: Transform - Anonymization
-            Dataset<Tuple2<Column2, AnonymizationTask>> anonymizedTuple = extractedTuple.map(
-                    (MapFunction<Tuple2<Column2, AnonymizationTask>, Tuple2<Column2, AnonymizationTask>>) transformService::anonymize,
-                    Encoders.tuple(Encoders.bean(Column2.class), Encoders.bean(AnonymizationTask.class))
+            Dataset<Tuple2<ColumnTuple, AnonymizationTask>> anonymizedTuple = extractedTuple.map(
+                    (MapFunction<Tuple2<ColumnTuple, AnonymizationTask>, Tuple2<ColumnTuple, AnonymizationTask>>) transformService::anonymize,
+                    Encoders.tuple(Encoders.bean(ColumnTuple.class), Encoders.bean(AnonymizationTask.class))
             );
 
             // Step 4: Transform – SQL script
             Dataset<Tuple2<Column2Script, AnonymizationTask>> scriptTuple = anonymizedTuple.map(
-                    (MapFunction<Tuple2<Column2, AnonymizationTask>, Tuple2<Column2Script, AnonymizationTask>>) column2ScriptService::create,
+                    (MapFunction<Tuple2<ColumnTuple, AnonymizationTask>, Tuple2<Column2Script, AnonymizationTask>>) column2ScriptService::create,
                     Encoders.tuple(Encoders.bean(Column2Script.class), Encoders.bean(AnonymizationTask.class))
             );
 

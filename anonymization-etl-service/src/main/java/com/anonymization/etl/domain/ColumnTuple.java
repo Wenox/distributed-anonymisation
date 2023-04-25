@@ -4,12 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.util.List;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class Column2 {
-    private List<String> pks;
-    private List<String> values;
+public class ColumnTuple implements Serializable {
+    List<String> pks;
+    List<String> values;
 }

@@ -10,5 +10,6 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public class ColumnTuple {
-    List<Pair<String, String>> pairs;
+    List<String> pks;
+    List<String> values;
 }

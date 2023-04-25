@@ -8,6 +8,7 @@ public class AnonymizationTask {
     private OperationType type;
     private String taskId;
     private String worksheetId;
+    private String blueprintId;
     private String tableName;
     private String columnName;
     private String columnType;
