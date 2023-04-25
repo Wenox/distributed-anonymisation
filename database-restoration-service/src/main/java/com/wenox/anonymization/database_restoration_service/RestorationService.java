@@ -18,6 +18,11 @@ public class RestorationService {
                 .orElseThrow(() -> new RestorationNotFoundException("Restoration not found with blueprintId: " + blueprintId));
     }
 
+    public Restoration getRestorationByRestorationId(String restorationId) {
+        return restorationRepository.findById(restorationId)
+                .orElseThrow(() -> new RestorationNotFoundException("Restoration not found with restorationId: " + restorationId));
+    }
+
     public void saveActiveRestoration(BlueprintCreatedEvent event) {
         restorationRepository.save(restorationMapper.toActiveRestoration(event));
     }
