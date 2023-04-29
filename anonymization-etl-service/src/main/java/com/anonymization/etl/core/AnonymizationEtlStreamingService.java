@@ -10,7 +10,6 @@ import com.anonymization.etl.source.StreamingSource;
 import com.anonymization.etl.transform.script.Column2Script;
 import com.anonymization.etl.transform.script.Column2ScriptService;
 import com.anonymization.etl.transform.operations.TransformService;
-import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import io.vavr.control.Try;
@@ -18,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.spark.SparkContext;
 import org.apache.spark.api.java.function.MapFunction;
-import org.apache.spark.api.java.function.MapPartitionsFunction;
 import org.apache.spark.broadcast.Broadcast;
 import org.apache.spark.sql.*;
 import org.springframework.context.annotation.DependsOn;
@@ -81,9 +79,7 @@ public class AnonymizationEtlStreamingService implements EtlStreamingService, Se
     @Async
     public void processEtlStreaming() {
 
-        SparkContext sparkContext = sparkSession.sparkContext();
-
-        Broadcast<KafkaSink> broadcastKafkaSink = sparkContext.broadcast(KafkaSink.apply(), KafkaSink.getClassTag());
+        BroadcastFacade broadcastFacade = BroadcastFacade.create(sparkSession.sparkContext());
 
         CircuitBreaker circuitBreaker = getCircuitBreaker();
 
@@ -96,20 +92,20 @@ public class AnonymizationEtlStreamingService implements EtlStreamingService, Se
             Dataset<AnonymizationTask> repartitionedInputDF = inputDF.repartition(4);
 
             // Step 2: Extract
-            Dataset<Tuple2<ColumnTuple, AnonymizationTask>> extractedTuple = repartitionedInputDF.mapPartitions(
-                    (MapPartitionsFunction<AnonymizationTask, Tuple2<ColumnTuple, AnonymizationTask>>) tasks -> extractService.extract(tasks, broadcastKafkaSink),
+            Dataset<Tuple2<ColumnTuple, AnonymizationTask>> extractedTuple = repartitionedInputDF.map(
+                    (MapFunction<AnonymizationTask, Tuple2<ColumnTuple, AnonymizationTask>>) task -> extractService.extract(task, broadcastFacade),
                     Encoders.tuple(Encoders.bean(ColumnTuple.class), Encoders.bean(AnonymizationTask.class))
             );
 
             // Step 3: Transform - Anonymization
             Dataset<Tuple2<ColumnTuple, AnonymizationTask>> anonymizedTuple = extractedTuple.map(
-                    (MapFunction<Tuple2<ColumnTuple, AnonymizationTask>, Tuple2<ColumnTuple, AnonymizationTask>>) task -> transformService.anonymize(task, broadcastKafkaSink),
+                    (MapFunction<Tuple2<ColumnTuple, AnonymizationTask>, Tuple2<ColumnTuple, AnonymizationTask>>) task -> transformService.anonymize(task, broadcastFacade.getKafkaSinkBroadcast()),
                     Encoders.tuple(Encoders.bean(ColumnTuple.class), Encoders.bean(AnonymizationTask.class))
             );
 
             // Step 4: Transform – SQL script
             Dataset<Tuple2<Column2Script, AnonymizationTask>> scriptTuple = anonymizedTuple.map(
-                    (MapFunction<Tuple2<ColumnTuple, AnonymizationTask>, Tuple2<Column2Script, AnonymizationTask>>) task -> column2ScriptService.create(task, broadcastKafkaSink),
+                    (MapFunction<Tuple2<ColumnTuple, AnonymizationTask>, Tuple2<Column2Script, AnonymizationTask>>) task -> column2ScriptService.create(task, broadcastFacade.getKafkaSinkBroadcast()),
                     Encoders.tuple(Encoders.bean(Column2Script.class), Encoders.bean(AnonymizationTask.class))
             );
 
