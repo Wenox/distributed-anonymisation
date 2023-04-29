@@ -22,14 +22,9 @@ public class ExtractService implements Serializable {
         WebClient webClient = WebClient.create("http://localhost:8200");
 
         String redisKey = task.getTableName() + ":" + task.getColumnName() + ":" + task.getBlueprintId();
-        log.info("Generated Redis key: {}", redisKey);
-
-        ColumnTuple columnTuple = broadcastFacade.redis().getRedisConnection().sync().get(redisKey);
-        log.info("Value retrieved from Redis with key: {}, value: {}", redisKey, columnTuple);
+        ColumnTuple columnTuple = broadcastFacade.redis().get(redisKey);
 
         if (columnTuple == null) {
-            log.info("Not found in Redis, calling get to restoration service");
-
             columnTuple = webClient.get()
                     .uri(uriBuilder -> uriBuilder.path("/api/v1/restorations/column-tuple")
                             .queryParam("blueprint_id", task.getBlueprintId())
@@ -41,12 +36,7 @@ public class ExtractService implements Serializable {
                     .publishOn(Schedulers.boundedElastic())
                     .block();
 
-            log.info("Retrieved using GET: {}", columnTuple);
-
-            broadcastFacade.getRedisSinkBroadcast().getValue().getRedisConnection().sync().set(redisKey, columnTuple);
-            log.info("Value stored in Redis with key: {}, value: {}", redisKey, columnTuple);
-        } else {
-            log.info("@@@@@@@@@@@@@@@ !!!!!!! Found in Redis: {}", columnTuple);
+            broadcastFacade.redis().set(redisKey, columnTuple);
         }
 
         broadcastFacade.getKafkaSinkBroadcast().getValue().send(KafkaConstants.TOPIC_EXTRACTION_SUCCESS, "SUCCESS");

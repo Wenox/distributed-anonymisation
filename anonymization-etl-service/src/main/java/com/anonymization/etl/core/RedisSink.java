@@ -19,12 +19,20 @@ public class RedisSink implements Serializable {
         this.redisConnectionSupplier = redisConnectionSupplier;
     }
 
-    public StatefulRedisConnection<String, ColumnTuple> getRedisConnection() {
+    private StatefulRedisConnection<String, ColumnTuple> getRedisConnection() {
         if (redisConnection == null) {
             log.info("Preparing for RedisConnectionSupplier instantiation...");
             redisConnection = redisConnectionSupplier.get();
         }
         return redisConnection;
+    }
+
+    public ColumnTuple get(String key) {
+        return getRedisConnection().sync().get(key);
+    }
+
+    public void set(String key, ColumnTuple value) {
+        getRedisConnection().sync().set(key, value);
     }
 
     public static RedisSink apply() {
