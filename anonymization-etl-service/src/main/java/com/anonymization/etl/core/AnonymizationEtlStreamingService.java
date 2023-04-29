@@ -10,6 +10,7 @@ import com.anonymization.etl.source.StreamingSource;
 import com.anonymization.etl.transform.script.Column2Script;
 import com.anonymization.etl.transform.script.Column2ScriptService;
 import com.anonymization.etl.transform.operations.TransformService;
+import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import io.vavr.control.Try;
@@ -102,13 +103,13 @@ public class AnonymizationEtlStreamingService implements EtlStreamingService, Se
 
             // Step 3: Transform - Anonymization
             Dataset<Tuple2<ColumnTuple, AnonymizationTask>> anonymizedTuple = extractedTuple.map(
-                    (MapFunction<Tuple2<ColumnTuple, AnonymizationTask>, Tuple2<ColumnTuple, AnonymizationTask>>) transformService::anonymize,
+                    (MapFunction<Tuple2<ColumnTuple, AnonymizationTask>, Tuple2<ColumnTuple, AnonymizationTask>>) task -> transformService.anonymize(task, broadcastKafkaSink),
                     Encoders.tuple(Encoders.bean(ColumnTuple.class), Encoders.bean(AnonymizationTask.class))
             );
 
             // Step 4: Transform – SQL script
             Dataset<Tuple2<Column2Script, AnonymizationTask>> scriptTuple = anonymizedTuple.map(
-                    (MapFunction<Tuple2<ColumnTuple, AnonymizationTask>, Tuple2<Column2Script, AnonymizationTask>>) column2ScriptService::create,
+                    (MapFunction<Tuple2<ColumnTuple, AnonymizationTask>, Tuple2<Column2Script, AnonymizationTask>>) task -> column2ScriptService.create(task, broadcastKafkaSink),
                     Encoders.tuple(Encoders.bean(Column2Script.class), Encoders.bean(AnonymizationTask.class))
             );
 

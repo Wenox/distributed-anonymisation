@@ -54,4 +54,22 @@ public class KafkaTopicConfig {
         log.warn("Creating topic: {}", KafkaConstants.TOPIC_EXTRACTION_SUCCESS);
         return TopicBuilder.name(KafkaConstants.TOPIC_EXTRACTION_SUCCESS).build();
     }
+
+    @Bean
+    public NewTopic topicExtractionFailure() {
+        log.warn("Creating topic: {}", KafkaConstants.TOPIC_EXTRACTION_FAILURE);
+        return TopicBuilder.name(KafkaConstants.TOPIC_EXTRACTION_FAILURE).build();
+    }
+
+    @Bean
+    public NewTopic topicTransformationSuccess() {
+        log.warn("Creating topic: {}", KafkaConstants.TOPIC_TRANSFORMATION_SUCCESS);
+        return TopicBuilder.name(KafkaConstants.TOPIC_TRANSFORMATION_SUCCESS).build();
+    }
+
+    @Bean
+    public NewTopic topicTransformationFailure() {
+        log.warn("Creating topic: {}", KafkaConstants.TOPIC_TRANSFORMATION_FAILURE);
+        return TopicBuilder.name(KafkaConstants.TOPIC_TRANSFORMATION_FAILURE).build();
+    }
 }
