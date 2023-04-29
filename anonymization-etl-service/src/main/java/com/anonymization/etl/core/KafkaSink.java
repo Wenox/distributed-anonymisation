@@ -2,18 +2,16 @@ package com.anonymization.etl.core;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.clients.producer.ProducerRecord;
-import org.apache.kafka.common.serialization.StringSerializer;
-import org.springframework.kafka.support.serializer.JsonSerializer;
+import scala.reflect.ClassTag;
+import scala.reflect.ClassTag$;
 
 import java.io.Serializable;
-import java.util.Map;
-import java.util.Properties;
 import java.util.function.Supplier;
 
 @Slf4j
 public class KafkaSink implements Serializable {
+
     private final Supplier<KafkaProducer<String, Object>> producerSupplier;
     private transient KafkaProducer<String, Object> producer;
 
@@ -22,20 +20,23 @@ public class KafkaSink implements Serializable {
     }
 
     private KafkaProducer<String, Object> getProducer() {
-        log.info("CALLING GET-PRODUCER");
         if (producer == null) {
-        log.info("PRODUCER == NULL @@@@@@@@");
+            log.info("Preparing for KafkaSink instantiation...");
             producer = producerSupplier.get();
         }
         return producer;
     }
 
     public void send(String topic, Object value) {
+        log.info("Publishing to Kafka | Topic: {} | Value: {}", topic, value);
         getProducer().send(new ProducerRecord<>(topic, value));
     }
 
     public static KafkaSink apply() {
-        Supplier<KafkaProducer<String, Object>> supplier = new KafkaProducerSupplier();
-        return new KafkaSink(supplier);
+        return new KafkaSink(new KafkaProducerSupplier());
+    }
+
+    public static ClassTag<KafkaSink> getClassTag() {
+        return ClassTag$.MODULE$.apply(KafkaSink.class);
     }
 }

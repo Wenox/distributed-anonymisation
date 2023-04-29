@@ -1,6 +1,5 @@
 package com.anonymization.etl.core;
 
-import com.anonymization.etl.config.tests.KafkaProducerFactory;
 import com.anonymization.etl.domain.ColumnTuple;
 import com.anonymization.etl.domain.SuccessEvent;
 import com.anonymization.etl.domain.tasks.AnonymizationTask;
@@ -11,16 +10,12 @@ import com.anonymization.etl.source.StreamingSource;
 import com.anonymization.etl.transform.script.Column2Script;
 import com.anonymization.etl.transform.script.Column2ScriptService;
 import com.anonymization.etl.transform.operations.TransformService;
-import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import io.vavr.control.Try;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.spark.SparkContext;
-import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.MapFunction;
 import org.apache.spark.api.java.function.MapPartitionsFunction;
 import org.apache.spark.broadcast.Broadcast;
@@ -31,12 +26,9 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import scala.Tuple2;
-import scala.reflect.ClassTag;
-import scala.reflect.ClassTag$;
 
 import javax.annotation.PostConstruct;
 import java.io.Serializable;
-import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -90,12 +82,7 @@ public class AnonymizationEtlStreamingService implements EtlStreamingService, Se
 
         SparkContext sparkContext = sparkSession.sparkContext();
 
-        ClassTag<KafkaSink> kafkaSinkClassTag = ClassTag$.MODULE$.apply(KafkaSink.class);
-
-
-        Broadcast<KafkaSink> broadcastKafkaSink = sparkContext.broadcast(KafkaSink.apply(), kafkaSinkClassTag);
-
-//        Broadcast<KafkaSink> broadcastKafkaSink = javaSparkContext.broadcast(KafkaSink.apply());
+        Broadcast<KafkaSink> broadcastKafkaSink = sparkContext.broadcast(KafkaSink.apply(), KafkaSink.getClassTag());
 
         CircuitBreaker circuitBreaker = getCircuitBreaker();
 
