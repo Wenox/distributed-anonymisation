@@ -48,4 +48,10 @@ public class KafkaTopicConfig {
         log.warn("Creating topic: {}", KafkaConstants.TOPIC_OPERATION_FAILURE);
         return TopicBuilder.name(KafkaConstants.TOPIC_OPERATION_FAILURE).build();
     }
+
+    @Bean
+    public NewTopic topicExtractionSuccess() {
+        log.warn("Creating topic: {}", KafkaConstants.TOPIC_EXTRACTION_SUCCESS);
+        return TopicBuilder.name(KafkaConstants.TOPIC_EXTRACTION_SUCCESS).build();
+    }
 }

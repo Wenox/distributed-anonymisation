@@ -1,13 +1,17 @@
 package com.anonymization.etl.extract;
 
 import com.anonymization.etl.config.RedisConfig;
+import com.anonymization.etl.config.tests.KafkaProducerFactory;
 import com.anonymization.etl.core.RedisUtils;
 import com.anonymization.etl.domain.ColumnTuple;
 import com.anonymization.etl.domain.tasks.AnonymizationTask;
+import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.sync.RedisCommands;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -32,7 +36,10 @@ public class ExtractService implements Serializable {
     public Iterator<Tuple2<ColumnTuple, AnonymizationTask>> extract(Iterator<AnonymizationTask> tasks) {
         List<Tuple2<ColumnTuple, AnonymizationTask>> result = new ArrayList<>();
 
-        try (StatefulRedisConnection<String, ColumnTuple> redisCommands = RedisUtils.buildRedisCommands(redisUrl)) {
+        try (StatefulRedisConnection<String, ColumnTuple> redisCommands = RedisUtils.buildRedisCommands(redisUrl);
+             KafkaProducer<String, Object> kafkaProducer = KafkaProducerFactory.createProducer())
+
+        {
             WebClient webClient = WebClient.create("http://localhost:8200");
 
             tasks.forEachRemaining(task -> {
@@ -65,6 +72,8 @@ public class ExtractService implements Serializable {
                 }
 
                 result.add(Tuple2.apply(columnTuple, task));
+
+                kafkaProducer.send(new ProducerRecord<>(KafkaConstants.TOPIC_EXTRACTION_SUCCESS, task.getTaskId(), "SUCCESS"));
             });
         }
 

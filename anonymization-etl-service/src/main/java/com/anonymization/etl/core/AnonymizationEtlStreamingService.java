@@ -1,5 +1,6 @@
 package com.anonymization.etl.core;
 
+import com.anonymization.etl.config.tests.KafkaProducerFactory;
 import com.anonymization.etl.domain.ColumnTuple;
 import com.anonymization.etl.domain.SuccessEvent;
 import com.anonymization.etl.domain.tasks.AnonymizationTask;
@@ -10,11 +11,14 @@ import com.anonymization.etl.source.StreamingSource;
 import com.anonymization.etl.transform.script.Column2Script;
 import com.anonymization.etl.transform.script.Column2ScriptService;
 import com.anonymization.etl.transform.operations.TransformService;
+import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import io.vavr.control.Try;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.spark.api.java.function.MapFunction;
 import org.apache.spark.api.java.function.MapPartitionsFunction;
 import org.apache.spark.sql.*;
@@ -27,6 +31,7 @@ import scala.Tuple2;
 
 import javax.annotation.PostConstruct;
 import java.io.Serializable;
+import java.util.Iterator;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -47,6 +52,9 @@ public class AnonymizationEtlStreamingService implements EtlStreamingService, Se
     private final TransformService transformService;
     private final Column2ScriptService column2ScriptService;
     private final LoadService loadService;
+
+    KafkaProducer<String, Object> kafkaProducer = KafkaProducerFactory.createProducer();
+
 
     private final Lock lock = new ReentrantLock();
 
@@ -82,11 +90,20 @@ public class AnonymizationEtlStreamingService implements EtlStreamingService, Se
             // Step 1: Read the Kafka stream
             Dataset<AnonymizationTask> inputDF = streamingSource.fetchTasks();
 
+            // Repartition the input data into a specified number of partitions
+            Dataset<AnonymizationTask> repartitionedInputDF = inputDF.repartition(4);
+
             // Step 2: Extract
             Dataset<Tuple2<ColumnTuple, AnonymizationTask>> extractedTuple = inputDF.mapPartitions(
                     (MapPartitionsFunction<AnonymizationTask, Tuple2<ColumnTuple, AnonymizationTask>>) tasks -> extractService.extract(tasks),
                     Encoders.tuple(Encoders.bean(ColumnTuple.class), Encoders.bean(AnonymizationTask.class))
             );
+
+
+//            Dataset<Tuple2<ColumnTuple, AnonymizationTask>> extractedTuple = repartitionedInputDF.mapPartitions(
+//                    (MapPartitionsFunction<AnonymizationTask, Tuple2<ColumnTuple, AnonymizationTask>>) tasks -> extractService.extract(tasks),
+//                    Encoders.tuple(Encoders.bean(ColumnTuple.class), Encoders.bean(AnonymizationTask.class))
+//            );
 
             // Step 3: Transform - Anonymization
             Dataset<Tuple2<ColumnTuple, AnonymizationTask>> anonymizedTuple = extractedTuple.map(
