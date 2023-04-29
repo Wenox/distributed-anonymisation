@@ -19,8 +19,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.spark.SparkContext;
+import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.api.java.function.MapFunction;
 import org.apache.spark.api.java.function.MapPartitionsFunction;
+import org.apache.spark.broadcast.Broadcast;
 import org.apache.spark.sql.*;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.retry.support.RetryTemplate;
@@ -28,6 +31,8 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import scala.Tuple2;
+import scala.reflect.ClassTag;
+import scala.reflect.ClassTag$;
 
 import javax.annotation.PostConstruct;
 import java.io.Serializable;
@@ -45,6 +50,8 @@ public class AnonymizationEtlStreamingService implements EtlStreamingService, Se
     private final StreamingSource streamingSource;
     private final StreamingSink streamingSink;
 
+    private final SparkSession sparkSession;
+
     private transient final CircuitBreakerRegistry circuitBreakerRegistry;
     private transient final RetryTemplate retryTemplate;
 
@@ -52,9 +59,6 @@ public class AnonymizationEtlStreamingService implements EtlStreamingService, Se
     private final TransformService transformService;
     private final Column2ScriptService column2ScriptService;
     private final LoadService loadService;
-
-    KafkaProducer<String, Object> kafkaProducer = KafkaProducerFactory.createProducer();
-
 
     private final Lock lock = new ReentrantLock();
 
@@ -83,6 +87,16 @@ public class AnonymizationEtlStreamingService implements EtlStreamingService, Se
 
     @Async
     public void processEtlStreaming() {
+
+        SparkContext sparkContext = sparkSession.sparkContext();
+
+        ClassTag<KafkaSink> kafkaSinkClassTag = ClassTag$.MODULE$.apply(KafkaSink.class);
+
+
+        Broadcast<KafkaSink> broadcastKafkaSink = sparkContext.broadcast(KafkaSink.apply(), kafkaSinkClassTag);
+
+//        Broadcast<KafkaSink> broadcastKafkaSink = javaSparkContext.broadcast(KafkaSink.apply());
+
         CircuitBreaker circuitBreaker = getCircuitBreaker();
 
         Try<Void> result = Try.run(() -> {
@@ -94,16 +108,10 @@ public class AnonymizationEtlStreamingService implements EtlStreamingService, Se
             Dataset<AnonymizationTask> repartitionedInputDF = inputDF.repartition(4);
 
             // Step 2: Extract
-            Dataset<Tuple2<ColumnTuple, AnonymizationTask>> extractedTuple = inputDF.mapPartitions(
-                    (MapPartitionsFunction<AnonymizationTask, Tuple2<ColumnTuple, AnonymizationTask>>) tasks -> extractService.extract(tasks),
+            Dataset<Tuple2<ColumnTuple, AnonymizationTask>> extractedTuple = repartitionedInputDF.mapPartitions(
+                    (MapPartitionsFunction<AnonymizationTask, Tuple2<ColumnTuple, AnonymizationTask>>) tasks -> extractService.extract(tasks, broadcastKafkaSink),
                     Encoders.tuple(Encoders.bean(ColumnTuple.class), Encoders.bean(AnonymizationTask.class))
             );
-
-
-//            Dataset<Tuple2<ColumnTuple, AnonymizationTask>> extractedTuple = repartitionedInputDF.mapPartitions(
-//                    (MapPartitionsFunction<AnonymizationTask, Tuple2<ColumnTuple, AnonymizationTask>>) tasks -> extractService.extract(tasks),
-//                    Encoders.tuple(Encoders.bean(ColumnTuple.class), Encoders.bean(AnonymizationTask.class))
-//            );
 
             // Step 3: Transform - Anonymization
             Dataset<Tuple2<ColumnTuple, AnonymizationTask>> anonymizedTuple = extractedTuple.map(

@@ -2,6 +2,7 @@ package com.anonymization.etl.extract;
 
 import com.anonymization.etl.config.RedisConfig;
 import com.anonymization.etl.config.tests.KafkaProducerFactory;
+import com.anonymization.etl.core.KafkaSink;
 import com.anonymization.etl.core.RedisUtils;
 import com.anonymization.etl.domain.ColumnTuple;
 import com.anonymization.etl.domain.tasks.AnonymizationTask;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.spark.broadcast.Broadcast;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -33,11 +35,10 @@ public class ExtractService implements Serializable {
         this.redisUrl = redisUrl;
     }
 
-    public Iterator<Tuple2<ColumnTuple, AnonymizationTask>> extract(Iterator<AnonymizationTask> tasks) {
+    public Iterator<Tuple2<ColumnTuple, AnonymizationTask>> extract(Iterator<AnonymizationTask> tasks, Broadcast<KafkaSink> kafkaSinkBroadcast) {
         List<Tuple2<ColumnTuple, AnonymizationTask>> result = new ArrayList<>();
 
-        try (StatefulRedisConnection<String, ColumnTuple> redisCommands = RedisUtils.buildRedisCommands(redisUrl);
-             KafkaProducer<String, Object> kafkaProducer = KafkaProducerFactory.createProducer())
+        try (StatefulRedisConnection<String, ColumnTuple> redisCommands = RedisUtils.buildRedisCommands(redisUrl))
 
         {
             WebClient webClient = WebClient.create("http://localhost:8200");
@@ -67,13 +68,16 @@ public class ExtractService implements Serializable {
 
                     redisCommands.sync().set(redisKey, columnTuple);
                     log.info("Value stored in Redis with key: {}, value: {}", redisKey, columnTuple);
-                } else {
+                }
+                else {
                     log.info("@@@@@@@@@@@@@@@ !!!!!!! Found in Redis: {}", columnTuple);
                 }
 
-                result.add(Tuple2.apply(columnTuple, task));
+                log.info("SENDING TO KAFKA!!!@@@!!!!");
+                kafkaSinkBroadcast.getValue().send(KafkaConstants.TOPIC_EXTRACTION_SUCCESS, "SUCCESS");
 
-                kafkaProducer.send(new ProducerRecord<>(KafkaConstants.TOPIC_EXTRACTION_SUCCESS, task.getTaskId(), "SUCCESS"));
+
+                result.add(Tuple2.apply(columnTuple, task));
             });
         }
 
