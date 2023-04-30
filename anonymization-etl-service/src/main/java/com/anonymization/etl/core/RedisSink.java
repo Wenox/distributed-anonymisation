@@ -35,8 +35,8 @@ public class RedisSink implements Serializable {
         getRedisConnection().sync().set(key, value);
     }
 
-    public static RedisSink apply() {
-        return new RedisSink(new RedisConnectionSupplier());
+    public static RedisSink apply(BroadcastSettings config) {
+        return new RedisSink(new RedisConnectionSupplier(config));
     }
 
     public static ClassTag<RedisSink> getClassTag() {

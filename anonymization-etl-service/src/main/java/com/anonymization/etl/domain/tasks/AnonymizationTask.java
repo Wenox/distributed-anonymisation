@@ -2,6 +2,9 @@ package com.anonymization.etl.domain.tasks;
 
 import com.anonymization.etl.domain.OperationType;
 import lombok.Data;
+import lombok.ToString;
+
+import java.util.Map;
 
 @Data
 public class AnonymizationTask {
@@ -12,4 +15,5 @@ public class AnonymizationTask {
     private String tableName;
     private String columnName;
     private String columnType;
+    private Map<String, String> configuration;
 }

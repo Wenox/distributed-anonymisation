@@ -36,28 +36,35 @@ public class DefaultTransformService implements TransformService, Serializable {
 
         switch (type) {
             case SUPPRESSION:
-                return transformSuppressionTask(input._1, (SuppressionTask) input._2);
+                return transformSuppressionTask(input._1, input._2);
             case SHUFFLE:
-                return transformShuffleTask(input._1, (ShuffleTask) input._2);
+                return transformShuffleTask(input._1, input._2);
             default:
                 log.info("Unsupported type! Value: {}", task);
                 return input;
         }
     }
 
-    private Tuple2<ColumnTuple, AnonymizationTask> transformSuppressionTask(ColumnTuple columnTuple, SuppressionTask task) {
-        String token = task.getToken();
+    private Tuple2<ColumnTuple, AnonymizationTask> transformSuppressionTask(ColumnTuple columnTuple, AnonymizationTask task) {
+        String token = String.valueOf(task.getConfiguration().get("token"));
+        System.out.println("token object: " + token);
 
+        System.out.println("previous values: " + columnTuple.getValues());
         List<String> newValues = columnTuple.getValues()
                 .stream()
                 .map(value -> token)
                 .toList();
 
+        System.out.println("new values: " + newValues);
+
         return Tuple2.apply(columnTuple.copyWithValues(newValues), task);
     }
 
-    private Tuple2<ColumnTuple, AnonymizationTask> transformShuffleTask(ColumnTuple columnTuple, ShuffleTask task) {
-        if (!task.getRepetitions()) {
+    private Tuple2<ColumnTuple, AnonymizationTask> transformShuffleTask(ColumnTuple columnTuple, AnonymizationTask task) {
+        Boolean repetitions = Boolean.valueOf(task.getConfiguration().get("repetitions"));
+        System.out.println("repetitions object: " + repetitions);
+
+        if (!false) {
             Collections.shuffle(columnTuple.getValues());
             return Tuple2.apply(columnTuple, task);
         } else {

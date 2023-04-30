@@ -1,8 +1,7 @@
 package com.anonymization.etl.config.tests;
 
 import com.anonymization.etl.domain.OperationType;
-import com.anonymization.etl.domain.tasks.ShuffleTask;
-import com.anonymization.etl.domain.tasks.SuppressionTask;
+import com.anonymization.etl.domain.tasks.AnonymizationTask;
 import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.PostConstruct;
 import java.io.Serializable;
-import java.util.UUID;
+import java.time.LocalDateTime;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -44,15 +44,16 @@ public class AnonymizationTaskSimulator implements Serializable {
     }
 
     public void sendAnonymizationTasks(String blueprintId, int numberOfTasks, String topic) {
+        var now = LocalDateTime.now();
         for (int i = 0; i < numberOfTasks; i++) {
-            SuppressionTask suppressionTask = new SuppressionTask();
+            AnonymizationTask suppressionTask = new AnonymizationTask();
             suppressionTask.setTaskId("suppressionTask-" + i);
             suppressionTask.setType(OperationType.SUPPRESSION);
             suppressionTask.setTableName("employees");
             suppressionTask.setColumnName("salary");
             suppressionTask.setColumnType("0");
-            suppressionTask.setWorksheetId(UUID.randomUUID().toString());
-            suppressionTask.setToken("***");
+            suppressionTask.setWorksheetId("worksheetId-" + now);
+            suppressionTask.setConfiguration(Map.of("token", "***"));
             suppressionTask.setBlueprintId(blueprintId);
 
             log.info("Sending suppression task {} to topic {}!", suppressionTask, topic);
@@ -60,14 +61,14 @@ public class AnonymizationTaskSimulator implements Serializable {
         }
 
         for (int i = 0; i < numberOfTasks; i++) {
-            ShuffleTask shuffleTask = new ShuffleTask();
+            AnonymizationTask shuffleTask = new AnonymizationTask();
             shuffleTask.setTaskId("shuffleTask-" + i);
             shuffleTask.setType(OperationType.SHUFFLE);
             shuffleTask.setTableName("employees");
             shuffleTask.setColumnName("salary");
             shuffleTask.setColumnType("0");
-            shuffleTask.setWorksheetId(UUID.randomUUID().toString());
-            shuffleTask.setRepetitions(false);
+            shuffleTask.setWorksheetId("worksheetId-" + now);
+            shuffleTask.setConfiguration(Map.of("repetitions", "false"));
             shuffleTask.setBlueprintId(blueprintId);
 
             log.info("Sending shuffle task {} to topic {}!", shuffleTask, topic);

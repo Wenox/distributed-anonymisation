@@ -32,8 +32,8 @@ public class KafkaSink implements Serializable {
         getProducer().send(new ProducerRecord<>(topic, value));
     }
 
-    public static KafkaSink apply() {
-        return new KafkaSink(new KafkaProducerSupplier());
+    public static KafkaSink apply(BroadcastSettings config) {
+        return new KafkaSink(new KafkaProducerSupplier(config));
     }
 
     public static ClassTag<KafkaSink> getClassTag() {

@@ -1,3 +1,11 @@
+# Spark
+<your_checkpoint_location>
+spark-worker-1-work
+spark-worker-2-work
+
+# Redis
+redisinsight
+
 # IntelliJ
 .idea
 

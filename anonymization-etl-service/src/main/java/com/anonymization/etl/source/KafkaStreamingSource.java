@@ -1,10 +1,6 @@
 package com.anonymization.etl.source;
 
 import com.anonymization.etl.domain.tasks.AnonymizationTask;
-import com.anonymization.etl.domain.OperationType;
-import com.anonymization.etl.domain.tasks.ShuffleTask;
-import com.anonymization.etl.domain.tasks.SuppressionTask;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
 import lombok.RequiredArgsConstructor;
@@ -40,33 +36,8 @@ public class KafkaStreamingSource implements StreamingSource, Serializable {
 
     public AnonymizationTask deserializeAnonymizationTask(String value) {
         ObjectMapper objectMapper = new ObjectMapper();
-        JsonNode rootNode;
-
         try {
-            rootNode = objectMapper.readTree(value);
-        } catch (IOException e) {
-            log.error("Error reading JSON", e);
-            throw new RuntimeException("Error reading JSON", e);
-        }
-
-        OperationType type = OperationType.valueOf(rootNode.get("type").asText().toUpperCase());
-
-        switch (type) {
-            case SUPPRESSION:
-                log.info("Deserializing into suppression... {}", value);
-                return deserializeJson(value, SuppressionTask.class);
-            case SHUFFLE:
-                log.info("Deserializing into shuffle... {}", value);
-                return deserializeJson(value, ShuffleTask.class);
-            default:
-                throw new RuntimeException("Unknown task type: " + type);
-        }
-    }
-
-    public <T> T deserializeJson(String value, Class<T> targetClass) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            return objectMapper.readValue(value, targetClass);
+            return objectMapper.readValue(value, AnonymizationTask.class);
         } catch (IOException e) {
             log.error("Error deserializing JSON", e);
             throw new RuntimeException("Error deserializing JSON", e);

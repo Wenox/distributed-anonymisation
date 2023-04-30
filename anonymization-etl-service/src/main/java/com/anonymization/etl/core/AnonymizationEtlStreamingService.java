@@ -38,8 +38,7 @@ public class AnonymizationEtlStreamingService implements EtlStreamingService, Se
 
     private final StreamingSource streamingSource;
     private final StreamingSink streamingSink;
-
-    private final SparkSession sparkSession;
+    private final BroadcastSettings broadcastSettings;
 
     private transient final CircuitBreakerRegistry circuitBreakerRegistry;
     private transient final RetryTemplate retryTemplate;
@@ -77,7 +76,7 @@ public class AnonymizationEtlStreamingService implements EtlStreamingService, Se
     @Async
     public void processEtlStreaming() {
 
-        BroadcastFacade broadcastFacade = BroadcastFacade.create(sparkSession.sparkContext());
+        BroadcastFacade broadcastFacade = BroadcastFacade.create(broadcastSettings);
 
         CircuitBreaker circuitBreaker = getCircuitBreaker();
 
@@ -109,7 +108,7 @@ public class AnonymizationEtlStreamingService implements EtlStreamingService, Se
 
             // Step 5: Load
             Dataset<SuccessEvent> successEvents = scriptTuple.map(
-                    (MapFunction<Tuple2<Column2Script, AnonymizationTask>, SuccessEvent>) loadService::load,
+                    (MapFunction<Tuple2<Column2Script, AnonymizationTask>, SuccessEvent>) task -> loadService.load(task, broadcastFacade.getS3SinkBroadcast()),
                     Encoders.bean(SuccessEvent.class)
             );
 
