@@ -7,24 +7,28 @@ import scala.reflect.ClassTag;
 import scala.reflect.ClassTag$;
 
 import java.io.Serializable;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 @Slf4j
 public class RedisSink implements Serializable {
 
     private final Supplier<StatefulRedisConnection<String, ColumnTuple>> redisConnectionSupplier;
-    private transient StatefulRedisConnection<String, ColumnTuple> redisConnection;
+    private final AtomicReference<StatefulRedisConnection<String, ColumnTuple>> redisConnectionRef;
 
     public RedisSink(Supplier<StatefulRedisConnection<String, ColumnTuple>> redisConnectionSupplier) {
         this.redisConnectionSupplier = redisConnectionSupplier;
+        this.redisConnectionRef = new AtomicReference<>();
     }
 
     private StatefulRedisConnection<String, ColumnTuple> getRedisConnection() {
-        if (redisConnection == null) {
-            log.info("Preparing for Redis Connection instantiation...");
-            redisConnection = redisConnectionSupplier.get();
-        }
-        return redisConnection;
+        return redisConnectionRef.updateAndGet(currentRedisConnection -> {
+            if (currentRedisConnection == null) {
+                log.info("Preparing for Redis Connection instantiation...");
+                return redisConnectionSupplier.get();
+            }
+            return currentRedisConnection;
+        });
     }
 
     public ColumnTuple get(String key) {

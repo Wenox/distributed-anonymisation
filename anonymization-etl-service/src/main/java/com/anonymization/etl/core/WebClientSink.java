@@ -6,24 +6,28 @@ import scala.reflect.ClassTag;
 import scala.reflect.ClassTag$;
 
 import java.io.Serializable;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 @Slf4j
 public class WebClientSink implements Serializable {
 
     private final Supplier<WebClient> webClientSupplier;
-    private transient WebClient webClient;
+    private final AtomicReference<WebClient> webClientRef;
 
     public WebClientSink(Supplier<WebClient> webClientSupplier) {
         this.webClientSupplier = webClientSupplier;
+        this.webClientRef = new AtomicReference<>();
     }
 
     public WebClient getWebClient() {
-        if (webClient == null) {
-            log.info("Preparing for WebClient instantiation...");
-            webClient = webClientSupplier.get();
-        }
-        return webClient;
+        return webClientRef.updateAndGet(currentWebClient -> {
+            if (currentWebClient == null) {
+                log.info("Preparing for WebClient instantiation...");
+                return webClientSupplier.get();
+            }
+            return currentWebClient;
+        });
     }
 
     public static WebClientSink apply(BroadcastSettings config) {

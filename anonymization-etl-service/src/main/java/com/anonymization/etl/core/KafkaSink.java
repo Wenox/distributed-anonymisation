@@ -7,24 +7,28 @@ import scala.reflect.ClassTag;
 import scala.reflect.ClassTag$;
 
 import java.io.Serializable;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 @Slf4j
 public class KafkaSink implements Serializable {
 
     private final Supplier<KafkaProducer<String, Object>> producerSupplier;
-    private transient KafkaProducer<String, Object> producer;
+    private final AtomicReference<KafkaProducer<String, Object>> producerRef;
 
     public KafkaSink(Supplier<KafkaProducer<String, Object>> producerSupplier) {
         this.producerSupplier = producerSupplier;
+        this.producerRef = new AtomicReference<>();
     }
 
     private KafkaProducer<String, Object> getProducer() {
-        if (producer == null) {
-            log.info("Preparing for KafkaSink instantiation...");
-            producer = producerSupplier.get();
-        }
-        return producer;
+        return producerRef.updateAndGet(currentProducer -> {
+            if (currentProducer == null) {
+                log.info("Preparing for KafkaProducer instantiation...");
+                return producerSupplier.get();
+            }
+            return currentProducer;
+        });
     }
 
     public void send(String topic, Object value) {

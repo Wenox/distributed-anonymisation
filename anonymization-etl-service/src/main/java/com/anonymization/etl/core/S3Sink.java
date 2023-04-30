@@ -10,24 +10,28 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 import java.io.Serializable;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 @Slf4j
 public class S3Sink implements Serializable {
 
     private final Supplier<S3Client> s3ClientSupplier;
-    private transient S3Client s3Client;
+    private final AtomicReference<S3Client> s3ClientRef;
 
     public S3Sink(Supplier<S3Client> s3ClientSupplier) {
         this.s3ClientSupplier = s3ClientSupplier;
+        this.s3ClientRef = new AtomicReference<>();
     }
 
     private S3Client getS3Client() {
-        if (s3Client == null) {
-            log.info("Preparing for S3 instantiation...");
-            s3Client = s3ClientSupplier.get();
-        }
-        return s3Client;
+        return s3ClientRef.updateAndGet(currentS3Client -> {
+            if (currentS3Client == null) {
+                log.info("Preparing for S3 instantiation...");
+                return s3ClientSupplier.get();
+            }
+            return currentS3Client;
+        });
     }
 
     public void upload(String key, String bucket, byte[] data) {
