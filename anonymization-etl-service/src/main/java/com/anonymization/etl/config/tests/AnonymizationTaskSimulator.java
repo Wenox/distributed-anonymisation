@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.PostConstruct;
 import java.io.Serializable;
+import java.sql.Types;
 import java.time.LocalDateTime;
 import java.util.Map;
 
@@ -51,8 +52,8 @@ public class AnonymizationTaskSimulator implements Serializable {
             suppressionTask.setType(OperationType.SUPPRESSION);
             suppressionTask.setTableName("employees");
             suppressionTask.setColumnName("salary");
-            suppressionTask.setColumnType("0");
-            suppressionTask.setPrimaryKeyType("0");
+            suppressionTask.setColumnType(String.valueOf(Types.VARCHAR));
+            suppressionTask.setPrimaryKeyType(String.valueOf(Types.INTEGER));
             suppressionTask.setPrimaryKey("id");
             suppressionTask.setWorksheetId("worksheetId-" + now);
             suppressionTask.setConfiguration(Map.of("token", "***"));
@@ -68,8 +69,8 @@ public class AnonymizationTaskSimulator implements Serializable {
             shuffleTask.setType(OperationType.SHUFFLE);
             shuffleTask.setTableName("employees");
             shuffleTask.setColumnName("salary");
-            shuffleTask.setColumnType("0");
-            shuffleTask.setPrimaryKeyType("0");
+            shuffleTask.setColumnType(String.valueOf(Types.VARCHAR));
+            shuffleTask.setPrimaryKeyType(String.valueOf(Types.INTEGER));
             shuffleTask.setPrimaryKey("id");
             shuffleTask.setWorksheetId("worksheetId-" + now);
             shuffleTask.setConfiguration(Map.of("repetitions", "false"));
