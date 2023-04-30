@@ -1,28 +1,29 @@
 package com.anonymization.etl.sink;
 
 import com.anonymization.etl.domain.SuccessEvent;
+import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.spark.api.java.function.VoidFunction2;
 import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
 import org.apache.spark.sql.streaming.StreamingQueryException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-
-import java.io.Serializable;
 import java.util.concurrent.TimeoutException;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ForeachBatchStreamingSink implements StreamingSink, Serializable {
+public class KafkaStreamingSink implements StreamingSink {
 
-    private final BatchProcess batchProcess;
+    @Value("${spring.kafka.bootstrap-servers}")
+    private String kafkaHost;
 
     public void sink(Dataset<SuccessEvent> successEvents) throws TimeoutException, StreamingQueryException {
         successEvents.selectExpr("CAST(taskId AS STRING) AS key", "to_json(struct(*)) AS value")
                 .writeStream()
-                .foreachBatch((VoidFunction2<Dataset<Row>, Long>) batchProcess::process)
+                .format("kafka")
+                .option("kafka.bootstrap.servers", kafkaHost)
+                .option("topic", KafkaConstants.TOPIC_LOAD_SUCCESS)
                 .option("checkpointLocation", "<your_checkpoint_location>")
                 .start()
                 .awaitTermination();

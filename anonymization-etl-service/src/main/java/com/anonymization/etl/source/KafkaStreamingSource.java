@@ -13,12 +13,11 @@ import org.springframework.stereotype.Service;
 import scala.Tuple2;
 
 import java.io.IOException;
-import java.io.Serializable;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class KafkaStreamingSource implements StreamingSource, Serializable {
+public class KafkaStreamingSource implements StreamingSource {
 
     private final SparkSession sparkSession;
 

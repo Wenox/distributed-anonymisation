@@ -15,61 +15,56 @@ public class KafkaTopicConfig {
 
     @Bean
     public NewTopic topicBlueprintCreated() {
-        log.warn("Creating topic: {}", KafkaConstants.TOPIC_CREATE_BLUEPRINT);
-        return TopicBuilder.name(KafkaConstants.TOPIC_CREATE_BLUEPRINT).build();
+        return createNewTopic(KafkaConstants.TOPIC_CREATE_BLUEPRINT);
     }
 
     @Bean
     public NewTopic topicDatabaseRestoredSuccess() {
-        log.warn("Creating topic: {}", KafkaConstants.TOPIC_RESTORE_SUCCESS);
-        return TopicBuilder.name(KafkaConstants.TOPIC_RESTORE_SUCCESS).build();
+        return createNewTopic(KafkaConstants.TOPIC_RESTORE_SUCCESS);
     }
 
     @Bean
     public NewTopic topicDatabaseRestoredFailure() {
-        log.warn("Creating topic: {}", KafkaConstants.TOPIC_RESTORE_FAILURE);
-        return TopicBuilder.name(KafkaConstants.TOPIC_RESTORE_FAILURE).build();
+        return createNewTopic(KafkaConstants.TOPIC_RESTORE_FAILURE);
     }
 
     @Bean
     public NewTopic topicOperations() {
-        log.warn("Creating topic: {}", KafkaConstants.TOPIC_OPERATIONS);
-        return TopicBuilder.name(KafkaConstants.TOPIC_OPERATIONS).build();
+        return createNewTopic(KafkaConstants.TOPIC_OPERATIONS);
     }
 
     @Bean
-    public NewTopic topicOperationSuccess() {
-        log.warn("Creating topic: {}", KafkaConstants.TOPIC_OPERATION_SUCCESS);
-        return TopicBuilder.name(KafkaConstants.TOPIC_OPERATION_SUCCESS).build();
+    public NewTopic topicLoadSuccess() {
+        return createNewTopic(KafkaConstants.TOPIC_LOAD_SUCCESS);
     }
 
     @Bean
-    public NewTopic topicOperationFailure() {
-        log.warn("Creating topic: {}", KafkaConstants.TOPIC_OPERATION_FAILURE);
-        return TopicBuilder.name(KafkaConstants.TOPIC_OPERATION_FAILURE).build();
+    public NewTopic topicLoadFailure() {
+        return createNewTopic(KafkaConstants.TOPIC_LOAD_FAILURE);
     }
 
     @Bean
     public NewTopic topicExtractionSuccess() {
-        log.warn("Creating topic: {}", KafkaConstants.TOPIC_EXTRACTION_SUCCESS);
-        return TopicBuilder.name(KafkaConstants.TOPIC_EXTRACTION_SUCCESS).build();
+        return createNewTopic(KafkaConstants.TOPIC_EXTRACTION_SUCCESS);
     }
 
     @Bean
     public NewTopic topicExtractionFailure() {
-        log.warn("Creating topic: {}", KafkaConstants.TOPIC_EXTRACTION_FAILURE);
-        return TopicBuilder.name(KafkaConstants.TOPIC_EXTRACTION_FAILURE).build();
+        return createNewTopic(KafkaConstants.TOPIC_EXTRACTION_FAILURE);
     }
 
     @Bean
     public NewTopic topicTransformationSuccess() {
-        log.warn("Creating topic: {}", KafkaConstants.TOPIC_TRANSFORMATION_SUCCESS);
-        return TopicBuilder.name(KafkaConstants.TOPIC_TRANSFORMATION_SUCCESS).build();
+        return createNewTopic(KafkaConstants.TOPIC_TRANSFORMATION_SUCCESS);
     }
 
     @Bean
     public NewTopic topicTransformationFailure() {
-        log.warn("Creating topic: {}", KafkaConstants.TOPIC_TRANSFORMATION_FAILURE);
-        return TopicBuilder.name(KafkaConstants.TOPIC_TRANSFORMATION_FAILURE).build();
+        return createNewTopic(KafkaConstants.TOPIC_TRANSFORMATION_FAILURE);
+    }
+
+    private NewTopic createNewTopic(String topicName) {
+        log.warn("Creating topic: {}", topicName);
+        return TopicBuilder.name(topicName).build();
     }
 }
