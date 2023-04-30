@@ -4,15 +4,12 @@ import com.anonymization.etl.core.KafkaSink;
 import com.anonymization.etl.domain.ColumnTuple;
 import com.anonymization.etl.domain.tasks.AnonymizationTask;
 import com.anonymization.etl.domain.OperationType;
-import com.anonymization.etl.domain.tasks.ShuffleTask;
-import com.anonymization.etl.domain.tasks.SuppressionTask;
 import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.spark.broadcast.Broadcast;
 import org.springframework.stereotype.Service;
 import scala.Tuple2;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -20,7 +17,7 @@ import java.util.Random;
 
 @Service
 @Slf4j
-public class DefaultTransformService implements TransformService, Serializable {
+public class DefaultTransformService implements TransformService {
 
     private final Random rng = new Random(System.currentTimeMillis());
 
