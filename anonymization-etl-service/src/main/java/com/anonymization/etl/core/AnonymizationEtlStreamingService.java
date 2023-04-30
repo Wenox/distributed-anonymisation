@@ -98,18 +98,20 @@ public class AnonymizationEtlStreamingService implements EtlStreamingService, Se
      *         --> For example: { values: [ 25000-30000, 25000-30000, 40000-45000 ] }
      *
      * Step 4: Transform: anonymized List is transformed into the partial SQL script for this column.
+     *         Partial SQL script contains UPDATE and ALTER column type queries.
      *         --> For example:   ALTER TABLE employees ALTER COLUMN salary TYPE TEXT USING '';
      *                            UPDATE employees SET salary = '25000-30000' WHERE id = 1;
      *                            UPDATE employees SET salary = '25000-30000' WHERE id = 2;
      *                            UPDATE employees SET salary = '40000-45000' WHERE id = 3; }
-
-     *         Partial SQL script contains UPDATE and ALTER column type queries.
      *
      * Step 5: Load: the partial SQL script is loaded into S3.
      *
      * Step 6: Sink success into Kafka.
      *
      * Each step publishes Kafka message for external observability.
+     *
+     * ...Further processing is performed by other services (e.g., execution of SQL scripts against Restoration Database)
+     * ...For example by anonymization-saga-service.
      * */
     @Async
     public void processEtlStreaming() {
