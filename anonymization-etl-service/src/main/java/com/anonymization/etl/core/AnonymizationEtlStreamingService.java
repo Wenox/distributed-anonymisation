@@ -22,7 +22,6 @@ import org.springframework.retry.support.RetryTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 import scala.Tuple2;
 
 import javax.annotation.PostConstruct;
@@ -84,10 +83,7 @@ public class AnonymizationEtlStreamingService implements EtlStreamingService, Se
         Try<Void> result = Try.run(() -> {
 
             // Step 1: Read the Kafka stream
-            Dataset<AnonymizationTask> inputDF = streamingSource.fetchTasks();
-
-            // Repartition the input data into a specified number of partitions
-            Dataset<AnonymizationTask> repartitionedInputDF = inputDF.repartition(4);
+            Dataset<AnonymizationTask> repartitionedInputDF = streamingSource.fetchTasks().repartition(4);
 
             // Step 2: Extract
             Dataset<Tuple2<ColumnTuple, AnonymizationTask>> extractedTuple = repartitionedInputDF.map(
