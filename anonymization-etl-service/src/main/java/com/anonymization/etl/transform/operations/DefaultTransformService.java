@@ -3,7 +3,6 @@ package com.anonymization.etl.transform.operations;
 import com.anonymization.etl.core.KafkaSink;
 import com.anonymization.etl.domain.ColumnTuple;
 import com.anonymization.etl.domain.tasks.AnonymizationTask;
-import com.anonymization.etl.domain.OperationType;
 import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.spark.broadcast.Broadcast;
@@ -26,20 +25,23 @@ public class DefaultTransformService implements TransformService {
                                                             Broadcast<KafkaSink> kafkaSinkBroadcast) {
         log.info("Transforming task: {}", input._2);
 
-        kafkaSinkBroadcast.getValue().send(KafkaConstants.TOPIC_TRANSFORMATION_SUCCESS, input._2.getTaskId());
+        Tuple2<ColumnTuple, AnonymizationTask> result;
 
-        AnonymizationTask task = input._2;
-        OperationType type = task.getType();
-
-        switch (type) {
-            case SUPPRESSION:
-                return transformSuppressionTask(input._1, input._2);
-            case SHUFFLE:
-                return transformShuffleTask(input._1, input._2);
-            default:
-                log.info("Unsupported type! Value: {}", task);
-                return input;
+        switch (input._2.getType()) {
+            case SUPPRESSION -> result = transformSuppressionTask(input._1, input._2);
+            case SHUFFLE -> result = transformShuffleTask(input._1, input._2);
+            default -> {
+                log.info("Unsupported type! Value: {}", input._2);
+                result = input;
+            }
         }
+
+        publishTransformationSuccess(kafkaSinkBroadcast, input._2.getTaskId());
+        return result;
+    }
+
+    private void publishTransformationSuccess(Broadcast<KafkaSink> kafkaSinkBroadcast, String taskId) {
+        kafkaSinkBroadcast.getValue().send(KafkaConstants.TOPIC_TRANSFORMATION_SUCCESS, taskId);
     }
 
     private Tuple2<ColumnTuple, AnonymizationTask> transformSuppressionTask(ColumnTuple columnTuple, AnonymizationTask task) {
@@ -58,10 +60,10 @@ public class DefaultTransformService implements TransformService {
     }
 
     private Tuple2<ColumnTuple, AnonymizationTask> transformShuffleTask(ColumnTuple columnTuple, AnonymizationTask task) {
-        Boolean repetitions = Boolean.valueOf(task.getConfiguration().get("repetitions"));
+        boolean repetitions = Boolean.parseBoolean(task.getConfiguration().get("repetitions"));
         System.out.println("repetitions object: " + repetitions);
 
-        if (!false) {
+        if (!repetitions) {
             Collections.shuffle(columnTuple.getValues());
             return Tuple2.apply(columnTuple, task);
         } else {

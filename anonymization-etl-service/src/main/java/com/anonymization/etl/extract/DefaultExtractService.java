@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.util.UriBuilder;
 import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
@@ -58,15 +59,13 @@ public class DefaultExtractService implements ExtractService {
     }
 
     private ColumnTuple fetchColumnTupleFromApi(AnonymizationTask task, BroadcastFacade broadcastFacade) {
-        URI uri = buildColumnTupleUri(task);
-
         return broadcastFacade.webClient()
                 .getWebClient()
                 .get()
-                .uri(uri)
+                .uri(uriBuilder -> buildColumnTupleUri(uriBuilder, task))
                 .retrieve()
                 .onStatus(HttpStatus::isError, response -> {
-                    log.error("Failed to fetch column tuple from {}: {}", uri, response.statusCode());
+                    log.error("Failed to fetch column tuple from restoration servce: {}", response.statusCode());
                     return Mono.error(new RuntimeException("Error fetching column tuple from Restoration Service API"));
                 })
                 .bodyToMono(ColumnTuple.class)
@@ -74,12 +73,11 @@ public class DefaultExtractService implements ExtractService {
                 .block();
     }
 
-    private URI buildColumnTupleUri(AnonymizationTask task) {
-        return UriComponentsBuilder.fromPath(endpoint)
+    private URI buildColumnTupleUri(UriBuilder uriBuilder, AnonymizationTask task) {
+        return uriBuilder.path(endpoint)
                 .queryParam("blueprint_id", task.getBlueprintId())
                 .queryParam("table", task.getTableName())
                 .queryParam("column", task.getColumnName())
-                .build()
-                .toUri();
+                .build();
     }
 }
