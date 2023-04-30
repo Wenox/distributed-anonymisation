@@ -15,7 +15,7 @@ import java.io.Serializable;
 public class LoadService implements Serializable {
 
     public SuccessEvent load(Tuple2<Column2Script, AnonymizationTask> scriptTuple) {
-        log.info("Loading...");
+        log.info("Loadi the partial file content (inside Column2Script) into store......");
         return new SuccessEvent(scriptTuple._2.getTaskId(), 0);
     }
 }

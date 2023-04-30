@@ -13,4 +13,8 @@ import java.util.List;
 public class ColumnTuple implements Serializable {
     List<String> pks;
     List<String> values;
+
+    public ColumnTuple copyWithValues(List<String> newValues) {
+        return new ColumnTuple(this.pks, newValues);
+    }
 }
