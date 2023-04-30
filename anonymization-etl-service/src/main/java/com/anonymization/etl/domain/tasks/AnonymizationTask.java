@@ -7,6 +7,7 @@ import lombok.ToString;
 import java.util.Map;
 
 @Data
+@ToString
 public class AnonymizationTask {
     private OperationType type;
     private String taskId;
@@ -15,5 +16,7 @@ public class AnonymizationTask {
     private String tableName;
     private String columnName;
     private String columnType;
+    private String primaryKey;
+    private String primaryKeyType;
     private Map<String, String> configuration;
 }

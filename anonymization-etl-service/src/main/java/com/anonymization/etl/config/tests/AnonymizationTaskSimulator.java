@@ -52,6 +52,8 @@ public class AnonymizationTaskSimulator implements Serializable {
             suppressionTask.setTableName("employees");
             suppressionTask.setColumnName("salary");
             suppressionTask.setColumnType("0");
+            suppressionTask.setPrimaryKeyType("0");
+            suppressionTask.setPrimaryKey("id");
             suppressionTask.setWorksheetId("worksheetId-" + now);
             suppressionTask.setConfiguration(Map.of("token", "***"));
             suppressionTask.setBlueprintId(blueprintId);
@@ -67,6 +69,8 @@ public class AnonymizationTaskSimulator implements Serializable {
             shuffleTask.setTableName("employees");
             shuffleTask.setColumnName("salary");
             shuffleTask.setColumnType("0");
+            shuffleTask.setPrimaryKeyType("0");
+            shuffleTask.setPrimaryKey("id");
             shuffleTask.setWorksheetId("worksheetId-" + now);
             shuffleTask.setConfiguration(Map.of("repetitions", "false"));
             shuffleTask.setBlueprintId(blueprintId);
