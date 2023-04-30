@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.function.Supplier;
 
 @RequiredArgsConstructor
-public class AmazonS3ClientSupplier implements Supplier<S3Client>, Serializable {
+public class S3ClientSupplier implements Supplier<S3Client>, Serializable {
 
     private final BroadcastSettings config;
 

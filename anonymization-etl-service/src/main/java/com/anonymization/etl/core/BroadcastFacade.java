@@ -12,6 +12,7 @@ public class BroadcastFacade implements Serializable {
     private Broadcast<KafkaSink> kafkaSinkBroadcast;
     private Broadcast<RedisSink> redisSinkBroadcast;
     private Broadcast<S3Sink> s3SinkBroadcast;
+    private Broadcast<WebClientSink> webClientSinkBroadcast;
 
     private BroadcastFacade() {}
 
@@ -21,6 +22,7 @@ public class BroadcastFacade implements Serializable {
         facade.kafkaSinkBroadcast = sc.broadcast(KafkaSink.apply(config), KafkaSink.getClassTag());
         facade.redisSinkBroadcast = sc.broadcast(RedisSink.apply(config), RedisSink.getClassTag());
         facade.s3SinkBroadcast = sc.broadcast(S3Sink.apply(config), S3Sink.getClassTag());
+        facade.webClientSinkBroadcast = sc.broadcast(WebClientSink.apply(config), WebClientSink.getClassTag());
         return facade;
     }
 
@@ -36,6 +38,10 @@ public class BroadcastFacade implements Serializable {
         return s3SinkBroadcast;
     }
 
+    public Broadcast<WebClientSink> getWebClientSinkBroadcast() {
+        return webClientSinkBroadcast;
+    }
+
     public RedisSink redis() {
         return redisSinkBroadcast.getValue();
     }
@@ -46,5 +52,9 @@ public class BroadcastFacade implements Serializable {
 
     public S3Sink s3() {
         return s3SinkBroadcast.getValue();
+    }
+
+    public WebClientSink webClient() {
+        return webClientSinkBroadcast.getValue();
     }
 }

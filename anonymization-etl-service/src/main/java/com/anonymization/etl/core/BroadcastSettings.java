@@ -20,6 +20,7 @@ public class BroadcastSettings implements Serializable {
     private final String awsAccessKeyId;
     private final String awsSecretAccessKey;
     private final String awsRegion;
+    private final String restorationServiceUrl;
 
     // necessary workaround around Spark serializability and broadcast issues
     @Configuration
@@ -40,10 +41,11 @@ public class BroadcastSettings implements Serializable {
         @Value("${aws.region}")
         private String awsRegion;
 
+        @Value("${restoration-service.url}")
+        private String restorationServiceUrl;
+
         @Bean
         public BroadcastSettings broadcastConfig(SparkSession sparkSession) {
-            System.out.println("access key id: " + awsAccessKeyId);
-            System.out.println("secret access key: " + awsSecretAccessKey);
             return BroadcastSettings.builder()
                     .sparkSession(sparkSession)
                     .redisUrl(redisUrl)
@@ -51,6 +53,7 @@ public class BroadcastSettings implements Serializable {
                     .awsAccessKeyId(awsAccessKeyId)
                     .awsSecretAccessKey(awsSecretAccessKey)
                     .awsRegion(awsRegion)
+                    .restorationServiceUrl(restorationServiceUrl)
                     .build();
         }
     }

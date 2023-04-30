@@ -21,7 +21,7 @@ public class RedisSink implements Serializable {
 
     private StatefulRedisConnection<String, ColumnTuple> getRedisConnection() {
         if (redisConnection == null) {
-            log.info("Preparing for RedisConnectionSupplier instantiation...");
+            log.info("Preparing for Redis Connection instantiation...");
             redisConnection = redisConnectionSupplier.get();
         }
         return redisConnection;

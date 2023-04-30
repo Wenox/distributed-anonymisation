@@ -6,7 +6,6 @@ import com.anonymization.etl.domain.tasks.AnonymizationTask;
 import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.scheduler.Schedulers;
 import scala.Tuple2;
 
@@ -19,13 +18,13 @@ public class ExtractService implements Serializable {
     public Tuple2<ColumnTuple, AnonymizationTask> extract(AnonymizationTask task,
                                                           BroadcastFacade broadcastFacade) {
 
-        WebClient webClient = WebClient.create("http://localhost:8200");
-
         String redisKey = task.getTableName() + ":" + task.getColumnName() + ":" + task.getBlueprintId();
         ColumnTuple columnTuple = broadcastFacade.redis().get(redisKey);
 
         if (columnTuple == null) {
-            columnTuple = webClient.get()
+            columnTuple = broadcastFacade.webClient()
+                    .getWebClient()
+                    .get()
                     .uri(uriBuilder -> uriBuilder.path("/api/v1/restorations/column-tuple")
                             .queryParam("blueprint_id", task.getBlueprintId())
                             .queryParam("table", task.getTableName())

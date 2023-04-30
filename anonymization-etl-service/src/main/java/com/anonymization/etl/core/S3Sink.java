@@ -24,7 +24,7 @@ public class S3Sink implements Serializable {
 
     private S3Client getS3Client() {
         if (s3Client == null) {
-            log.info("Preparing for AmazonS3 instantiation...");
+            log.info("Preparing for S3 instantiation...");
             s3Client = s3ClientSupplier.get();
         }
         return s3Client;
@@ -44,7 +44,7 @@ public class S3Sink implements Serializable {
     }
 
     public static S3Sink apply(BroadcastSettings config) {
-        return new S3Sink(new AmazonS3ClientSupplier(config));
+        return new S3Sink(new S3ClientSupplier(config));
     }
 
     public static ClassTag<S3Sink> getClassTag() {
