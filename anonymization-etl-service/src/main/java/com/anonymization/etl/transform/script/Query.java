@@ -85,6 +85,7 @@ public class Query {
         return switch (type) {
             case "12" -> true;
             case "4" -> false;
+            case "2" -> false;
             default -> throw new IllegalStateException("Unsupported column type: " + type);
         };
     }

@@ -1,10 +1,14 @@
 package com.wenox.anonymization.worksheet_service.operation;
 
+import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
+import com.wenox.anonymization.shared_events_library.api.KafkaTemplateWrapper;
 import com.wenox.anonymization.worksheet_service.FailureResponse;
 import com.wenox.anonymization.worksheet_service.WorksheetRepository;
 import com.wenox.anonymization.worksheet_service.domain.*;
 import com.wenox.anonymization.worksheet_service.exception.WorksheetNotFoundException;
 import com.wenox.anonymization.worksheet_service.operation.base.AddOperationRequest;
+import com.wenox.anonymization.worksheet_service.task.AnonymizationTask;
+import com.wenox.anonymization.worksheet_service.task.AnonymizationTaskMapper;
 import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,6 +24,8 @@ public class DefaultOperationService implements OperationService {
     private final OperationRepository operationRepository;
     private final WorksheetRepository worksheetRepository;
     private final OperationMapper<AddOperationRequest> operationMapper;
+    private final AnonymizationTaskMapper anonymizationTaskMapper;
+    private final KafkaTemplateWrapper<String, Object> kafkaTemplateWrapper;
 
     public <T extends AddOperationRequest> Either<FailureResponse, AddOperationResponse> addOperation(String worksheetId, T request, OperationType operationType) {
         Worksheet worksheet = worksheetRepository.findById(worksheetId)
@@ -48,7 +54,7 @@ public class DefaultOperationService implements OperationService {
         // possible side effect extension point with per-operation-type capabilities...
         sideEffectNotImplemented(request, operationType);
 
-        return saveOperationAndReturnResponse(worksheet, request);
+        return saveOperationAndPublishTask(worksheet, request);
     }
 
     private <T extends AddOperationRequest> void sideEffectNotImplemented(T request, OperationType operationType) {
@@ -60,9 +66,13 @@ public class DefaultOperationService implements OperationService {
         }
     }
 
-    public <T extends AddOperationRequest> Either<FailureResponse, AddOperationResponse> saveOperationAndReturnResponse(Worksheet worksheet, T request) {
+    public <T extends AddOperationRequest> Either<FailureResponse, AddOperationResponse> saveOperationAndPublishTask(Worksheet worksheet, T request) {
         Operation operation = operationMapper.toOperation(worksheet, request);
         operationRepository.save(operation);
+
+        AnonymizationTask task = anonymizationTaskMapper.toAnonymizationTask(operation, worksheet);
+        kafkaTemplateWrapper.send(KafkaConstants.TOPIC_OPERATIONS, task);
+
         return Either.right(operationMapper.toResponse(operation, worksheet));
     }
 }

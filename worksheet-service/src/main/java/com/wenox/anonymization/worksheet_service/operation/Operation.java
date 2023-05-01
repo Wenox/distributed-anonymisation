@@ -31,6 +31,11 @@ public class Operation implements Serializable {
 
         @PrimaryKeyColumn(name = "operation_type", type = PARTITIONED)
         private OperationType operationType;
+
+        @Override
+        public String toString() {
+            return String.format("%s:%s:%s:%s", operationType, table, column, worksheetId);
+        }
     }
 
     @PrimaryKey
