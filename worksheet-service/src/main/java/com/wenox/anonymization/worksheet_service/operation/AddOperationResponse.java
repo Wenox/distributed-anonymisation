@@ -1,6 +1,5 @@
 package com.wenox.anonymization.worksheet_service.operation;
 
-import com.wenox.anonymization.worksheet_service.WorksheetResponse;
 import lombok.Builder;
 import lombok.Data;
 
@@ -13,15 +12,17 @@ public class AddOperationResponse {
 
     private TaskStatus status;
 
-    private String tableName;
+    private String table;
 
-    private String columnName;
-
-    private OperationType operationType;
+    private String column;
 
     private String columnType;
 
-    private Object settings;
+    private String primaryKey;
 
-    WorksheetResponse worksheet;
+    private String primaryKeyType;
+
+    private OperationType operationType;
+
+    private Object settings;
 }

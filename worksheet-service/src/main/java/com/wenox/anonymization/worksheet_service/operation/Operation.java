@@ -23,11 +23,11 @@ public class Operation implements Serializable {
         @PrimaryKeyColumn(name = "worksheet_id", type = PARTITIONED)
         private String worksheetId;
 
-        @PrimaryKeyColumn(name = "table_name", type = PARTITIONED)
-        private String tableName;
+        @PrimaryKeyColumn(name = "table", type = PARTITIONED)
+        private String table;
 
-        @PrimaryKeyColumn(name = "column_name", type = PARTITIONED)
-        private String columnName;
+        @PrimaryKeyColumn(name = "column", type = PARTITIONED)
+        private String column;
 
         @PrimaryKeyColumn(name = "operation_type", type = PARTITIONED)
         private OperationType operationType;
@@ -42,14 +42,11 @@ public class Operation implements Serializable {
     @Column("column_type")
     private String columnType;
 
-    @Column("is_primary_key")
-    private boolean isPrimaryKey;
+    @Column("primary_key")
+    private String primaryKey;
 
-    @Column("is_foreign_key")
-    private boolean isForeignKey;
-
-    @Column("is_nullable")
-    private boolean isNullable;
+    @Column("primary_key_type")
+    private String primaryKeyType;
 
     @Column("settings")
     private String settings;

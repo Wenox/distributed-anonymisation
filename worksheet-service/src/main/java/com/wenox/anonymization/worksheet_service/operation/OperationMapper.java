@@ -2,7 +2,7 @@ package com.wenox.anonymization.worksheet_service.operation;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.wenox.anonymization.worksheet_service.WorksheetMapper;
+import com.wenox.anonymization.worksheet_service.domain.Table;
 import com.wenox.anonymization.worksheet_service.domain.Worksheet;
 import com.wenox.anonymization.worksheet_service.operation.base.AddOperationRequest;
 import lombok.RequiredArgsConstructor;
@@ -15,20 +15,23 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class OperationMapper<T extends AddOperationRequest> {
 
-    private final WorksheetMapper worksheetMapper;
     private final ObjectMapper objectMapper;
 
     public Operation toOperation(Worksheet worksheet, T request) {
         try {
+            Table table = worksheet.getMetadata().tables().get(request.getTable());
             return Operation.builder()
                     .key(Operation.Key.builder()
                             .worksheetId(worksheet.getWorksheetId())
-                            .tableName(request.getTable())
-                            .columnName(request.getColumn())
+                            .table(request.getTable())
+                            .column(request.getColumn())
                             .operationType(request.getOperationType())
                             .build())
                     .status(TaskStatus.PENDING)
                     .settings(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(request.getSettings()))
+                    .primaryKey(table.getPrimaryKey().columnName())
+                    .primaryKeyType(table.getPrimaryKey().type())
+                    .columnType(table.getColumns().get(request.getColumn()).getType())
                     .build();
         } catch (JsonProcessingException ex) {
             log.error("Error converting settings object : {} for request : {} and worksheet : {}", request.getSettings(), request, worksheet, ex);
@@ -40,12 +43,13 @@ public class OperationMapper<T extends AddOperationRequest> {
         try {
             return AddOperationResponse.builder()
                     .status(TaskStatus.PENDING)
-                    .worksheet(worksheetMapper.toResponse(worksheet))
                     .worksheetId(operation.getKey().getWorksheetId())
-                    .tableName(operation.getKey().getTableName())
-                    .columnName(operation.getKey().getColumnName())
+                    .table(operation.getKey().getTable())
+                    .column(operation.getKey().getColumn())
                     .operationType(operation.getKey().getOperationType())
                     .columnType(operation.getColumnType())
+                    .primaryKey(operation.getPrimaryKey())
+                    .primaryKeyType(operation.getPrimaryKeyType())
                     .settings(objectMapper.readValue(operation.getSettings(), Object.class))
                     .build();
         } catch (JsonProcessingException ex) {
