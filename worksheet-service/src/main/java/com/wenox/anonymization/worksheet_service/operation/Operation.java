@@ -36,6 +36,9 @@ public class Operation implements Serializable {
     @PrimaryKey
     private Key key;
 
+    @Column("task_status")
+    private TaskStatus status;
+
     @Column("column_type")
     private String columnType;
 

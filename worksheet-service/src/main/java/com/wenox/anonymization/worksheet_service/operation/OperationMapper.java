@@ -27,6 +27,7 @@ public class OperationMapper<T extends AddOperationRequest> {
                             .columnName(request.getColumn())
                             .operationType(request.getOperationType())
                             .build())
+                    .status(TaskStatus.PENDING)
                     .settings(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(request.getSettings()))
                     .build();
         } catch (JsonProcessingException ex) {
@@ -38,6 +39,7 @@ public class OperationMapper<T extends AddOperationRequest> {
     public AddOperationResponse toResponse(Operation operation, Worksheet worksheet) {
         try {
             return AddOperationResponse.builder()
+                    .status(TaskStatus.PENDING)
                     .worksheet(worksheetMapper.toResponse(worksheet))
                     .worksheetId(operation.getKey().getWorksheetId())
                     .tableName(operation.getKey().getTableName())

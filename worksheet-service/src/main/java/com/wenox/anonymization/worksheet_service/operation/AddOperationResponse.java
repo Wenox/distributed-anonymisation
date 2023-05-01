@@ -11,6 +11,8 @@ public class AddOperationResponse {
 
     private String worksheetId;
 
+    private TaskStatus status;
+
     private String tableName;
 
     private String columnName;
