@@ -45,7 +45,7 @@ public class OperationResource {
 
     @GetMapping("/{id}/tasks/status")
     public ResponseEntity<?> getTasksStatuses(@PathVariable("id") String worksheetId) {
-        return ResponseEntity.ok(operationService.getTasksStatuses(worksheetId));
+        return ResponseEntity.ok(operationService.getTasksInWorksheetGroupedByStatus(worksheetId));
     }
 
     @PostMapping("/start-simulation")

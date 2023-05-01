@@ -3,7 +3,6 @@ package com.wenox.anonymization.worksheet_service.operation;
 import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
 import com.wenox.anonymization.shared_events_library.api.KafkaTemplateWrapper;
 import com.wenox.anonymization.worksheet_service.FailureResponse;
-import com.wenox.anonymization.worksheet_service.TaskStatusResponse;
 import com.wenox.anonymization.worksheet_service.WorksheetRepository;
 import com.wenox.anonymization.worksheet_service.domain.*;
 import com.wenox.anonymization.worksheet_service.exception.WorksheetNotFoundException;
@@ -13,13 +12,11 @@ import com.wenox.anonymization.worksheet_service.task.AnonymizationTaskMapper;
 import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.cassandra.core.CassandraBatchOperations;
-import org.springframework.data.cassandra.core.CassandraOperations;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -33,9 +30,15 @@ public class DefaultOperationService implements OperationService {
     private final KafkaTemplateWrapper<String, Object> kafkaTemplateWrapper;
 
     @Override
-    public List<TaskStatusResponse> getTasksStatuses(String worksheetId) {
-        List<Operation> tasks = operationRepository.findByWorksheetId(worksheetId);
-        return tasks.stream().map(TaskStatusResponse::from).toList();
+    public Map<TaskStatus, List<String>> getTasksInWorksheetGroupedByStatus(String worksheetId) {
+        List<Operation> operations = operationRepository.findByWorksheetId(worksheetId);
+
+        Map<TaskStatus, List<String>> tasksByStatus = Arrays.stream(TaskStatus.values())
+                .collect(Collectors.toMap(status -> status, status -> new ArrayList<>(), (a, b) -> a, () -> new EnumMap<>(TaskStatus.class)));
+
+        operations.forEach(operation -> tasksByStatus.get(operation.getStatus()).add(operation.getKey().getTaskId()));
+
+        return tasksByStatus;
     }
 
     @Async
