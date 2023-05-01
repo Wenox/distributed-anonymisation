@@ -24,7 +24,7 @@ public class TaskStatusUpdater {
 
     @KafkaListener(topics = KafkaConstants.TOPIC_EXTRACTION_SUCCESS, groupId = "blueprint-service-group")
     public void onExtracted(String taskId) {
-        Operation operation = operationRepository.findById(Operation.Key.from(taskId))
+        Operation operation = operationRepository.findById(taskId)
                 .orElseThrow(() -> new TaskNotFoundException("Task not found with taskId: " + taskId));
 
         TaskStatus existingStatus = operation.getStatus();
@@ -41,7 +41,7 @@ public class TaskStatusUpdater {
 
     @KafkaListener(topics = KafkaConstants.TOPIC_TRANSFORMATION_ANONYMIZE_SUCCESS, groupId = "blueprint-service-group")
     public void onTransformedAnonymization(String taskId) {
-        Operation operation = operationRepository.findById(Operation.Key.from(taskId))
+        Operation operation = operationRepository.findById(taskId)
                 .orElseThrow(() -> new TaskNotFoundException("Task not found with taskId: " + taskId));
 
         TaskStatus existingStatus = operation.getStatus();
@@ -58,7 +58,7 @@ public class TaskStatusUpdater {
 
     @KafkaListener(topics = KafkaConstants.TOPIC_TRANSFORMATION_SCRIPT_SUCCESS, groupId = "blueprint-service-group")
     public void onTransformedSqlScript(String taskId) {
-        Operation operation = operationRepository.findById(Operation.Key.from(taskId))
+        Operation operation = operationRepository.findById(taskId)
                 .orElseThrow(() -> new TaskNotFoundException("Task not found with taskId: " + taskId));
 
         TaskStatus existingStatus = operation.getStatus();
@@ -75,7 +75,7 @@ public class TaskStatusUpdater {
 
     @KafkaListener(topics = KafkaConstants.TOPIC_LOAD_SUCCESS, groupId = "blueprint-service-group")
     public void onLoaded(String taskId) {
-        Operation operation = operationRepository.findById(Operation.Key.from(taskId))
+        Operation operation = operationRepository.findById(taskId)
                 .orElseThrow(() -> new TaskNotFoundException("Task not found with taskId: " + taskId));
 
         TaskStatus existingStatus = operation.getStatus();

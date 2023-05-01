@@ -3,6 +3,7 @@ package com.wenox.anonymization.worksheet_service.operation;
 import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
 import com.wenox.anonymization.shared_events_library.api.KafkaTemplateWrapper;
 import com.wenox.anonymization.worksheet_service.FailureResponse;
+import com.wenox.anonymization.worksheet_service.TaskStatusResponse;
 import com.wenox.anonymization.worksheet_service.WorksheetRepository;
 import com.wenox.anonymization.worksheet_service.domain.*;
 import com.wenox.anonymization.worksheet_service.exception.WorksheetNotFoundException;
@@ -15,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -23,10 +25,17 @@ import java.util.Optional;
 public class DefaultOperationService implements OperationService {
 
     private final OperationRepository operationRepository;
+    private final OperationByWorksheetRepository operationByWorksheetRepository;
     private final WorksheetRepository worksheetRepository;
     private final OperationMapper<AddOperationRequest> operationMapper;
     private final AnonymizationTaskMapper anonymizationTaskMapper;
     private final KafkaTemplateWrapper<String, Object> kafkaTemplateWrapper;
+
+    @Override
+    public List<TaskStatusResponse> getTasksStatuses(String worksheetId) {
+        List<OperationByWorksheet> tasks = operationByWorksheetRepository.findByWorksheetId(worksheetId);
+        return tasks.stream().map(TaskStatusResponse::from).toList();
+    }
 
     @Async
     @Override
@@ -77,6 +86,9 @@ public class DefaultOperationService implements OperationService {
     public <T extends AddOperationRequest> Either<FailureResponse, AddOperationResponse> saveOperationAndPublishTask(Worksheet worksheet, T request) {
         Operation operation = operationMapper.toOperation(worksheet, request);
         operationRepository.save(operation);
+
+        OperationByWorksheet operationByWorksheet = operationMapper.toOperationByWorksheet(worksheet, request);
+        operationByWorksheetRepository.save(operationByWorksheet);
 
         AnonymizationTask task = anonymizationTaskMapper.toAnonymizationTask(operation, worksheet);
         kafkaTemplateWrapper.send(KafkaConstants.TOPIC_OPERATIONS, task);

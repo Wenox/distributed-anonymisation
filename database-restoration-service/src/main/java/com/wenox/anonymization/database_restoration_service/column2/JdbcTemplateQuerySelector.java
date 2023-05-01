@@ -22,18 +22,12 @@ public class JdbcTemplateQuerySelector implements QuerySelector {
         List<String> pks = new ArrayList<>();
         List<String> values = new ArrayList<>();
 
-        log.info("Attempting to query using jdcbtemplate");
-
         jdbcTemplate.query(String.format("SELECT %s, %s FROM %s", primaryKeyColumnName, columnName, tableName),
                 (RowMapper<Void>) (rs, rowNum) -> {
                     pks.add(rs.getString(primaryKeyColumnName));
                     values.add(rs.getString(columnName));
                     return null;
                 });
-
-        log.info("result: pks: {}, values: {}", pks, values);
-
-
 
         return new ColumnTuple(pks, values);
     }

@@ -23,7 +23,7 @@ public class KafkaStreamingSink implements StreamingSink {
                 .format("kafka")
                 .option("kafka.bootstrap.servers", kafkaHost)
                 .option("topic", KafkaConstants.TOPIC_LOAD_SUCCESS)
-                .option("checkpointLocation", "<your_checkpoint_location>")
+                .option("checkpointLocation", ".spark_checkpoint")
                 .start()
                 .awaitTermination();
     }

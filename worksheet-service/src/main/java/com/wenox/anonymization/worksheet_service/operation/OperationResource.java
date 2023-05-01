@@ -1,5 +1,6 @@
 package com.wenox.anonymization.worksheet_service.operation;
 
+import com.wenox.anonymization.worksheet_service.exception.TaskNotFoundException;
 import com.wenox.anonymization.worksheet_service.exception.WorksheetNotFoundException;
 import com.wenox.anonymization.worksheet_service.operation.generalisation.AddGeneralisationRequest;
 import com.wenox.anonymization.worksheet_service.operation.shuffle.AddShuffleRequest;
@@ -17,22 +18,6 @@ import org.springframework.web.bind.annotation.*;
 public class OperationResource {
 
     private final OperationService operationService;
-
-    @PostMapping("/start-simulation")
-    public ResponseEntity<String> send(@RequestParam("worksheet_id") String worksheetId, @RequestParam("number_of_tasks") Integer numberOfTasks) {
-        AddSuppressionRequest dto = new AddSuppressionRequest();
-        dto.setTable("employees");
-        dto.setColumn("salary");
-        SuppressionSettings settings = new SuppressionSettings();
-        settings.setToken("*****");
-        dto.setSettings(settings);
-
-        for (int i = 0; i < numberOfTasks; i++) {
-            operationService.asyncAddOperation(worksheetId, dto, OperationType.SUPPRESSION);
-        }
-
-        return ResponseEntity.ok("Started simulation");
-    }
 
     @PutMapping("/{id}/suppression")
     public ResponseEntity<?> addSuppression(@PathVariable("id") String worksheetId, @Valid @RequestBody AddSuppressionRequest dto) {
@@ -58,8 +43,34 @@ public class OperationResource {
         );
     }
 
+    @GetMapping("/{id}/tasks/status")
+    public ResponseEntity<?> getTasksStatuses(@PathVariable("id") String worksheetId) {
+        return ResponseEntity.ok(operationService.getTasksStatuses(worksheetId));
+    }
+
+    @PostMapping("/start-simulation")
+    public ResponseEntity<String> send(@RequestParam("worksheet_id") String worksheetId, @RequestParam("number_of_tasks") Integer numberOfTasks) {
+        AddSuppressionRequest dto = new AddSuppressionRequest();
+        dto.setTable("employees");
+        dto.setColumn("salary");
+        SuppressionSettings settings = new SuppressionSettings();
+        settings.setToken("*****");
+        dto.setSettings(settings);
+
+        for (int i = 0; i < numberOfTasks; i++) {
+            operationService.asyncAddOperation(worksheetId, dto, OperationType.SUPPRESSION);
+        }
+
+        return ResponseEntity.ok("Started simulation");
+    }
+
     @ExceptionHandler(WorksheetNotFoundException.class)
     public ResponseEntity<String> handleWorksheetNotFoundException(WorksheetNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(TaskNotFoundException.class)
+    public ResponseEntity<String> handleTaskNotFoundException(TaskNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ex.getMessage());
     }
 }

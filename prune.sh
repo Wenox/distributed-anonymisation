@@ -28,4 +28,6 @@ done
 
 docker volume prune -f
 
+rm -rf .spark_checkpoint
+
 echo "Done pruning"

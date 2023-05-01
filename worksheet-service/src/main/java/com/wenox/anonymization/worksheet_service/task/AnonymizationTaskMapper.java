@@ -27,12 +27,12 @@ public class AnonymizationTaskMapper {
 
         return AnonymizationTask
                 .builder()
-                .type(operation.getKey().getOperationType())
-                .taskId(operation.getKey().toString())
+                .type(operation.getOperationType())
+                .taskId(operation.getTaskId())
                 .worksheetId(worksheet.getWorksheetId())
                 .blueprintId(worksheet.getBlueprintId())
-                .tableName(operation.getKey().getTable())
-                .columnName(operation.getKey().getColumn())
+                .tableName(operation.getTable())
+                .columnName(operation.getColumn())
                 .columnType(operation.getColumnType())
                 .primaryKey(operation.getPrimaryKey())
                 .primaryKeyType(operation.getPrimaryKeyType())

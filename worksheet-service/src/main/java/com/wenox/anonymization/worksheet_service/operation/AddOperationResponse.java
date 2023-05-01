@@ -8,9 +8,11 @@ import lombok.Data;
 @Builder
 public class AddOperationResponse {
 
-    private String worksheetId;
+    private String taskId;
 
     private TaskStatus status;
+
+    private String worksheetId;
 
     private String table;
 

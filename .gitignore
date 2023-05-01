@@ -1,5 +1,5 @@
 # Spark
-<your_checkpoint_location>
+.spark_checkpoint
 spark-worker-1-work
 spark-worker-2-work
 
