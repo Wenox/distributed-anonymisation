@@ -13,6 +13,8 @@ import com.wenox.anonymization.worksheet_service.task.AnonymizationTaskMapper;
 import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.cassandra.core.CassandraBatchOperations;
+import org.springframework.data.cassandra.core.CassandraOperations;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +28,7 @@ public class DefaultOperationService implements OperationService {
 
     private final OperationRepository operationRepository;
     private final OperationByWorksheetRepository operationByWorksheetRepository;
+    private final CassandraOperations cassandraOperations;
     private final WorksheetRepository worksheetRepository;
     private final OperationMapper<AddOperationRequest> operationMapper;
     private final AnonymizationTaskMapper anonymizationTaskMapper;
@@ -85,10 +88,14 @@ public class DefaultOperationService implements OperationService {
 
     public <T extends AddOperationRequest> Either<FailureResponse, AddOperationResponse> saveOperationAndPublishTask(Worksheet worksheet, T request) {
         Operation operation = operationMapper.toOperation(worksheet, request);
-        operationRepository.save(operation);
-
         OperationByWorksheet operationByWorksheet = operationMapper.toOperationByWorksheet(worksheet, request);
-        operationByWorksheetRepository.save(operationByWorksheet);
+
+        CassandraBatchOperations batchOps = cassandraOperations.batchOps();
+        batchOps.insert(operation, operationByWorksheet);
+        batchOps.execute();
+
+//        operationRepository.save(operation);
+//        operationByWorksheetRepository.save(operationByWorksheet);
 
         AnonymizationTask task = anonymizationTaskMapper.toAnonymizationTask(operation, worksheet);
         kafkaTemplateWrapper.send(KafkaConstants.TOPIC_OPERATIONS, task);
