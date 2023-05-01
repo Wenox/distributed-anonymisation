@@ -12,11 +12,8 @@ import java.io.Serializable;
 @Builder
 public class Operation implements Serializable {
 
-    @PrimaryKey("task_id")
-    private String taskId;
-
-    @Column("worksheet_id")
-    private String worksheetId;
+    @PrimaryKey
+    OperationKey key;
 
     @Column("table_name")
     private String table;

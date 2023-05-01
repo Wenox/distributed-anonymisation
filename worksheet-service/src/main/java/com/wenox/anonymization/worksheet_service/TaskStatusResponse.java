@@ -1,6 +1,6 @@
 package com.wenox.anonymization.worksheet_service;
 
-import com.wenox.anonymization.worksheet_service.operation.OperationByWorksheet;
+import com.wenox.anonymization.worksheet_service.operation.Operation;
 import com.wenox.anonymization.worksheet_service.operation.TaskStatus;
 import lombok.*;
 
@@ -14,9 +14,9 @@ public class TaskStatusResponse {
     private String taskId;
     private TaskStatus status;
 
-    public static TaskStatusResponse from(OperationByWorksheet operation) {
+    public static TaskStatusResponse from(Operation operation) {
         return TaskStatusResponse.builder()
-                .taskId(operation.getTaskId())
+                .taskId(operation.getKey().getTaskId())
                 .status(operation.getStatus())
                 .build();
     }

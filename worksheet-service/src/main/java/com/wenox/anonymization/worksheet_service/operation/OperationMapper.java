@@ -20,31 +20,14 @@ public class OperationMapper<T extends AddOperationRequest> {
     public Operation toOperation(Worksheet worksheet, T request) {
         try {
             Table table = worksheet.getMetadata().tables().get(request.getTable());
-            return Operation.builder()
-                    .taskId(buildTaskId(request, worksheet.getWorksheetId()))
+            return Operation
+                    .builder()
+                    .key(OperationKey
+                            .builder()
+                            .taskId(buildTaskId(request, worksheet.getWorksheetId()))
+                            .worksheetId(worksheet.getWorksheetId())
+                            .build())
                     .status(TaskStatus.STARTED)
-                    .worksheetId(worksheet.getWorksheetId())
-                    .table(request.getTable())
-                    .column(request.getColumn())
-                    .operationType(request.getOperationType())
-                    .settings(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(request.getSettings()))
-                    .primaryKey(table.getPrimaryKey().columnName())
-                    .primaryKeyType(table.getPrimaryKey().type())
-                    .columnType(table.getColumns().get(request.getColumn()).getType())
-                    .build();
-        } catch (JsonProcessingException ex) {
-            log.error("Error converting settings object : {} for request : {} and worksheet : {}", request.getSettings(), request, worksheet, ex);
-            throw new RuntimeException("Error converting object to JSON for worksheetId: " + worksheet.getWorksheetId(), ex);
-        }
-    }
-
-    public OperationByWorksheet toOperationByWorksheet(Worksheet worksheet, T request) {
-        try {
-            Table table = worksheet.getMetadata().tables().get(request.getTable());
-            return OperationByWorksheet.builder()
-                    .taskId(buildTaskId(request, worksheet.getWorksheetId()))
-                    .status(TaskStatus.STARTED)
-                    .worksheetId(worksheet.getWorksheetId())
                     .table(request.getTable())
                     .column(request.getColumn())
                     .operationType(request.getOperationType())
@@ -61,7 +44,7 @@ public class OperationMapper<T extends AddOperationRequest> {
 
     /**
      * PK serialization. Example key: SUPPRESSION:employees:salary:worksheet-id
-     * */
+     */
     public String buildTaskId(T request, String worksheetId) {
         StringBuilder sb = new StringBuilder();
         sb.append(request.getOperationType())
@@ -78,8 +61,8 @@ public class OperationMapper<T extends AddOperationRequest> {
         try {
             return AddOperationResponse.builder()
                     .status(TaskStatus.STARTED)
-                    .taskId(operation.getTaskId())
-                    .worksheetId(operation.getWorksheetId())
+                    .taskId(operation.getKey().getTaskId())
+                    .worksheetId(operation.getKey().getWorksheetId())
                     .table(operation.getTable())
                     .column(operation.getColumn())
                     .operationType(operation.getOperationType())

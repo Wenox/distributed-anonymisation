@@ -27,8 +27,6 @@ import java.util.Optional;
 public class DefaultOperationService implements OperationService {
 
     private final OperationRepository operationRepository;
-    private final OperationByWorksheetRepository operationByWorksheetRepository;
-    private final CassandraOperations cassandraOperations;
     private final WorksheetRepository worksheetRepository;
     private final OperationMapper<AddOperationRequest> operationMapper;
     private final AnonymizationTaskMapper anonymizationTaskMapper;
@@ -36,7 +34,7 @@ public class DefaultOperationService implements OperationService {
 
     @Override
     public List<TaskStatusResponse> getTasksStatuses(String worksheetId) {
-        List<OperationByWorksheet> tasks = operationByWorksheetRepository.findByWorksheetId(worksheetId);
+        List<Operation> tasks = operationRepository.findByWorksheetId(worksheetId);
         return tasks.stream().map(TaskStatusResponse::from).toList();
     }
 
@@ -88,14 +86,8 @@ public class DefaultOperationService implements OperationService {
 
     public <T extends AddOperationRequest> Either<FailureResponse, AddOperationResponse> saveOperationAndPublishTask(Worksheet worksheet, T request) {
         Operation operation = operationMapper.toOperation(worksheet, request);
-        OperationByWorksheet operationByWorksheet = operationMapper.toOperationByWorksheet(worksheet, request);
 
-        CassandraBatchOperations batchOps = cassandraOperations.batchOps();
-        batchOps.insert(operation, operationByWorksheet);
-        batchOps.execute();
-
-//        operationRepository.save(operation);
-//        operationByWorksheetRepository.save(operationByWorksheet);
+        operationRepository.save(operation);
 
         AnonymizationTask task = anonymizationTaskMapper.toAnonymizationTask(operation, worksheet);
         kafkaTemplateWrapper.send(KafkaConstants.TOPIC_OPERATIONS, task);

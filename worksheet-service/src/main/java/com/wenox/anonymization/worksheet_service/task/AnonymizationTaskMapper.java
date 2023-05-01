@@ -28,7 +28,7 @@ public class AnonymizationTaskMapper {
         return AnonymizationTask
                 .builder()
                 .type(operation.getOperationType())
-                .taskId(operation.getTaskId())
+                .taskId(operation.getKey().getTaskId())
                 .worksheetId(worksheet.getWorksheetId())
                 .blueprintId(worksheet.getBlueprintId())
                 .tableName(operation.getTable())
