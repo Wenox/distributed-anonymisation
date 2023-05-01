@@ -144,13 +144,13 @@ public class AnonymizationEtlStreamingService implements EtlStreamingService, Se
             );
 
             // Step 5: Load partial files into S3
-            Dataset<SuccessEvent> successEvents = scriptTuple.map(
-                    (MapFunction<Tuple2<Column2Script, AnonymizationTask>, SuccessEvent>) task -> loadService.load(task, broadcastFacade.getS3SinkBroadcast()),
-                    Encoders.bean(SuccessEvent.class)
+            Dataset<String> finishedTasks = scriptTuple.map(
+                    (MapFunction<Tuple2<Column2Script, AnonymizationTask>, String>) task -> loadService.load(task, broadcastFacade.getS3SinkBroadcast()),
+                    Encoders.bean(String.class)
             );
 
             // Step 6: Kafka sink
-            streamingSink.sink(successEvents);
+            streamingSink.sink(finishedTasks);
 
         }).recover(throwable -> {
             log.error("Error occurred during ETL processing", throwable);

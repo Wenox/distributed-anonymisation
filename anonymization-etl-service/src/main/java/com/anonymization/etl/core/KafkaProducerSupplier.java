@@ -11,17 +11,17 @@ import java.util.Properties;
 import java.util.function.Supplier;
 
 @RequiredArgsConstructor
-public class KafkaProducerSupplier implements Supplier<KafkaProducer<String, Object>>, Serializable {
+public class KafkaProducerSupplier implements Supplier<KafkaProducer<String, String>>, Serializable {
 
     private final BroadcastSettings config;
 
     @Override
-    public KafkaProducer<String, Object> get() {
+    public KafkaProducer<String, String> get() {
         Properties props = new Properties();
         props.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, config.getKafkaHost());
         props.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
-        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class.getName());
-        KafkaProducer<String, Object> producer = new KafkaProducer<>(props);
+        props.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        KafkaProducer<String, String> producer = new KafkaProducer<>(props);
 
         Runtime.getRuntime().addShutdownHook(new Thread(producer::close));
 

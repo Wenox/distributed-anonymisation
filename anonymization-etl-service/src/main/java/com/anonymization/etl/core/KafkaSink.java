@@ -13,15 +13,15 @@ import java.util.function.Supplier;
 @Slf4j
 public class KafkaSink implements Serializable {
 
-    private final Supplier<KafkaProducer<String, Object>> producerSupplier;
-    private final AtomicReference<KafkaProducer<String, Object>> producerRef;
+    private final Supplier<KafkaProducer<String, String>> producerSupplier;
+    private final AtomicReference<KafkaProducer<String, String>> producerRef;
 
-    public KafkaSink(Supplier<KafkaProducer<String, Object>> producerSupplier) {
+    public KafkaSink(Supplier<KafkaProducer<String, String>> producerSupplier) {
         this.producerSupplier = producerSupplier;
         this.producerRef = new AtomicReference<>();
     }
 
-    private KafkaProducer<String, Object> getProducer() {
+    private KafkaProducer<String, String> getProducer() {
         return producerRef.updateAndGet(currentProducer -> {
             if (currentProducer == null) {
                 log.info("Preparing for KafkaProducer instantiation...");
@@ -31,7 +31,7 @@ public class KafkaSink implements Serializable {
         });
     }
 
-    public void send(String topic, Object value) {
+    public void send(String topic, String value) {
         log.info("Publishing to Kafka | Topic: {} | Value: {}", topic, value);
         getProducer().send(new ProducerRecord<>(topic, value));
     }

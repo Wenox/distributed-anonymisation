@@ -28,7 +28,7 @@ public class DefaultExtractService implements ExtractService {
     @Override
     public Tuple2<ColumnTuple, AnonymizationTask> extract(AnonymizationTask task, BroadcastFacade broadcastFacade) {
         ColumnTuple columnTuple = fetchColumnTuple(task, broadcastFacade);
-        sendExtractionSuccessNotification(broadcastFacade);
+        sendExtractionSuccessNotification(broadcastFacade, task.getTaskId());
         return Tuple2.apply(columnTuple, task);
     }
 
@@ -39,8 +39,8 @@ public class DefaultExtractService implements ExtractService {
                 .orElseGet(() -> fetchAndCacheColumnTupleFromApi(broadcastFacade, task, redisKey));
     }
 
-    private void sendExtractionSuccessNotification(BroadcastFacade broadcastFacade) {
-        broadcastFacade.getKafkaSinkBroadcast().getValue().send(KafkaConstants.TOPIC_EXTRACTION_SUCCESS, "SUCCESS");
+    private void sendExtractionSuccessNotification(BroadcastFacade broadcastFacade, String taskId) {
+        broadcastFacade.getKafkaSinkBroadcast().getValue().send(KafkaConstants.TOPIC_EXTRACTION_SUCCESS, taskId);
     }
 
     private String buildRedisKey(AnonymizationTask task) {

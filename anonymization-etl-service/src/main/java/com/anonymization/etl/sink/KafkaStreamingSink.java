@@ -1,6 +1,5 @@
 package com.anonymization.etl.sink;
 
-import com.anonymization.etl.domain.SuccessEvent;
 import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,8 +17,8 @@ public class KafkaStreamingSink implements StreamingSink {
     @Value("${spring.kafka.bootstrap-servers}")
     private String kafkaHost;
 
-    public void sink(Dataset<SuccessEvent> successEvents) throws TimeoutException, StreamingQueryException {
-        successEvents.selectExpr("CAST(taskId AS STRING) AS key", "to_json(struct(*)) AS value")
+    public void sink(Dataset<String> finishedTasks) throws TimeoutException, StreamingQueryException {
+        finishedTasks.selectExpr("CAST(value AS STRING) AS key", "CAST(value AS STRING) AS value")
                 .writeStream()
                 .format("kafka")
                 .option("kafka.bootstrap.servers", kafkaHost)
