@@ -54,13 +54,23 @@ public class KafkaTopicConfig {
     }
 
     @Bean
-    public NewTopic topicTransformationSuccess() {
-        return createNewTopic(KafkaConstants.TOPIC_TRANSFORMATION_SUCCESS);
+    public NewTopic topicTransformationAnonymizeSuccess() {
+        return createNewTopic(KafkaConstants.TOPIC_TRANSFORMATION_ANONYMIZE_SUCCESS);
     }
 
     @Bean
-    public NewTopic topicTransformationFailure() {
-        return createNewTopic(KafkaConstants.TOPIC_TRANSFORMATION_FAILURE);
+    public NewTopic topicTransformationAnonymizeFailure() {
+        return createNewTopic(KafkaConstants.TOPIC_TRANSFORMATION_ANONYMIZE_FAILURE);
+    }
+
+    @Bean
+    public NewTopic topicTransformationScriptSuccess() {
+        return createNewTopic(KafkaConstants.TOPIC_TRANSFORMATION_SCRIPT_SUCCESS);
+    }
+
+    @Bean
+    public NewTopic topicTransformationScriptFailure() {
+        return createNewTopic(KafkaConstants.TOPIC_TRANSFORMATION_SCRIPT_FAILURE);
     }
 
     private NewTopic createNewTopic(String topicName) {

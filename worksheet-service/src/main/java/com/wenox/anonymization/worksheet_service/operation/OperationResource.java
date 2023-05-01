@@ -4,6 +4,7 @@ import com.wenox.anonymization.worksheet_service.exception.WorksheetNotFoundExce
 import com.wenox.anonymization.worksheet_service.operation.generalisation.AddGeneralisationRequest;
 import com.wenox.anonymization.worksheet_service.operation.shuffle.AddShuffleRequest;
 import com.wenox.anonymization.worksheet_service.operation.suppression.AddSuppressionRequest;
+import com.wenox.anonymization.worksheet_service.operation.suppression.SuppressionSettings;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,22 @@ import org.springframework.web.bind.annotation.*;
 public class OperationResource {
 
     private final OperationService operationService;
+
+    @PostMapping("/start-simulation")
+    public ResponseEntity<String> send(@RequestParam("worksheet_id") String worksheetId, @RequestParam("number_of_tasks") Integer numberOfTasks) {
+        AddSuppressionRequest dto = new AddSuppressionRequest();
+        dto.setTable("employees");
+        dto.setColumn("salary");
+        SuppressionSettings settings = new SuppressionSettings();
+        settings.setToken("*****");
+        dto.setSettings(settings);
+
+        for (int i = 0; i < numberOfTasks; i++) {
+            operationService.asyncAddOperation(worksheetId, dto, OperationType.SUPPRESSION);
+        }
+
+        return ResponseEntity.ok("Started simulation");
+    }
 
     @PutMapping("/{id}/suppression")
     public ResponseEntity<?> addSuppression(@PathVariable("id") String worksheetId, @Valid @RequestBody AddSuppressionRequest dto) {

@@ -12,6 +12,7 @@ import com.wenox.anonymization.worksheet_service.task.AnonymizationTaskMapper;
 import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -27,6 +28,13 @@ public class DefaultOperationService implements OperationService {
     private final AnonymizationTaskMapper anonymizationTaskMapper;
     private final KafkaTemplateWrapper<String, Object> kafkaTemplateWrapper;
 
+    @Async
+    @Override
+    public <T extends AddOperationRequest> void asyncAddOperation(String worksheetId, T request, OperationType operationType) {
+        addOperation(worksheetId, request, operationType);
+    }
+
+    @Override
     public <T extends AddOperationRequest> Either<FailureResponse, AddOperationResponse> addOperation(String worksheetId, T request, OperationType operationType) {
         Worksheet worksheet = worksheetRepository.findById(worksheetId)
                 .orElseThrow(() -> new WorksheetNotFoundException("Worksheet not found with worksheetId: " + worksheetId));

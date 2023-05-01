@@ -27,7 +27,7 @@ public class OperationMapper<T extends AddOperationRequest> {
                             .column(request.getColumn())
                             .operationType(request.getOperationType())
                             .build())
-                    .status(TaskStatus.CREATED)
+                    .status(TaskStatus.STARTED)
                     .settings(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(request.getSettings()))
                     .primaryKey(table.getPrimaryKey().columnName())
                     .primaryKeyType(table.getPrimaryKey().type())
@@ -42,7 +42,7 @@ public class OperationMapper<T extends AddOperationRequest> {
     public AddOperationResponse toResponse(Operation operation, Worksheet worksheet) {
         try {
             return AddOperationResponse.builder()
-                    .status(TaskStatus.CREATED)
+                    .status(TaskStatus.STARTED)
                     .worksheetId(operation.getKey().getWorksheetId())
                     .table(operation.getKey().getTable())
                     .column(operation.getKey().getColumn())

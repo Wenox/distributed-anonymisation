@@ -41,7 +41,7 @@ public class DefaultTransformService implements TransformService {
     }
 
     private void publishTransformationSuccess(Broadcast<KafkaSink> kafkaSinkBroadcast, String taskId) {
-        kafkaSinkBroadcast.getValue().send(KafkaConstants.TOPIC_TRANSFORMATION_SUCCESS, taskId);
+        kafkaSinkBroadcast.getValue().send(KafkaConstants.TOPIC_TRANSFORMATION_ANONYMIZE_SUCCESS, taskId);
     }
 
     private Tuple2<ColumnTuple, AnonymizationTask> transformSuppressionTask(ColumnTuple columnTuple, AnonymizationTask task) {

@@ -6,5 +6,6 @@ import io.vavr.control.Either;
 
 public interface OperationService {
 
+    <T extends AddOperationRequest> void asyncAddOperation(String worksheetId, T request, OperationType operationType);
     <T extends AddOperationRequest> Either<FailureResponse, AddOperationResponse> addOperation(String worksheetId, T request, OperationType operationType);
 }

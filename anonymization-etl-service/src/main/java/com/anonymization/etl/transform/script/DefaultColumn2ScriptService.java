@@ -3,6 +3,7 @@ package com.anonymization.etl.transform.script;
 import com.anonymization.etl.core.KafkaSink;
 import com.anonymization.etl.domain.ColumnTuple;
 import com.anonymization.etl.domain.tasks.AnonymizationTask;
+import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.spark.broadcast.Broadcast;
 import org.springframework.stereotype.Service;
@@ -42,6 +43,12 @@ public class DefaultColumn2ScriptService implements Column2ScriptService {
         Column2Script column2Script = new Column2Script();
         column2Script.setUpdateQueries(updateQueries);
 
+        publishTransformationSuccess(kafkaSinkBroadcast, task.getTaskId());
+
         return Tuple2.apply(column2Script, tuple2._2);
+    }
+
+    private void publishTransformationSuccess(Broadcast<KafkaSink> kafkaSinkBroadcast, String taskId) {
+        kafkaSinkBroadcast.getValue().send(KafkaConstants.TOPIC_TRANSFORMATION_SCRIPT_SUCCESS, taskId);
     }
 }

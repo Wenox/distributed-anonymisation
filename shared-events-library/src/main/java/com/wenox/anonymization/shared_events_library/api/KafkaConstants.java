@@ -7,15 +7,19 @@ public final class KafkaConstants {
     }
 
     public static final String TOPIC_CREATE_BLUEPRINT = "create-blueprint";
-    public static final String TOPIC_OPERATIONS = "operations";
-    public static final String TOPIC_LOAD_SUCCESS = "load-success";
-    public static final String TOPIC_LOAD_FAILURE = "load-failure";
-    public static final String TOPIC_EXTRACTION_SUCCESS = "extraction-success";
-    public static final String TOPIC_EXTRACTION_FAILURE = "extraction-failure";
-    public static final String TOPIC_TRANSFORMATION_SUCCESS = "transformation-success";
-    public static final String TOPIC_TRANSFORMATION_FAILURE = "transformation-failure";
     public static final String TOPIC_RESTORE_SUCCESS = "restore-success";
     public static final String TOPIC_RESTORE_FAILURE = "restore-failure";
     public static final String TOPIC_METADATA_SUCCESS = "metadata-success";
     public static final String TOPIC_METADATA_FAILURE = "metadata-failure";
+
+    public static final String TOPIC_OPERATIONS = "operations";
+
+    public static final String TOPIC_EXTRACTION_SUCCESS = "extraction-success";
+    public static final String TOPIC_EXTRACTION_FAILURE = "extraction-failure";
+    public static final String TOPIC_TRANSFORMATION_ANONYMIZE_SUCCESS = "transformation-anonymize-success";
+    public static final String TOPIC_TRANSFORMATION_ANONYMIZE_FAILURE = "transformation-anonymize-failure";
+    public static final String TOPIC_TRANSFORMATION_SCRIPT_SUCCESS = "transformation-script-success";
+    public static final String TOPIC_TRANSFORMATION_SCRIPT_FAILURE = "transformation-script-failure";
+    public static final String TOPIC_LOAD_SUCCESS = "load-success";
+    public static final String TOPIC_LOAD_FAILURE = "load-failure";
 }

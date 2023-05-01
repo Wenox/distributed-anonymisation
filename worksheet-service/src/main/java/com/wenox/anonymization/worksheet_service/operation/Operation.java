@@ -52,7 +52,6 @@ public class Operation implements Serializable {
          * Efficient implementation for deserialization.
          * */
         public static Key from(String serialized) {
-            System.out.println("Serialized string: " + serialized);
             if (serialized == null || serialized.isEmpty()) {
                 throw new IllegalArgumentException("Serialized string cannot be null or empty: " + serialized);
             }
