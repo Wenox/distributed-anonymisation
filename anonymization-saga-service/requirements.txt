@@ -3,3 +3,4 @@ uvicorn
 prefect
 pydantic
 boto3
+pymongo

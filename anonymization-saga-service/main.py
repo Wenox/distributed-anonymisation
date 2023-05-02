@@ -1,7 +1,11 @@
 import asyncio
+import json
+
 from fastapi import FastAPI
 from prefect import flow, task
 from pydantic import BaseModel
+
+from saga import Saga, saga_collection
 from trigger_lambda import router as trigger_lambda_router
 from logger_config import setup_logger
 
@@ -13,9 +17,15 @@ app.include_router(trigger_lambda_router)
 logger = setup_logger(__name__)
 
 
+class TriggerRequest(BaseModel):
+    worksheet_id: str
+
+
 @task
-def step1():
-    print("Step 1")
+def create_saga(worksheet_id: str):
+    logger.info(f"Step 1: Creating new Saga for worksheet_id: {worksheet_id}...")
+    saga = Saga(worksheet_id)
+    saga_collection.insert_one(saga.to_dict())
 
 
 @task
@@ -40,20 +50,16 @@ def step5():
 
 
 @flow
-async def workflow():
-    step1()
+async def anonymization_saga_workflow(body: TriggerRequest):
+    create_saga(body.worksheet_id)
     step2()
     step3()
     step4()
     step5()
 
 
-class TriggerRequest(BaseModel):
-    message: str
-
-
-@app.post("/trigger-workflow")
-async def trigger_workflow(body: TriggerRequest):
-    print('Request body:', body)
-    await asyncio.create_task(workflow())
+@app.post("/api/anonymization-sagas")
+async def trigger_anonymization_saga_workflow(body: TriggerRequest):
+    logger.info(f"-----> Started anonymization saga workflow. Body:\n{json.dumps(body.dict(), indent=4)}")
+    await asyncio.create_task(anonymization_saga_workflow(body))
     return {"service": "anonymization-saga-service"}
