@@ -4,3 +4,6 @@ prefect
 pydantic
 boto3
 pymongo
+httpx
+tenacity
+aiobreaker
