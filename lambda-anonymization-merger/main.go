@@ -11,6 +11,7 @@ import (
 	"io"
 	"log"
 	"strings"
+	"sync"
 )
 
 type LambdaRequest struct {
@@ -33,32 +34,9 @@ func (e *MergeFilesError) Unwrap() error {
 	return e.Err
 }
 
-func processFile(s3Client *s3.S3, bucket, key string, mergedContent *strings.Builder) error {
-	obj, err := s3Client.GetObject(&s3.GetObjectInput{
-		Bucket: aws.String(bucket),
-		Key:    aws.String(key),
-	})
-
-	if err != nil {
-		return err
-	}
-
-	buf := new(strings.Builder)
-	_, err = io.Copy(buf, obj.Body)
-	if err != nil {
-		return err
-	}
-	
-	mergedContent.WriteString(buf.String())
-	mergedContent.WriteString("\n")
-
-	return nil
-}
-
-func mergeFiles(s3Client *s3.S3, request LambdaRequest) (string, int, error) {
-	var mergedContent strings.Builder
+func listFiles(s3Client *s3.S3, request LambdaRequest) ([]*string, error) {
+	files := make([]*string, 0)
 	var nextContinuationToken *string
-	fileCount := 0
 
 	for {
 		params := &s3.ListObjectsV2Input{
@@ -69,18 +47,12 @@ func mergeFiles(s3Client *s3.S3, request LambdaRequest) (string, int, error) {
 
 		result, err := s3Client.ListObjectsV2(params)
 		if err != nil {
-			return "", fileCount, &MergeFilesError{"Failed to list anonymization scripts", err}
+			return files, &MergeFilesError{"Failed to list anonymization scripts", err}
 		}
 
 		for _, content := range result.Contents {
 			if strings.HasSuffix(*content.Key, ".sql") {
-				err := processFile(s3Client, request.InputBucket, *content.Key, &mergedContent)
-				if err != nil {
-					return "", fileCount, &MergeFilesError{fmt.Sprintf("Failed to process anonymization script %s", *content.Key), err}
-				}
-
-				fileCount++
-				log.Printf("Appended anonymization script: %s\n", *content.Key)
+				files = append(files, content.Key)
 			}
 		}
 
@@ -89,6 +61,61 @@ func mergeFiles(s3Client *s3.S3, request LambdaRequest) (string, int, error) {
 		} else {
 			break
 		}
+	}
+
+	return files, nil
+}
+
+func processFile(s3Client *s3.S3, bucket, key string) (string, error) {
+	obj, err := s3Client.GetObject(&s3.GetObjectInput{
+		Bucket: aws.String(bucket),
+		Key:    aws.String(key),
+	})
+
+	if err != nil {
+		return "", err
+	}
+
+	buf := new(strings.Builder)
+	_, err = io.Copy(buf, obj.Body)
+	if err != nil {
+		return "", err
+	}
+
+	return buf.String(), nil
+}
+
+func mergeFiles(s3Client *s3.S3, request LambdaRequest) (string, int, error) {
+	files, err := listFiles(s3Client, request)
+	if err != nil {
+		return "", 0, err
+	}
+
+	fileCount := len(files)
+	fileContentChan := make(chan string, fileCount)
+	var wg sync.WaitGroup
+	wg.Add(fileCount)
+
+	for _, fileKey := range files {
+		go func(key string) {
+			defer wg.Done()
+			content, err := processFile(s3Client, request.InputBucket, key)
+			if err != nil {
+				log.Printf("Failed to process anonymization script %s: %v", key, err)
+				return
+			}
+			fileContentChan <- content
+			log.Printf("Appended anonymization script: %s\n", key)
+		}(*fileKey)
+	}
+
+	wg.Wait()
+	close(fileContentChan)
+
+	var mergedContent strings.Builder
+	for content := range fileContentChan {
+		mergedContent.WriteString(content)
+		mergedContent.WriteString("\n")
 	}
 
 	return mergedContent.String(), fileCount, nil
