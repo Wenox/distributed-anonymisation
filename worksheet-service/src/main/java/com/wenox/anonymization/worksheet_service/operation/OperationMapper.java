@@ -2,20 +2,38 @@ package com.wenox.anonymization.worksheet_service.operation;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.wenox.anonymization.worksheet_service.ToStringSerializer;
 import com.wenox.anonymization.worksheet_service.domain.Table;
 import com.wenox.anonymization.worksheet_service.domain.Worksheet;
 import com.wenox.anonymization.worksheet_service.operation.base.AddOperationRequest;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 
 @Component
-@RequiredArgsConstructor
 @Slf4j
 public class OperationMapper<T extends AddOperationRequest> {
 
     private final ObjectMapper objectMapper;
+    private final ObjectMapper stringObjectMapper;
+
+    public OperationMapper(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+        this.stringObjectMapper = createStringObjectMapper();
+    }
+
+    private ObjectMapper createStringObjectMapper() {
+        ObjectMapper customObjectMapper = new ObjectMapper();
+        SimpleModule module = new SimpleModule();
+        module.addSerializer(Boolean.class, new ToStringSerializer());
+        module.addSerializer(Integer.class, new ToStringSerializer());
+        module.addSerializer(Long.class, new ToStringSerializer());
+        module.addSerializer(Double.class, new ToStringSerializer());
+        module.addSerializer(Float.class, new ToStringSerializer());
+        customObjectMapper.registerModule(module);
+        return customObjectMapper;
+    }
 
     public Operation toOperation(Worksheet worksheet, T request) {
         try {
@@ -31,7 +49,7 @@ public class OperationMapper<T extends AddOperationRequest> {
                     .table(request.getTable())
                     .column(request.getColumn())
                     .operationType(request.getOperationType())
-                    .settings(objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(request.getSettings()))
+                    .settings(stringObjectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(request.getSettings()))
                     .primaryKey(table.getPrimaryKey().columnName())
                     .primaryKeyType(table.getPrimaryKey().type())
                     .columnType(table.getColumns().get(request.getColumn()).getType())
