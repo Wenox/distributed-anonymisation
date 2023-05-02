@@ -2,6 +2,8 @@ from enum import Enum
 from uuid import uuid4
 import pymongo
 
+from config import MONGODB_CONNECTION_URI
+
 
 # Define the status Enum
 class SagaStatus(Enum):
@@ -12,9 +14,7 @@ class SagaStatus(Enum):
 
 
 # Connect to the MongoDB instance
-client = pymongo.MongoClient(
-    "mongodb://root:example@localhost:27023/anonymization_saga_db?authSource=admin"
-)
+client = pymongo.MongoClient(MONGODB_CONNECTION_URI)
 
 
 # Get the database and collection

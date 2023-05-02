@@ -1,0 +1,9 @@
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+RESTORATION_SERVICE_URL = os.getenv('RESTORATION_SERVICE_URL')
+CREATE_MIRROR_ENDPOINT = os.getenv('CREATE_MIRROR_ENDPOINT')
+
+MONGODB_CONNECTION_URI = os.getenv('MONGODB_CONNECTION_URI')
