@@ -93,15 +93,23 @@ func mergeFiles(s3Client *s3.S3, request LambdaRequest) (string, int, error) {
 
 	fileCount := len(files)
 	fileContentChan := make(chan string, fileCount)
+	errorChan := make(chan error, fileCount)
 	var wg sync.WaitGroup
 	wg.Add(fileCount)
 
+	concurrencyLimit := 10
+	semaphore := make(chan struct{}, concurrencyLimit)
+
 	for _, fileKey := range files {
 		go func(key string) {
+			semaphore <- struct{}{}
 			defer wg.Done()
+			defer func() { <-semaphore }()
+
 			content, err := processFile(s3Client, request.InputBucket, key)
 			if err != nil {
 				log.Printf("Failed to process anonymization script %s: %v", key, err)
+				errorChan <- err
 				return
 			}
 			fileContentChan <- content
@@ -111,6 +119,11 @@ func mergeFiles(s3Client *s3.S3, request LambdaRequest) (string, int, error) {
 
 	wg.Wait()
 	close(fileContentChan)
+	close(errorChan)
+
+	if len(errorChan) > 0 {
+		return "", 0, errors.New("One or more errors occurred while processing files")
+	}
 
 	var mergedContent strings.Builder
 	for content := range fileContentChan {
