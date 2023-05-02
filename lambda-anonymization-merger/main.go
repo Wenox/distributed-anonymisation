@@ -4,13 +4,12 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
-	"strings"
-
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"io"
+	"strings"
 )
 
 type LambdaRequest struct {
@@ -33,9 +32,10 @@ func (e *MergeFilesError) Unwrap() error {
 	return e.Err
 }
 
-func mergeFiles(s3Client *s3.S3, request LambdaRequest) (string, error) {
+func mergeFiles(s3Client *s3.S3, request LambdaRequest) (string, int, error) {
 	var mergedContent strings.Builder
 	var nextContinuationToken *string
+	fileCount := 0
 
 	for {
 		params := &s3.ListObjectsV2Input{
@@ -45,7 +45,7 @@ func mergeFiles(s3Client *s3.S3, request LambdaRequest) (string, error) {
 		}
 		result, err := s3Client.ListObjectsV2(params)
 		if err != nil {
-			return "", &MergeFilesError{"Failed to list anonymization scripts", err}
+			return "", fileCount, &MergeFilesError{"Failed to list anonymization scripts", err}
 		}
 
 		for _, content := range result.Contents {
@@ -55,16 +55,19 @@ func mergeFiles(s3Client *s3.S3, request LambdaRequest) (string, error) {
 					Key:    content.Key,
 				})
 				if err != nil {
-					return "", &MergeFilesError{fmt.Sprintf("Failed to get anonymization script %s", *content.Key), err}
+					return "", fileCount, &MergeFilesError{fmt.Sprintf("Failed to get anonymization script %s", *content.Key), err}
 				}
 
 				buf := new(strings.Builder)
 				_, err = io.Copy(buf, obj.Body)
 				if err != nil {
-					return "", &MergeFilesError{fmt.Sprintf("Failed to read anonymization script %s", *content.Key), err}
+					return "", fileCount, &MergeFilesError{fmt.Sprintf("Failed to read anonymization script %s", *content.Key), err}
 				}
 				mergedContent.WriteString(buf.String())
 				mergedContent.WriteString("\n")
+
+				fileCount++
+				fmt.Printf("Appended anonymization script: %s\n", *content.Key)
 			}
 		}
 
@@ -75,14 +78,13 @@ func mergeFiles(s3Client *s3.S3, request LambdaRequest) (string, error) {
 		}
 	}
 
-	return mergedContent.String(), nil
+	return mergedContent.String(), fileCount, nil
 }
 
 func handler(ctx context.Context, request LambdaRequest) (string, error) {
 	sess := session.Must(session.NewSession())
 	s3Client := s3.New(sess)
-
-	mergedContent, err := mergeFiles(s3Client, request)
+	mergedContent, fileCount, err := mergeFiles(s3Client, request)
 	if err != nil {
 		fmt.Println(err)
 		return "", errors.New("Failed to merge anonymization scripts")
@@ -99,7 +101,8 @@ func handler(ctx context.Context, request LambdaRequest) (string, error) {
 		return "", errors.New("Failed to write merged anonymization script")
 	}
 
-	return fmt.Sprintf("Merged anonymization files written to %s inside bucket %s", outputKey, request.OutputBucket), nil
+	return fmt.Sprintf("Merged %d anonymization files, and written the output to bucket %s, location: %s", fileCount, request.OutputBucket, outputKey),
+		nil
 }
 
 func main() {
