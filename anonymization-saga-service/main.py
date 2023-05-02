@@ -3,8 +3,11 @@ import asyncio
 from fastapi import FastAPI
 from prefect import flow, task
 from pydantic import BaseModel
+from trigger_lambda import router as trigger_lambda_router
+
 
 app = FastAPI()
+app.include_router(trigger_lambda_router)
 
 
 @task
