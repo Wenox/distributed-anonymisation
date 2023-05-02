@@ -1,13 +1,14 @@
 import json
-import logging
 from pydantic import BaseModel
 from fastapi import APIRouter
 import boto3
+from logger_config import setup_logger
+
+
+logger = setup_logger(__name__)
+
 
 router = APIRouter()
-
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 
 class LambdaTriggerRequest(BaseModel):
@@ -15,8 +16,8 @@ class LambdaTriggerRequest(BaseModel):
     output_script: str
 
 
-INPUT_BUCKET = "blueprints-for-anonymisation"
-OUTPUT_BUCKET = "blueprints-for-anonymisation"
+INPUT_BUCKET = "anonymisation-fragments"
+OUTPUT_BUCKET = "anonymisation-scripts"
 LAMBDA_NAME = "anonymizationMerger"
 
 
@@ -34,17 +35,21 @@ async def trigger_lambda(request: LambdaTriggerRequest):
             "outputScript": request.output_script,
         }
 
+        logger.info(f"-----> Lambda Request:\n{json.dumps(payload, indent=4)}")
         # Invoke the Lambda function
-        response = lambda_client.invoke(
+        lambda_response = lambda_client.invoke(
             FunctionName=LAMBDA_NAME,
             InvocationType='RequestResponse',
             Payload=json.dumps(payload),
         )
 
-        # Log the response
-        logger.info(f"Lambda response: {response}")
+        # Read and parse the response payload
+        response_payload = json.loads(lambda_response['Payload'].read().decode('utf-8'))
 
-        return {"status": "success", "response": response}
+        # Log the response
+        response = {"status": "success", "response": response_payload}
+        logger.info(f"<----- Lambda Response:\n{json.dumps(response, indent=4)}")
+        return response
 
     except Exception as e:
         logger.error(f"Error triggering Lambda: {e}")

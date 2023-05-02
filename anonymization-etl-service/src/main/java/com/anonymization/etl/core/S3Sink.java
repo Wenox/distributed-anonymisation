@@ -38,7 +38,7 @@ public class S3Sink implements Serializable {
         log.info("Uploading to S3 | Bucket: {} | Key: {}", bucket, key);
 
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
-                .bucket(S3Constants.BUCKET_BLUEPRINTS)
+                .bucket(bucket)
                 .key(key)
                 .build();
 

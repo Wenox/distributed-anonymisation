@@ -20,7 +20,7 @@ public class DefaultLoadService implements LoadService {
         String key = String.format("%s/%s/%s/%s.sql", scriptTuple._2.getWorksheetId(), scriptTuple._2.getTableName(), scriptTuple._2.getColumnName(), scriptTuple._2.getType().name());
 
         byte[] byteArray = scriptTuple._1.toByteArray();
-        s3SinkBroadcast.getValue().upload(key, S3Constants.BUCKET_BLUEPRINTS, byteArray);
+        s3SinkBroadcast.getValue().upload(key, S3Constants.BUCKET_FRAGMENTS, byteArray);
 
         return scriptTuple._2.getTaskId();
     }
