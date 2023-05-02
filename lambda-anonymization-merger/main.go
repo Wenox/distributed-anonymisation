@@ -9,6 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"io"
+	"log"
 	"strings"
 )
 
@@ -32,6 +33,28 @@ func (e *MergeFilesError) Unwrap() error {
 	return e.Err
 }
 
+func processFile(s3Client *s3.S3, bucket, key string, mergedContent *strings.Builder) error {
+	obj, err := s3Client.GetObject(&s3.GetObjectInput{
+		Bucket: aws.String(bucket),
+		Key:    aws.String(key),
+	})
+
+	if err != nil {
+		return err
+	}
+
+	buf := new(strings.Builder)
+	_, err = io.Copy(buf, obj.Body)
+	if err != nil {
+		return err
+	}
+	
+	mergedContent.WriteString(buf.String())
+	mergedContent.WriteString("\n")
+
+	return nil
+}
+
 func mergeFiles(s3Client *s3.S3, request LambdaRequest) (string, int, error) {
 	var mergedContent strings.Builder
 	var nextContinuationToken *string
@@ -43,6 +66,7 @@ func mergeFiles(s3Client *s3.S3, request LambdaRequest) (string, int, error) {
 			Prefix:            aws.String(request.InputDirectory),
 			ContinuationToken: nextContinuationToken,
 		}
+
 		result, err := s3Client.ListObjectsV2(params)
 		if err != nil {
 			return "", fileCount, &MergeFilesError{"Failed to list anonymization scripts", err}
@@ -50,24 +74,13 @@ func mergeFiles(s3Client *s3.S3, request LambdaRequest) (string, int, error) {
 
 		for _, content := range result.Contents {
 			if strings.HasSuffix(*content.Key, ".sql") {
-				obj, err := s3Client.GetObject(&s3.GetObjectInput{
-					Bucket: aws.String(request.InputBucket),
-					Key:    content.Key,
-				})
+				err := processFile(s3Client, request.InputBucket, *content.Key, &mergedContent)
 				if err != nil {
-					return "", fileCount, &MergeFilesError{fmt.Sprintf("Failed to get anonymization script %s", *content.Key), err}
+					return "", fileCount, &MergeFilesError{fmt.Sprintf("Failed to process anonymization script %s", *content.Key), err}
 				}
-
-				buf := new(strings.Builder)
-				_, err = io.Copy(buf, obj.Body)
-				if err != nil {
-					return "", fileCount, &MergeFilesError{fmt.Sprintf("Failed to read anonymization script %s", *content.Key), err}
-				}
-				mergedContent.WriteString(buf.String())
-				mergedContent.WriteString("\n")
 
 				fileCount++
-				fmt.Printf("Appended anonymization script: %s\n", *content.Key)
+				log.Printf("Appended anonymization script: %s\n", *content.Key)
 			}
 		}
 
@@ -85,8 +98,9 @@ func handler(ctx context.Context, request LambdaRequest) (string, error) {
 	sess := session.Must(session.NewSession())
 	s3Client := s3.New(sess)
 	mergedContent, fileCount, err := mergeFiles(s3Client, request)
+
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		return "", errors.New("Failed to merge anonymization scripts")
 	}
 
@@ -96,8 +110,9 @@ func handler(ctx context.Context, request LambdaRequest) (string, error) {
 		Key:    aws.String(outputKey),
 		Body:   strings.NewReader(mergedContent),
 	})
+
 	if err != nil {
-		fmt.Printf("Failed to write merged anonymization script to %s: %v\n", outputKey, err)
+		log.Printf("Failed to write merged anonymization script to %s: %v\n", outputKey, err)
 		return "", errors.New("Failed to write merged anonymization script")
 	}
 
