@@ -60,6 +60,6 @@ async def anonymization_saga_workflow(body: TriggerRequest):
 
 @app.post("/api/anonymization-sagas")
 async def trigger_anonymization_saga_workflow(body: TriggerRequest):
-    logger.info(f"-----> Started anonymization saga workflow. Body:\n{json.dumps(body.dict(), indent=4)}")
+    logger.info(f"-----> /api/anonymization-sagas: Started anonymization saga workflow. Body:\n{json.dumps(body.dict(), indent=4)}")
     await asyncio.create_task(anonymization_saga_workflow(body))
     return {"service": "anonymization-saga-service"}
