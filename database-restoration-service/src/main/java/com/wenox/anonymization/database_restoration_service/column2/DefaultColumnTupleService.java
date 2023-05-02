@@ -18,16 +18,16 @@ public class DefaultColumnTupleService implements ColumnTupleService {
     private final DataSourceFactory dataSourceFactory;
 
     @Override
-    public ColumnTuple queryColumnTuple(String blueprintId, String table, String column) {
+    public ColumnTuple queryColumnTuple(String blueprintId, String table, String column, String pk) {
         Restoration restoration = restorationService.getRestorationByBlueprintId(blueprintId);
         if (!restoration.isActive()) {
-            throw new InactiveRestorationException("Unable to get column data: Restoration is inactive! Restoraion: " + restoration);
+            throw new InactiveRestorationException("Unable to get column data: Restoration is inactive! Restoration: " + restoration);
         }
 
         DatabaseConnection connection = DatabaseConnection.forPostgres(restoration.getDatabaseName());
         QuerySelector querySelector = new JdbcTemplateQuerySelector(dataSourceFactory.getDataSource(connection));
 
-        log.info("Querying TABLE: {}, COLUMN: {}, PK: {}, DATABASE: {}", table, column, "id", restoration.getDatabaseName());
-        return querySelector.select(table, "id", column);
+        log.info("Querying TABLE: {}, COLUMN: {}, PK: {}, DATABASE: {}", table, column, pk, restoration.getDatabaseName());
+        return querySelector.select(table, pk, column);
     }
 }

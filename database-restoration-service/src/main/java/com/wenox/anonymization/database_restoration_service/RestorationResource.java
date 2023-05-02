@@ -23,8 +23,9 @@ public class RestorationResource {
     @GetMapping("/column-tuple")
     public ResponseEntity<ColumnTuple> getColumnTuple(@RequestParam("blueprint_id") String blueprintId,
                                                       @RequestParam("table") String table,
-                                                      @RequestParam("column") String column) {
-        return ResponseEntity.ok(columnTupleService.queryColumnTuple(blueprintId, table, column));
+                                                      @RequestParam("column") String column,
+                                                      @RequestParam("pk") String pk) {
+        return ResponseEntity.ok(columnTupleService.queryColumnTuple(blueprintId, table, column, pk));
     }
 
     @ExceptionHandler(RestorationNotFoundException.class)

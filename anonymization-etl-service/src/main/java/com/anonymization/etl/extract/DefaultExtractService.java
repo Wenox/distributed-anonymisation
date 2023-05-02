@@ -78,6 +78,7 @@ public class DefaultExtractService implements ExtractService {
                 .queryParam("blueprint_id", task.getBlueprintId())
                 .queryParam("table", task.getTableName())
                 .queryParam("column", task.getColumnName())
+                .queryParam("pk", task.getPrimaryKey())
                 .build();
     }
 }
