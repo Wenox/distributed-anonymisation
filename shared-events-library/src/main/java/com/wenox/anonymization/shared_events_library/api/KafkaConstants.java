@@ -8,6 +8,11 @@ public final class KafkaConstants {
 
     public static final String TOPIC_CREATED_BLUEPRINT = "created-blueprint";
     public static final String TOPIC_CREATED_WORKSHEET = "created-worksheet";
+
+    public static final String TOPIC_ANONYMIZATION_EXECUTION = "anonymization-execution";
+    public static final String TOPIC_ANONYMIZATION_EXECUTION_SUCCESS = "anonymization-execution-success";
+    public static final String TOPIC_ANONYMIZATION_EXECUTION_FAILURE = "anonymization-execution-failure";
+
     public static final String TOPIC_RESTORE_SUCCESS = "restore-success";
     public static final String TOPIC_RESTORE_FAILURE = "restore-failure";
     public static final String TOPIC_METADATA_SUCCESS = "metadata-success";

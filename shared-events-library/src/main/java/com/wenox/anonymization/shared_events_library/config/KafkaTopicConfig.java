@@ -19,6 +19,21 @@ public class KafkaTopicConfig {
     }
 
     @Bean
+    public NewTopic topicAnonymizationExecution() {
+        return createNewTopic(KafkaConstants.TOPIC_ANONYMIZATION_EXECUTION);
+    }
+
+    @Bean
+    public NewTopic topicAnonymizationExecutionSuccess() {
+        return createNewTopic(KafkaConstants.TOPIC_ANONYMIZATION_EXECUTION_SUCCESS);
+    }
+
+    @Bean
+    public NewTopic topicAnonymizationExecutionFailure() {
+        return createNewTopic(KafkaConstants.TOPIC_ANONYMIZATION_EXECUTION_FAILURE);
+    }
+
+    @Bean
     public NewTopic topicDatabaseRestoredSuccess() {
         return createNewTopic(KafkaConstants.TOPIC_RESTORE_SUCCESS);
     }
