@@ -28,6 +28,8 @@ public class DefaultMirrorService {
             log.error("Error during database restoration for dto : {}, worksheet: {}", dto, worksheet, ex);
         }
 
+        // todo: add Either failure
+
         return new CreateMirrorResponse("Successfully created mirror: mirror-" + worksheet.getDatabaseName());
     }
 }

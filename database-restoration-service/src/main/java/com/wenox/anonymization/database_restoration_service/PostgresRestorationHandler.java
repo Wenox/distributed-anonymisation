@@ -24,14 +24,16 @@ public class PostgresRestorationHandler implements RestorationHandler {
 
     public void restoreScriptDump(String dbName) throws IOException, InterruptedException, TimeoutException {
         log.info("Restoring database {} from script", dbName);
-        try (InputStream inputStream = storageService.downloadFile(S3Constants.BUCKET_BLUEPRINTS, dbName)) {
+        String s3fileName = dbName.startsWith("mirror-") ? dbName.substring("mirror-".length()) : dbName;
+        try (InputStream inputStream = storageService.downloadFile(S3Constants.BUCKET_BLUEPRINTS, s3fileName)) {
             restoreDumpFromInputStream(inputStream, commandFactory.generateRestoreFromScriptCommand(dbName));
         }
     }
 
     public void restoreArchiveDump(String dbName) throws IOException, InterruptedException, TimeoutException {
         log.info("Restoring database {} from archive", dbName);
-        try (InputStream inputStream = storageService.downloadFile(S3Constants.BUCKET_BLUEPRINTS, dbName)) {
+        String s3fileName = dbName.startsWith("mirror-") ? dbName.substring("mirror-".length()) : dbName;
+        try (InputStream inputStream = storageService.downloadFile(S3Constants.BUCKET_BLUEPRINTS, s3fileName)) {
             restoreDumpFromInputStream(inputStream, commandFactory.generateRestoreFromArchiveCommand(dbName));
         }
     }
