@@ -1,28 +1,18 @@
 from enum import Enum
-from uuid import uuid4
+from uuid import uuid4, UUID
 import pymongo
 
 from config import MONGODB_CONNECTION_URI
 
 
-# Define the status Enum
 class SagaStatus(Enum):
     CREATED = "CREATED"
-    IN_PROGRESS = "IN_PROGRESS"
-    COMPLETED = "COMPLETED"
+    MIRROR_READY = "MIRROR_READY"
+    FRAGMENTS_READY = "FRAGMENTS_READY"
+    FINISHED = "FINISHED"
     FAILED = "FAILED"
 
 
-# Connect to the MongoDB instance
-client = pymongo.MongoClient(MONGODB_CONNECTION_URI)
-
-
-# Get the database and collection
-db = client.anonymization_saga_db
-saga_collection = db.saga
-
-
-# Define the Saga entity
 class Saga:
     def __init__(self, worksheet_id: str, status: SagaStatus = SagaStatus.CREATED):
         self.saga_id = uuid4()
@@ -35,3 +25,18 @@ class Saga:
             "status": self.status.value,
             "worksheet_id": self.worksheet_id,
         }
+
+
+def update_saga_status(saga_id: UUID, status: SagaStatus):
+    saga_collection.update_one(
+        {"saga_id": str(saga_id)}, {"$set": {"status": status.value}}
+    )
+
+
+# Connect to the MongoDB instance
+client = pymongo.MongoClient(MONGODB_CONNECTION_URI)
+
+
+# Get the database and collection
+db = client.anonymization_saga_db
+saga_collection = db.saga

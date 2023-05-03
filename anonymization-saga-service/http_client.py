@@ -1,3 +1,5 @@
+import json
+
 import httpx
 from tenacity import retry, wait_exponential, stop_after_attempt
 from datetime import timedelta
@@ -16,10 +18,10 @@ logger = setup_logger(__name__)
 )
 async def async_request_with_retries(*args, **kwargs):
     async with httpx.AsyncClient() as client:
-        logger.info(f"-----> Request: {args} {kwargs}")
+        logger.info(f"----------> Request: {args} {kwargs}")
         response = await client.request(*args, **kwargs)
         response.raise_for_status()
-        logger.info(f"<----- Response: {response.status_code} {response.json()}")
+        logger.info(f"<---------- Response: Status {response.status_code}\n{json.dumps(response.json(), indent=4)}")
         return response
 
 
