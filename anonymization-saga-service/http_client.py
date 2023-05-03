@@ -1,3 +1,4 @@
+import asyncio
 import json
 
 import httpx
@@ -29,5 +30,5 @@ async def async_request_with_retries(*args, **kwargs):
 circuit_breaker = CircuitBreaker(fail_max=3, timeout_duration=timedelta(seconds=30))
 
 
-async def async_request_with_circuit_breaker_and_retries(*args, **kwargs):
-    return await circuit_breaker.call_async(async_request_with_retries, *args, **kwargs)
+def async_request_with_circuit_breaker_and_retries(*args, **kwargs):
+    return asyncio.run(circuit_breaker.call_async(async_request_with_retries, *args, **kwargs))

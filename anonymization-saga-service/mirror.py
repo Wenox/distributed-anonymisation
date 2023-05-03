@@ -4,9 +4,9 @@ from http_client import async_request_with_circuit_breaker_and_retries
 create_mirror_path = RESTORATION_SERVICE_URL + CREATE_MIRROR_ENDPOINT
 
 
-async def create_mirror(worksheet_id):
+def create_mirror(worksheet_id):
     try:
-        response = await async_request_with_circuit_breaker_and_retries("POST", create_mirror_path,
+        response = async_request_with_circuit_breaker_and_retries("POST", create_mirror_path,
                                                                         json={"worksheet_id": worksheet_id})
         return response.json()
     except Exception as e:
