@@ -19,6 +19,15 @@ public class PostgresCommandFactory implements CommandFactory {
     @Value("${command.execute-script}")
     private String command;
 
+    @Value("${command.generate-dump.archive-format}")
+    private String dumpToArchiveCommand;
+
+    @Value("${command.generate-dump.script-format}")
+    private String dumpToScriptCommand;
+
+    @Value("${command.generate-dump.directory-format}")
+    private String dumpToDirectory;
+
     private final ConnectionProperties connectionProperties;
 
     @Override
@@ -28,6 +37,11 @@ public class PostgresCommandFactory implements CommandFactory {
 
     private List<String> buildExecuteScriptCommand(String dbName) {
         return buildCommand(command, dbName);
+    }
+
+    @Override
+    public List<String> generateDumpToArchiveCommand(String dbName) {
+        return buildCommand(dumpToArchiveCommand, dbName);
     }
 
     private List<String> buildCommand(String commandTemplate, String dbName) {

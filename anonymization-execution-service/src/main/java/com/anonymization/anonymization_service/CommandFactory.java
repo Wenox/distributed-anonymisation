@@ -5,4 +5,6 @@ import java.util.List;
 public interface CommandFactory {
 
     List<String> generateExecuteScriptCommand(String dbName);
+
+    List<String> generateDumpToArchiveCommand(String dbName);
 }
