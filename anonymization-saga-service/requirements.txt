@@ -8,3 +8,4 @@ httpx
 tenacity
 aiobreaker
 python-dotenv
+starlette

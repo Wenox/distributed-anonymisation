@@ -1,12 +1,8 @@
-import asyncio
 import json
-import time
 
 import boto3
 from fastapi import FastAPI
-from prefect import flow, task, Flow
-from prefect.server.schemas.core import Parameter
-from prefect.task_runners import SequentialTaskRunner
+from prefect import flow, task
 from pydantic import BaseModel
 from starlette.background import BackgroundTasks
 
@@ -86,9 +82,11 @@ def merge_anonymization_fragments(saga: Saga):
     logger.info(f"<----- Step 3: Merged anonymization fragments. Updated saga to {SagaStatus.MERGE_SUCCESS}")
 
 
-@task
-def step4():
-    print("Step 4")
+@task(name="Execute anonymization script")
+def execute_anonymization_script(saga):
+    logger.info(f"-----> Step 4: Executing anonymization script: {saga.worksheet_id}...")
+
+    logger.info(f"<----- Step 4: Executed anonymization script: {SagaStatus.MERGE_SUCCESS}")
 
 
 @flow(name="Anonymization Saga Workflow")
@@ -96,7 +94,7 @@ def anonymization_saga_workflow(saga):
     start_create_mirror(saga)
     fragments_population(saga)
     merge_anonymization_fragments(saga)
-    step4()
+    execute_anonymization_script(saga)
 
 
 @app.post("/api/anonymization-sagas")
