@@ -123,6 +123,19 @@ services:
     volumes:
       - ./anonymization-saga-service/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
 
+  mirror_mongodb:
+    image: mongo
+    container_name: mirror_mongodb
+    restart: always
+    ports:
+      - "27024:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: mirror_db
+    volumes:
+      - ./mirror-service/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+
   restoration_mongodb:
     image: mongo
     container_name: restoration_mongodb

@@ -2,7 +2,6 @@ package com.wenox.anonymization.database_restoration_service;
 
 import com.wenox.anonymization.database_restoration_service.column2.ColumnTuple;
 import com.wenox.anonymization.database_restoration_service.column2.ColumnTupleService;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,11 +26,6 @@ public class RestorationResource {
                                                       @RequestParam("column") String column,
                                                       @RequestParam("pk") String pk) {
         return ResponseEntity.ok(columnTupleService.queryColumnTuple(blueprintId, table, column, pk));
-    }
-
-    @PostMapping(value = "/mirror")
-    public ResponseEntity<CreateMirrorResponse> createMirror(@Valid @RequestBody CreateMirrorRequest dto) {
-        return ResponseEntity.ok(new CreateMirrorResponse("Stub response: " + dto.getWorksheetId()));
     }
 
     @ExceptionHandler(RestorationNotFoundException.class)

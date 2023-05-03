@@ -1,4 +1,4 @@
-package com.wenox.anonymization.database_restoration_service;
+package com.wenox.anonymization.database_restoration_service.mirror;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

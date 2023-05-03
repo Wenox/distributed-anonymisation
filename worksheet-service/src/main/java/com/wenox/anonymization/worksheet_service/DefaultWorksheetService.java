@@ -1,6 +1,7 @@
 package com.wenox.anonymization.worksheet_service;
 
-import com.amazonaws.services.kms.model.NotFoundException;
+import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
+import com.wenox.anonymization.shared_events_library.api.KafkaTemplateWrapper;
 import com.wenox.anonymization.worksheet_service.domain.*;
 import com.wenox.anonymization.worksheet_service.exception.InactiveRestorationException;
 import com.wenox.anonymization.worksheet_service.exception.WorksheetNotFoundException;
@@ -17,6 +18,7 @@ public class DefaultWorksheetService implements WorksheetService {
     private final WorksheetRepository worksheetRepository;
     private final WorksheetMapper worksheetMapper;
     private final DependenciesService dependenciesService;
+    private final KafkaTemplateWrapper<String, Object> kafkaTemplateWrapper;
 
     public Either<FailureResponse, CreateWorksheetResponse> createWorksheet(CreateWorksheetRequest request) {
         Either<FailureResponse, CreateWorksheetResponse> eitherResponse = dependenciesService.retrieveDependencies(request);
@@ -29,6 +31,7 @@ public class DefaultWorksheetService implements WorksheetService {
 
             Worksheet worksheet = worksheetRepository.save(worksheetMapper.toWorksheet(request, response));
             response.setWorksheet(worksheet);
+            kafkaTemplateWrapper.send(KafkaConstants.TOPIC_CREATED_WORKSHEET, worksheetMapper.toWorksheetCreatedEvent(response));
             return Either.right(response);
         });
     }

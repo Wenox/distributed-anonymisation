@@ -1,5 +1,6 @@
 package com.wenox.anonymization.worksheet_service;
 
+import com.wenox.anonymization.shared_events_library.api.RestoreMode;
 import com.wenox.anonymization.worksheet_service.domain.Metadata;
 import com.wenox.anonymization.worksheet_service.domain.WorksheetStatus;
 import lombok.*;
@@ -19,6 +20,8 @@ public class WorksheetResponse {
     private String worksheetName;
 
     private String databaseName;
+
+    private RestoreMode restoreMode;
 
     private Metadata metadata;
 }

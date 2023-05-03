@@ -1,4 +1,4 @@
-package com.wenox.anonymization.worksheet_service.domain;
+package com.wenox.anonymization.database_restoration_service.worksheet;
 
 import com.wenox.anonymization.shared_events_library.api.RestoreMode;
 import lombok.Getter;
@@ -13,20 +13,15 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @ToString
 @Document
-public class Worksheet {
+public class WorksheetProjection {
 
     @Id
     private String worksheetId;
 
     private String blueprintId;
 
-    private String worksheetName;
-
     private String databaseName;
 
     private RestoreMode restoreMode;
-
-    private Metadata metadata;
-
-    private WorksheetStatus worksheetStatus;
 }
+

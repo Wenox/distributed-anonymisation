@@ -1,5 +1,6 @@
 import asyncio
 import json
+from prefect import Flow
 
 from fastapi import FastAPI
 from prefect import flow, task

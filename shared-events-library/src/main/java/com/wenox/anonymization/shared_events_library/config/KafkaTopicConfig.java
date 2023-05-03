@@ -15,7 +15,7 @@ public class KafkaTopicConfig {
 
     @Bean
     public NewTopic topicBlueprintCreated() {
-        return createNewTopic(KafkaConstants.TOPIC_CREATE_BLUEPRINT);
+        return createNewTopic(KafkaConstants.TOPIC_CREATED_BLUEPRINT);
     }
 
     @Bean
@@ -71,6 +71,11 @@ public class KafkaTopicConfig {
     @Bean
     public NewTopic topicTransformationScriptFailure() {
         return createNewTopic(KafkaConstants.TOPIC_TRANSFORMATION_SCRIPT_FAILURE);
+    }
+
+    @Bean
+    public NewTopic topicCreatedWorksheet() {
+        return createNewTopic(KafkaConstants.TOPIC_CREATED_WORKSHEET);
     }
 
     private NewTopic createNewTopic(String topicName) {
