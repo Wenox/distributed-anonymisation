@@ -149,18 +149,18 @@ services:
     volumes:
       - ./worksheet-service/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
 
-  anonymization_mongodb:
+  anonymization_execution_mongodb:
     image: mongo
-    container_name: anonymization_mongodb
+    container_name: anonymization_execution_mongodb
     restart: always
     ports:
       - "27021:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
-      MONGO_INITDB_DATABASE: anonymization_db
+      MONGO_INITDB_DATABASE: anonymization_execution_db
     volumes:
-      - ./anonymization-service/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - ./anonymization-execution-service/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
 
   outcomes_mongodb:
     image: mongo

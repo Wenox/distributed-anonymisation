@@ -1,12 +1,12 @@
-package com.wenox.anonymization.anonymization_service;
+package com.anonymization.anonymization_service;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class AnonymizationServiceApplication {
+public class AnonymizationExecutionServiceApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(AnonymizationServiceApplication.class, args);
+        SpringApplication.run(AnonymizationExecutionServiceApplication.class, args);
     }
 }

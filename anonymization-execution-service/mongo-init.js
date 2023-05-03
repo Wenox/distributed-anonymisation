@@ -5,7 +5,7 @@ db.createUser(
         roles: [
             {
                 role: "readWrite",
-                db: "anonymization_db"
+                db: "anonymization_execution_db"
             }
         ]
     }

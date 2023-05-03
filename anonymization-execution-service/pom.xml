@@ -8,11 +8,11 @@
         <version>3.0.4</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.wenox.anonymization</groupId>
-    <artifactId>anonymization-service</artifactId>
+    <groupId>com.anonymization</groupId>
+    <artifactId>anonymization-execution-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>Anonymization Service</name>
-    <description>Anonymization Service</description>
+    <name>Anonymization Execution Service</name>
+    <description>Anonymization Execution Service</description>
     <properties>
         <java.version>17</java.version>
     </properties>
