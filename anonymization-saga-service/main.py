@@ -2,15 +2,18 @@ import asyncio
 import json
 import time
 
+import boto3
 from fastapi import FastAPI
-from prefect import flow, task
+from prefect import flow, task, Flow
+from prefect.server.schemas.core import Parameter
 from prefect.task_runners import SequentialTaskRunner
 from pydantic import BaseModel
+from starlette.background import BackgroundTasks
 
 from fragments_population import check_fragments_status
 from mirror import create_mirror
 from saga import Saga, saga_collection, update_saga_status, SagaStatus
-from trigger_lambda import router as trigger_lambda_router
+from trigger_lambda import router as trigger_lambda_router, INPUT_BUCKET, OUTPUT_BUCKET, LAMBDA_NAME
 from logger_config import setup_logger
 
 app = FastAPI()
@@ -23,7 +26,6 @@ class TriggerRequest(BaseModel):
     worksheet_id: str
 
 
-@task(name="Initialize Saga")
 def create_saga(worksheet_id: str):
     logger.info(f"-----> Step 1: Creating new Saga for worksheet_id: {worksheet_id}...")
     saga = Saga(worksheet_id)
@@ -34,18 +36,54 @@ def create_saga(worksheet_id: str):
 
 @task(name="Create mirror")
 def start_create_mirror(saga: Saga):
-    logger.info(f"-----> Step 2: Creating mirror for worksheet_id: {saga.worksheet_id}...")
+    logger.info(f"-----> Step 1: Creating mirror for worksheet_id: {saga.worksheet_id}...")
     create_mirror(saga.worksheet_id)
     update_saga_status(saga.saga_id, SagaStatus.MIRROR_READY)
-    logger.info(f"<----- Step 2: Created mirror. Updated saga to {SagaStatus.MIRROR_READY}.")
+    logger.info(f"<----- Step 1: Created mirror. Updated saga to {SagaStatus.MIRROR_READY}.")
 
 
 @task(name="Check fragments status")
 def fragments_population(saga: Saga):
-    logger.info(f"-----> Step 3: Checking fragments status for worksheet_id: {saga.worksheet_id}...")
+    logger.info(f"-----> Step 2: Checking fragments status for worksheet_id: {saga.worksheet_id}...")
     check_fragments_status(saga.worksheet_id)
     update_saga_status(saga.saga_id, SagaStatus.FRAGMENTS_READY)
-    logger.info(f"<----- Step 3: Retrieved fragments. Updated saga to {SagaStatus.FRAGMENTS_READY}")
+    logger.info(f"<----- Step 2: Retrieved fragments. Updated saga to {SagaStatus.FRAGMENTS_READY}")
+
+
+@task(name="Merge anonymization fragments")
+def merge_anonymization_fragments(saga: Saga):
+    logger.info(f"-----> Step 3: Merging anonymization fragments worksheet_id: {saga.worksheet_id}...")
+    try:
+        # Set up the Lambda client
+        lambda_client = boto3.client('lambda', region_name='eu-west-2')
+
+        # Prepare the payload
+        payload = {
+            "inputBucket": INPUT_BUCKET,
+            "inputDirectory": saga.worksheet_id,
+            "outputBucket": OUTPUT_BUCKET,
+            "outputScript": 'result-output.sql',
+        }
+
+        logger.info(f"==========> AWS Lambda Request:\n{json.dumps(payload, indent=4)}")
+        # Invoke the Lambda function
+        lambda_response = lambda_client.invoke(
+            FunctionName=LAMBDA_NAME,
+            InvocationType='RequestResponse',
+            Payload=json.dumps(payload),
+        )
+
+        # Read and parse the response payload
+        response_payload = json.loads(lambda_response['Payload'].read().decode('utf-8'))
+
+        # Log the response
+        response = {"status": "success", "response": response_payload}
+        logger.info(f"<========== AWS Lambda Response:\n{json.dumps(response, indent=4)}")
+
+    except Exception as e:
+        logger.error(f"Error triggering Lambda: {e}")
+
+    logger.info(f"<----- Step 3: Merged anonymization fragments. Updated saga to {SagaStatus.MERGE_SUCCESS}")
 
 
 @task
@@ -53,22 +91,18 @@ def step4():
     print("Step 4")
 
 
-@task
-def step5():
-    print("Step 5")
-
-
 @flow(name="Anonymization Saga Workflow")
-def anonymization_saga_workflow(body: TriggerRequest):
-    saga = create_saga(body.worksheet_id)
+def anonymization_saga_workflow(saga):
     start_create_mirror(saga)
     fragments_population(saga)
+    merge_anonymization_fragments(saga)
     step4()
-    step5()
 
 
 @app.post("/api/anonymization-sagas")
-async def trigger_anonymization_saga_workflow(body: TriggerRequest):
-    logger.info(f"-----> /api/anonymization-sagas: Started anonymization saga workflow. Body:\n{json.dumps(body.dict(), indent=4)}")
-    anonymization_saga_workflow(body)
-    return {"service": "anonymization-saga-service"}
+async def trigger_anonymization_saga_workflow(body: TriggerRequest, background_tasks: BackgroundTasks):
+    logger.info(
+        f"-----> /api/anonymization-sagas: Started anonymization saga workflow. Body:\n{json.dumps(body.dict(), indent=4)}")
+    saga = create_saga(body.worksheet_id)
+    background_tasks.add_task(anonymization_saga_workflow, saga)
+    return saga.to_dict()
