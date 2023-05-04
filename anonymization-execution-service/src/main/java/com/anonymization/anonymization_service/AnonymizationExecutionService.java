@@ -5,27 +5,15 @@ import com.wenox.anonymization.s3.api.StorageService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.reactivestreams.Publisher;
-import org.reactivestreams.Subscriber;
-import org.reactivestreams.Subscription;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
-import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
-import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
-import software.amazon.awssdk.core.async.AsyncRequestBody;
-import software.amazon.awssdk.regions.Region;
-import software.amazon.awssdk.services.s3.S3AsyncClient;
-import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import software.amazon.awssdk.services.s3.model.PutObjectResponse;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -42,21 +30,23 @@ public class AnonymizationExecutionService {
     private String s3UploadCommand;
 
     @PostMapping
-    public void executeAnonymizationScript(@Valid @RequestBody TriggerRequest dto) {
+    public ResponseEntity<?> executeAnonymizationScript(@Valid @RequestBody TriggerRequest dto) {
         log.info("=====> Received dto: {}", dto);
         try {
-            restoreScriptDump(dto.getDatabaseName(), dto.getFilePath());
+            return ResponseEntity.ok(restoreScriptDump(dto.getDbName(), dto.getFilePath()));
         } catch (Exception ex) {
             log.error("Error occurred during processing of dto: {}", dto, ex);
             ex.printStackTrace();
+            return ResponseEntity.badRequest().body("Error executing script: " + ex);
         }
     }
 
-    public void restoreScriptDump(String dbName, String file) throws IOException, TimeoutException, InterruptedException {
+    public ExecuteScriptResponse restoreScriptDump(String dbName, String file) throws IOException, TimeoutException, InterruptedException {
         log.info("Executing script {} against database {}", file, dbName);
         try (InputStream inputStream = storageService.downloadFile(S3Constants.BUCKET_SCRIPTS, file)) {
             restoreDumpFromInputStream(inputStream, commandFactory.generateExecuteScriptCommand(dbName));
         }
+        return new ExecuteScriptResponse("Executed script successfully");
     }
 
     private void restoreDumpFromInputStream(InputStream inputStream, List<String> command) throws IOException, InterruptedException, TimeoutException {

@@ -1,3 +1,4 @@
+import datetime
 import json
 
 import boto3
@@ -81,6 +82,7 @@ def merge_anonymization_fragments(saga: Saga):
     except Exception as e:
         logger.error(f"Error triggering Lambda: {e}")
 
+    update_saga_status(saga.saga_id, SagaStatus.MERGE_SUCCESS)
     logger.info(f"<----- Step 3: Merged anonymization fragments. Updated saga to {SagaStatus.MERGE_SUCCESS}")
 
 
@@ -88,14 +90,34 @@ def merge_anonymization_fragments(saga: Saga):
 def execute_anonymization_script(saga, db_name):
     logger.info(f"-----> Step 4: Executing anonymization script: {saga.worksheet_id}...")
     try:
-        anonymization_execution_path = "http://localhost:8500/api/v1/execute-anonymization/generate-dump"
+        anonymization_execution_path = "http://localhost:8500/api/v1/execute-anonymization"
+        timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
+        file_name = f"{saga.worksheet_id}/result-output.sql"
         response = async_request_with_circuit_breaker_and_retries("POST", anonymization_execution_path,
+                                                                  json={"db_name": db_name, "file_path": file_name},
+                                                                  timeout=60)
+        return response.json()
+    except Exception as e:
+        print(f"Request failed: {e}")
+
+    update_saga_status(saga.saga_id, SagaStatus.ANONYMIZATION_EXECUTED)
+    logger.info(f"<----- Step 4: Executed anonymization script: {SagaStatus.ANONYMIZATION_EXECUTED}")
+
+
+@task(name="Generate anonymization dump")
+def generate_anonymization_dump(saga, db_name):
+    logger.info(f"-----> Step 5: Generating anonymization dump: {saga.worksheet_id}...")
+    try:
+        generate_dump_path = "http://localhost:8500/api/v1/execute-anonymization/generate-dump"
+        response = async_request_with_circuit_breaker_and_retries("POST", generate_dump_path,
                                                                   json={"db_name": db_name},
                                                                   timeout=60)
         return response.json()
     except Exception as e:
         print(f"Request failed: {e}")
-    logger.info(f"<----- Step 4: Executed anonymization script: {SagaStatus.MERGE_SUCCESS}")
+
+    update_saga_status(saga.saga_id, SagaStatus.DUMP_GENERATED)
+    logger.info(f"<----- Step 5: Generated anonymization dump: {SagaStatus.DUMP_GENERATED}")
 
 
 @flow(name="Anonymization Saga Workflow")
@@ -105,6 +127,7 @@ def anonymization_saga_workflow(saga):
     fragments_population(saga)
     merge_anonymization_fragments(saga)
     execute_anonymization_script(saga, response['db_name'])
+    generate_anonymization_dump(saga, response['db_name'])
 
 
 @app.post("/api/anonymization-sagas")
