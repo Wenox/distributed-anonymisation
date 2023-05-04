@@ -31,18 +31,21 @@ public class DefaultBlueprintService implements BlueprintService {
             return blueprint.getBlueprintId();
         }
 
-        CompletableFuture.runAsync(() -> {
-            if (s3UploadHandler.uploadToS3(content, blueprint)) {
-                blueprintStatusUpdater.updateBlueprintStatusOnSuccess(blueprint);
-            } else {
-                blueprintStatusUpdater.updateBlueprintStatusOnFailure(blueprint);
-            }
-        }).exceptionally(ex -> {
-            log.error("Error for blueprint {} while updating blueprint after S3 upload.", blueprint, ex);
-            return null;
-        });
+        CompletableFuture.runAsync(() -> handleUploadAndStatus(content, blueprint))
+                .exceptionally(ex -> {
+                    log.error("Error for blueprint {} while updating blueprint after S3 upload.", blueprint, ex);
+                    return null;
+                });
 
         return blueprint.getBlueprintId();
+    }
+
+    private void handleUploadAndStatus(byte[] content, Blueprint blueprint) {
+        if (s3UploadHandler.uploadToS3(content, blueprint)) {
+            blueprintStatusUpdater.updateBlueprintStatusOnSuccess(blueprint);
+        } else {
+            blueprintStatusUpdater.updateBlueprintStatusOnFailure(blueprint);
+        }
     }
 
     @Override
