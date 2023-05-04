@@ -14,11 +14,11 @@ logger = setup_logger(__name__)
 # Configure retries, exponential backoff, and timeout
 @retry(
     wait=wait_exponential(multiplier=1, min=2, max=10),
-    stop=stop_after_attempt(5),
+    stop=stop_after_attempt(3),
     reraise=True,
 )
-async def async_request_with_retries(*args, **kwargs):
-    async with httpx.AsyncClient() as client:
+async def async_request_with_retries(*args, timeout=None, **kwargs):
+    async with httpx.AsyncClient(timeout=timeout) as client:
         logger.info(f"----------> Request: {args} {kwargs}")
         response = await client.request(*args, **kwargs)
         response.raise_for_status()
@@ -27,8 +27,8 @@ async def async_request_with_retries(*args, **kwargs):
 
 
 # Configure circuit breaker
-circuit_breaker = CircuitBreaker(fail_max=3, timeout_duration=timedelta(seconds=30))
+circuit_breaker = CircuitBreaker(fail_max=50, timeout_duration=timedelta(seconds=30))
 
 
-def async_request_with_circuit_breaker_and_retries(*args, **kwargs):
-    return asyncio.run(circuit_breaker.call_async(async_request_with_retries, *args, **kwargs))
+def async_request_with_circuit_breaker_and_retries(*args, timeout=None, **kwargs):
+    return asyncio.run(circuit_breaker.call_async(async_request_with_retries, *args, timeout=timeout, **kwargs))

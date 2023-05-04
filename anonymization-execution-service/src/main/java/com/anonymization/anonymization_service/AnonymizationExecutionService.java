@@ -9,6 +9,7 @@ import org.reactivestreams.Publisher;
 import org.reactivestreams.Subscriber;
 import org.reactivestreams.Subscription;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
@@ -75,17 +76,18 @@ public class AnonymizationExecutionService {
     }
 
     @PostMapping("/generate-dump")
-    public void generateDump(@Valid @RequestBody DumpRequest dto) {
+    public ResponseEntity<?> generateDump(@Valid @RequestBody DumpRequest dto) {
         log.info("=====> Received dto: {}", dto);
         try {
-            dumpAndSaveInS3(dto.getDbName(), "resulting_dump_script.sql");
+            return ResponseEntity.ok(dumpAndSaveInS3(dto.getDbName(), "resulting_dump_script.sql"));
         } catch (Exception ex) {
             log.error("Error occurred during processing of dto: {}", dto, ex);
             ex.printStackTrace();
+            return ResponseEntity.badRequest().body(ex);
         }
     }
 
-    public void dumpAndSaveInS3(String dbName, String file) throws IOException, TimeoutException, InterruptedException {
+    public GenerateDumpResponse dumpAndSaveInS3(String dbName, String file) throws IOException, TimeoutException, InterruptedException {
         String command = String.format("pg_dump -h localhost -p 5432 -U postgres -Fp %s --verbose | aws s3 cp - s3://%s/%s", dbName, S3Constants.BUCKET_DUMPS, file);
         log.info("Executing command: {}", command);
 
@@ -101,6 +103,7 @@ public class AnonymizationExecutionService {
         }
 
         log.info("Successfully executed script using command {}", command);
+        return GenerateDumpResponse.builder().file(file).build();
     }
 
 }

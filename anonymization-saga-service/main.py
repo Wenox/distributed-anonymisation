@@ -7,6 +7,7 @@ from pydantic import BaseModel
 from starlette.background import BackgroundTasks
 
 from fragments_population import check_fragments_status
+from http_client import async_request_with_circuit_breaker_and_retries
 from mirror import create_mirror
 from saga import Saga, saga_collection, update_saga_status, SagaStatus
 from trigger_lambda import router as trigger_lambda_router, INPUT_BUCKET, OUTPUT_BUCKET, LAMBDA_NAME
@@ -33,9 +34,10 @@ def create_saga(worksheet_id: str):
 @task(name="Create mirror")
 def start_create_mirror(saga: Saga):
     logger.info(f"-----> Step 1: Creating mirror for worksheet_id: {saga.worksheet_id}...")
-    create_mirror(saga.worksheet_id)
+    response = create_mirror(saga.worksheet_id)
     update_saga_status(saga.saga_id, SagaStatus.MIRROR_READY)
     logger.info(f"<----- Step 1: Created mirror. Updated saga to {SagaStatus.MIRROR_READY}.")
+    return response
 
 
 @task(name="Check fragments status")
@@ -83,18 +85,26 @@ def merge_anonymization_fragments(saga: Saga):
 
 
 @task(name="Execute anonymization script")
-def execute_anonymization_script(saga):
+def execute_anonymization_script(saga, db_name):
     logger.info(f"-----> Step 4: Executing anonymization script: {saga.worksheet_id}...")
-
+    try:
+        anonymization_execution_path = "http://localhost:8500/api/v1/execute-anonymization/generate-dump"
+        response = async_request_with_circuit_breaker_and_retries("POST", anonymization_execution_path,
+                                                                  json={"db_name": db_name},
+                                                                  timeout=60)
+        return response.json()
+    except Exception as e:
+        print(f"Request failed: {e}")
     logger.info(f"<----- Step 4: Executed anonymization script: {SagaStatus.MERGE_SUCCESS}")
 
 
 @flow(name="Anonymization Saga Workflow")
 def anonymization_saga_workflow(saga):
-    start_create_mirror(saga)
+    response = start_create_mirror(saga)
+    logger.info(f"Returned response {response}")
     fragments_population(saga)
     merge_anonymization_fragments(saga)
-    execute_anonymization_script(saga)
+    execute_anonymization_script(saga, response['db_name'])
 
 
 @app.post("/api/anonymization-sagas")

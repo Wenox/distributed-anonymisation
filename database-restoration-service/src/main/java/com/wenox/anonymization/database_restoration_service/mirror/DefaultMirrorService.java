@@ -30,6 +30,6 @@ public class DefaultMirrorService {
 
         // todo: add Either failure
 
-        return new CreateMirrorResponse("Successfully created mirror: mirror-" + worksheet.getDatabaseName());
+        return new CreateMirrorResponse("mirror-" + worksheet.getDatabaseName());
     }
 }
