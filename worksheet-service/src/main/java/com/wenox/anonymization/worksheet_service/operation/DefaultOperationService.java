@@ -3,6 +3,7 @@ package com.wenox.anonymization.worksheet_service.operation;
 import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
 import com.wenox.anonymization.shared_events_library.api.KafkaTemplateWrapper;
 import com.wenox.anonymization.worksheet_service.FailureResponse;
+import com.wenox.anonymization.worksheet_service.TasksInWorksheetResponse;
 import com.wenox.anonymization.worksheet_service.WorksheetRepository;
 import com.wenox.anonymization.worksheet_service.domain.*;
 import com.wenox.anonymization.worksheet_service.exception.WorksheetNotFoundException;
@@ -16,6 +17,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,16 +32,27 @@ public class DefaultOperationService implements OperationService {
     private final KafkaTemplateWrapper<String, Object> kafkaTemplateWrapper;
 
     @Override
-    public Map<TaskStatus, List<String>> getTasksInWorksheetGroupedByStatus(String worksheetId) {
+    public TasksInWorksheetResponse getTasksInWorksheetGroupedByStatus(String worksheetId) {
         List<Operation> operations = operationRepository.findByWorksheetId(worksheetId);
 
         Map<TaskStatus, List<String>> tasksByStatus = Arrays.stream(TaskStatus.values())
                 .collect(Collectors.toMap(status -> status, status -> new ArrayList<>(), (a, b) -> a, () -> new EnumMap<>(TaskStatus.class)));
 
-        operations.forEach(operation -> tasksByStatus.get(operation.getStatus()).add(operation.getKey().getTaskId()));
+        AtomicInteger numberOfTasks = new AtomicInteger();
+        boolean allSuccessful = operations.stream()
+                .peek(operation -> {
+                    tasksByStatus.get(operation.getStatus()).add(operation.getKey().getTaskId());
+                    numberOfTasks.incrementAndGet();
+                })
+                .allMatch(operation -> operation.getStatus() == TaskStatus.FINISHED);
 
-        return tasksByStatus;
+        return TasksInWorksheetResponse.builder()
+                .tasksByStatus(tasksByStatus)
+                .allSuccessful(allSuccessful)
+                .numberOfTasks(numberOfTasks.get())
+                .build();
     }
+
 
     @Async
     @Override

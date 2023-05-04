@@ -6,8 +6,8 @@ from fastapi import FastAPI
 from prefect import flow, task
 from pydantic import BaseModel
 from starlette.background import BackgroundTasks
-
-from fragments_population import check_fragments_status
+from retry import retry
+from fragments_population import get_tasks_statuses
 from http_client import async_request_with_circuit_breaker_and_retries
 from mirror import create_mirror
 from saga import Saga, saga_collection, update_saga_status, SagaStatus
@@ -42,11 +42,20 @@ def start_create_mirror(saga: Saga):
 
 
 @task(name="Check fragments status")
+@retry(tries=5, delay=1.0, max_delay=1.0, backoff=1, jitter=(0, 0), logger=logger)
 def fragments_population(saga: Saga):
-    logger.info(f"-----> Step 2: Checking fragments status for worksheet_id: {saga.worksheet_id}...")
-    check_fragments_status(saga.worksheet_id)
-    update_saga_status(saga.saga_id, SagaStatus.FRAGMENTS_READY)
-    logger.info(f"<----- Step 2: Retrieved fragments. Updated saga to {SagaStatus.FRAGMENTS_READY}")
+    logger.info(f"-----> Step 2: Checking tasks status for worksheet_id: {saga.worksheet_id}...")
+    response = get_tasks_statuses(saga.worksheet_id)
+
+    if response['allSuccessful']:
+        logger.info("All tasks completed!")
+        update_saga_status(saga.saga_id, SagaStatus.TASKS_COMPLETED)
+    else:
+        logger.info("Some tasks not successful...")
+        raise Exception("Some tasks not successful, retrying...")
+        # re-run the task up to 5 times, timeout 1000 ms
+
+    logger.info(f"<----- Step 2: Retrieved fragments. Updated saga to {SagaStatus.TASKS_COMPLETED}")
 
 
 @task(name="Merge anonymization fragments")

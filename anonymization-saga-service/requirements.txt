@@ -9,3 +9,4 @@ tenacity
 aiobreaker
 python-dotenv
 starlette
+retry
