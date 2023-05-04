@@ -41,9 +41,9 @@ def start_create_mirror(saga: Saga):
     return response
 
 
-@task(name="Check fragments status")
+@task(name="Check tasks status")
 @retry(tries=5, delay=1.0, max_delay=1.0, backoff=1, jitter=(0, 0), logger=logger)
-def fragments_population(saga: Saga):
+def tasks_status(saga: Saga):
     logger.info(f"-----> Step 2: Checking tasks status for worksheet_id: {saga.worksheet_id}...")
     response = get_tasks_statuses(saga.worksheet_id)
 
@@ -52,10 +52,23 @@ def fragments_population(saga: Saga):
         update_saga_status(saga.saga_id, SagaStatus.TASKS_COMPLETED)
     else:
         logger.info("Some tasks not successful...")
-        raise Exception("Some tasks not successful, retrying...")
-        # re-run the task up to 5 times, timeout 1000 ms
+        if is_still_processing_tasks(tasks_by_status=response['tasksByStatus']):
+            logger.info("Still processing some tasks...")
+            # Re-run the task up to 7 times, timeout 3000 ms
+            raise Exception("Still processing some tasks...")
+        else:
+            logger.info("Some tasks were failed.")
+            # Re-run the task up to 4 times, timeout 1000 ms
+            raise Exception("Some tasks were failed, retrying...")
 
     logger.info(f"<----- Step 2: Retrieved fragments. Updated saga to {SagaStatus.TASKS_COMPLETED}")
+
+
+def is_still_processing_tasks(tasks_by_status):
+    return len(tasks_by_status['STARTED']) > 0 or \
+        len(tasks_by_status['EXTRACTED']) > 0 or \
+        len(tasks_by_status['TRANSFORMED_ANONYMIZATION']) > 0 or \
+        len(tasks_by_status['TRANSFORMED_SQL_SCRIPT']) > 0
 
 
 @task(name="Merge anonymization fragments")
@@ -133,7 +146,7 @@ def generate_anonymization_dump(saga, db_name):
 def anonymization_saga_workflow(saga):
     response = start_create_mirror(saga)
     logger.info(f"Returned response {response}")
-    fragments_population(saga)
+    tasks_status(saga)
     merge_anonymization_fragments(saga)
     execute_anonymization_script(saga, response['db_name'])
     generate_anonymization_dump(saga, response['db_name'])
