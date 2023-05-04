@@ -10,7 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
-
+// todo unfirm logging for events, rest
 @Slf4j
 @Component
 @RequiredArgsConstructor

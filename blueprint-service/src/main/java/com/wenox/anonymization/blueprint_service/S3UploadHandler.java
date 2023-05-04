@@ -10,12 +10,13 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 @Slf4j
 public class S3UploadHandler {
+
     private final StorageService s3StorageService;
 
-    public boolean uploadToS3(ImportBlueprintRequest dto, Blueprint blueprint) {
+    public boolean uploadToS3(byte[] content, Blueprint blueprint) {
         try {
-            log.info("Uploading to S3... Dump: {}, blueprintId: {}", dto.dumpFile().getOriginalFilename(), blueprint.getBlueprintId());
-            s3StorageService.uploadFile(dto.dumpFile(), S3Constants.BUCKET_BLUEPRINTS, blueprint.getBlueprintDatabaseName());
+            log.info("Uploading to S3... BlueprintId: {}", blueprint.getBlueprintId());
+            s3StorageService.uploadFile(content, S3Constants.BUCKET_BLUEPRINTS, blueprint.getBlueprintDatabaseName());
             return true;
         } catch (Exception e) {
             log.error("Error while storing dump: ", e);

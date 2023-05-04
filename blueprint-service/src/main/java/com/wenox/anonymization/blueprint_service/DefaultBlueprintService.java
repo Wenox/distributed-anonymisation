@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
 @Service
@@ -21,8 +22,17 @@ public class DefaultBlueprintService implements BlueprintService {
         Blueprint blueprint = blueprintMapper.fromImportRequest(dto);
         blueprintRepository.save(blueprint);
 
+        byte[] content;
+        try {
+            content = dto.dumpFile().getBytes();
+        } catch (IOException ex) {
+            log.error("Error when retrieving dump content for dto: {}", dto, ex);
+            blueprintStatusUpdater.updateBlueprintStatusOnFailure(blueprint);
+            return blueprint.getBlueprintId();
+        }
+
         CompletableFuture.runAsync(() -> {
-            if (s3UploadHandler.uploadToS3(dto, blueprint)) {
+            if (s3UploadHandler.uploadToS3(content, blueprint)) {
                 blueprintStatusUpdater.updateBlueprintStatusOnSuccess(blueprint);
             } else {
                 blueprintStatusUpdater.updateBlueprintStatusOnFailure(blueprint);
