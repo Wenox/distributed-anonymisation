@@ -4,6 +4,7 @@ import com.wenox.anonymization.s3.S3Constants;
 import com.wenox.anonymization.s3.api.StorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
@@ -21,6 +22,9 @@ public class PostgresRestorationHandler implements RestorationHandler {
 
     private final StorageService storageService;
     private final CommandFactory commandFactory;
+
+    @Value("${command.restore-dump.timeout:120}")
+    private Integer timeout;
 
     public void restoreScriptDump(String dbName) throws IOException, InterruptedException, TimeoutException {
         log.info("Restoring database {} from script", dbName);
@@ -43,7 +47,7 @@ public class PostgresRestorationHandler implements RestorationHandler {
                 .command(command)
                 .redirectInput(inputStream)
                 .redirectOutput(Slf4jStream.of(getClass()).asInfo())
-                .timeout(60, TimeUnit.SECONDS)
+                .timeout(timeout, TimeUnit.SECONDS)
                 .execute()
                 .getExitValue();
 

@@ -2,6 +2,7 @@ package com.wenox.anonymization.database_restoration_service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
@@ -18,6 +19,9 @@ public class PostgresDatabaseCreationHandler implements DatabaseCreationHandler 
 
     private final CommandFactory commandFactory;
 
+    @Value("${command.create-database.timeout:30}")
+    private Integer timeout;
+
     public void createDatabase(String dbName) throws IOException, InterruptedException, TimeoutException {
         log.info("Creating database {}", dbName);
 
@@ -26,7 +30,7 @@ public class PostgresDatabaseCreationHandler implements DatabaseCreationHandler 
         int exitCode = new ProcessExecutor()
                 .command(command)
                 .redirectOutput(Slf4jStream.of(getClass()).asInfo())
-                .timeout(60, TimeUnit.SECONDS)
+                .timeout(timeout, TimeUnit.SECONDS)
                 .execute()
                 .getExitValue();
 
