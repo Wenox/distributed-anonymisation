@@ -2,7 +2,8 @@ package com.wenox.anonymization.blueprint_service;
 
 public enum BlueprintStatus {
     CREATED,
-    // todo dump store?
+    S3_STORE_SUCCESS,
+    S3_STORE_FAILURE,
     RESTORE_SUCCESS,
     RESTORE_FAILURE,
     METADATA_EXTRACTION_SUCCESS,
