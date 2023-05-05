@@ -31,7 +31,7 @@ public class PostgresDatabaseCreationHandler implements DatabaseCreationHandler 
                 .getExitValue();
 
         if (exitCode != 0) {
-            throw new RuntimeException(String.format("Create %s database using command %s failed with exit code: %d", dbName, command, exitCode));
+            throw new CreateDatabaseException(String.format("Create database '%s' using command '%s' failed with exit code: %d", dbName, command, exitCode));
         }
 
         log.info("Successfully created database {} using command {}", dbName, command);
