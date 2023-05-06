@@ -8,4 +8,6 @@ public interface StorageService extends Serializable {
     void uploadFile(byte[] data, String bucketName, String key);
 
     InputStream downloadFile(String bucketName, String key);
+
+    void deleteFile(String bucketName, String key);
 }
