@@ -18,14 +18,33 @@ public class PostgresCommandFactory implements CommandFactory {
     private final ConnectionProperties connectionProperties;
     private final CommandProperties commandProperties;
 
+    @Override
     public List<String> generateCreateDatabaseCommand(String dbName) {
         return buildCreateDatabaseCommand(dbName);
     }
 
+    @Override
+    public List<String> generateDropDatabaseCommand(String dbName) {
+        return buildDropDatabaseCommand(dbName);
+    }
+
+    @Override
+    public String generateExistsDatabaseCommand(String dbName) {
+        return MessageFormat.format(
+                commandProperties.getExistsDatabase(),
+                connectionProperties.getHost(),
+                connectionProperties.getPort(),
+                connectionProperties.getUsername(),
+                dbName
+        );
+    }
+
+    @Override
     public List<String> generateRestoreFromArchiveCommand(String dbName) {
         return buildRestoreFromArchiveCommand(dbName);
     }
 
+    @Override
     public List<String> generateRestoreFromScriptCommand(String dbName) {
         return buildRestoreFromScriptCommand(dbName);
     }
@@ -38,11 +57,20 @@ public class PostgresCommandFactory implements CommandFactory {
                 connectionProperties.getUsername(),
                 dbName
         );
+
         return Arrays.asList(formattedCommand.split(WHITESPACE_PATTERN));
     }
 
     private List<String> buildCreateDatabaseCommand(String dbName) {
         return buildCommand(commandProperties.getCreateDatabase(), dbName);
+    }
+
+    private List<String> buildDropDatabaseCommand(String dbName) {
+        return buildCommand(commandProperties.getDropDatabase(), dbName);
+    }
+
+    private List<String> buildExistsDatabaseCommand(String dbName) {
+        return buildCommand(commandProperties.getExistsDatabase(), dbName);
     }
 
     private List<String> buildRestoreFromArchiveCommand(String dbName) {

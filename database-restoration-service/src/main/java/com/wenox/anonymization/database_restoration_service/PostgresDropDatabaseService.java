@@ -12,20 +12,21 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-@Service
 @Slf4j
 @RequiredArgsConstructor
-public class PostgresDatabaseCreationHandler implements DatabaseCreationHandler {
+@Service
+public class PostgresDropDatabaseService implements DropDatabaseService {
 
     private final CommandFactory commandFactory;
 
-    @Value("${command.create-database.timeout:30}")
+    @Value("${command.drop-database.timeout:30}")
     private Integer timeout;
 
-    public void createDatabase(String dbName) throws IOException, InterruptedException, TimeoutException {
-        log.info("Creating database {}", dbName);
+    @Override
+    public void dropDatabase(String dbName) throws IOException, InterruptedException, TimeoutException {
+        log.info("Dropping database {}", dbName);
 
-        List<String> command = commandFactory.generateCreateDatabaseCommand(dbName);
+        List<String> command = commandFactory.generateDropDatabaseCommand(dbName);
 
         int exitCode = new ProcessExecutor()
                 .command(command)
@@ -35,9 +36,9 @@ public class PostgresDatabaseCreationHandler implements DatabaseCreationHandler 
                 .getExitValue();
 
         if (exitCode != 0) {
-            throw new CreateDatabaseException(String.format("Create database '%s' using command '%s' failed with exit code: %d", dbName, command, exitCode));
+            throw new DropDatabaseException(String.format("Drop database '%s' using command '%s' failed with exit code: %d", dbName, command, exitCode));
         }
 
-        log.info("Successfully created database {} using command {}", dbName, command);
+        log.info("Successfully dropped database {} using command {}", dbName, command);
     }
 }

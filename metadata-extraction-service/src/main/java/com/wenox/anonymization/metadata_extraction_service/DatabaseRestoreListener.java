@@ -40,7 +40,7 @@ public class DatabaseRestoreListener implements RestoreListener {
             });
         } catch (final Exception ex) {
             log.error("Error during metadata extraction for {}", event, ex);
-            loggingKafkaTemplate.send(KafkaConstants.TOPIC_METADATA_FAILURE, new MetadataExtractedFailureEvent(event.getBlueprintId(), ex.getMessage(), ex));
+            loggingKafkaTemplate.send(KafkaConstants.TOPIC_METADATA_FAILURE, new MetadataExtractedFailureEvent(event.getBlueprintId(), event.getDatabaseName(), ex.getMessage(), ex));
         }
     }
 

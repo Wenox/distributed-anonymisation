@@ -78,6 +78,7 @@ public class AnonymizationExecutionService {
     }
 
     public GenerateDumpResponse dumpAndSaveInS3(String dbName, String file) throws IOException, TimeoutException, InterruptedException {
+        // todo
         String command = String.format("pg_dump -h localhost -p 5432 -U postgres -Fp %s --verbose | aws s3 cp - s3://%s/%s", dbName, S3Constants.BUCKET_DUMPS, file);
         log.info("Executing command: {}", command);
 

@@ -20,7 +20,7 @@ import java.util.concurrent.TimeoutException;
 @Service
 @Slf4j
 @RequiredArgsConstructor
-public class PostgresRestorationHandler implements RestorationHandler {
+public class PostgresRestoreDatabaseService implements RestoreDatabaseService {
 
     private final StorageService storageService;
     private final CommandFactory commandFactory;

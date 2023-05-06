@@ -11,6 +11,8 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "command")
 public class CommandProperties {
     private String createDatabase;
+    private String dropDatabase;
+    private String existsDatabase;
     private RestoreDump restoreDump;
 
     @Data

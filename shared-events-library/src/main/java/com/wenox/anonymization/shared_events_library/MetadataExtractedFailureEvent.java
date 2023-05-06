@@ -9,6 +9,7 @@ import lombok.Value;
 @AllArgsConstructor
 public class MetadataExtractedFailureEvent {
     String blueprintId;
+    String databaseName;
     String errorMessage;
     Exception exception;
 }
