@@ -162,19 +162,6 @@ services:
     volumes:
       - ./anonymization-execution-service/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
 
-  outcomes_mongodb:
-    image: mongo
-    container_name: outcomes_mongodb
-    restart: always
-    ports:
-      - "27022:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
-      MONGO_INITDB_DATABASE: outcomes_db
-    volumes:
-      - ./outcome-service/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
-
   zookeeper:
     image: 'bitnami/zookeeper:latest'
     ports:
