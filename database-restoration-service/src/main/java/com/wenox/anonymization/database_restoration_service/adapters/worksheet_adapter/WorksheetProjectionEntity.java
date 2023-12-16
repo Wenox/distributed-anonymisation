@@ -1,4 +1,4 @@
-package com.wenox.anonymization.database_restoration_service.adapters.worksheet_db_adapter;
+package com.wenox.anonymization.database_restoration_service.adapters.worksheet_adapter;
 
 import com.wenox.anonymization.database_restoration_service.domain.model.WorksheetProjection;
 import com.wenox.anonymization.shared_events_library.api.RestoreMode;

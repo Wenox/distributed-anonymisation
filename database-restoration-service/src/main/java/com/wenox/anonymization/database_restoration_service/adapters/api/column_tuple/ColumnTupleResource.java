@@ -1,4 +1,4 @@
-package com.wenox.anonymization.database_restoration_service.adapters.api;
+package com.wenox.anonymization.database_restoration_service.adapters.api.column_tuple;
 
 import com.wenox.anonymization.database_restoration_service.domain.exception.InactiveRestorationException;
 import com.wenox.anonymization.database_restoration_service.domain.model.ColumnTuple;

@@ -1,4 +1,4 @@
-package com.wenox.anonymization.database_restoration_service.adapters.api;
+package com.wenox.anonymization.database_restoration_service.adapters.api.restoration;
 
 import com.wenox.anonymization.database_restoration_service.domain.model.Restoration;
 import com.wenox.anonymization.database_restoration_service.domain.exception.RestorationNotFoundException;

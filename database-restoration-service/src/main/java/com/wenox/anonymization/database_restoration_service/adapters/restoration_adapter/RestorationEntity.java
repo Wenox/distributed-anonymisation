@@ -1,4 +1,4 @@
-package com.wenox.anonymization.database_restoration_service.adapters.restoration_db_adapter;
+package com.wenox.anonymization.database_restoration_service.adapters.restoration_adapter;
 
 import com.wenox.anonymization.database_restoration_service.domain.model.Restoration;
 import lombok.*;

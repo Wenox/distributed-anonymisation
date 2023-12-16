@@ -1,4 +1,4 @@
-package com.wenox.anonymization.database_restoration_service.adapters.worksheet_db_adapter;
+package com.wenox.anonymization.database_restoration_service.adapters.worksheet_adapter;
 
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;

@@ -1,4 +1,4 @@
-package com.wenox.anonymization.database_restoration_service.adapters.api;
+package com.wenox.anonymization.database_restoration_service.adapters.api.mirror;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
