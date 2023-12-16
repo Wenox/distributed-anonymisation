@@ -1,4 +1,4 @@
-package com.wenox.anonymization.blueprint_service;
+package com.wenox.anonymization.blueprint_service.domain.model;
 
 public enum BlueprintStatus {
     CREATED,

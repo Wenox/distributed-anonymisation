@@ -1,32 +1,38 @@
-package com.wenox.anonymization.blueprint_service;
+package com.wenox.anonymization.blueprint_service.domain.service;
 
+import com.wenox.anonymization.blueprint_service.domain.exception.BlueprintNotFoundException;
+import com.wenox.anonymization.blueprint_service.domain.model.Blueprint;
+import com.wenox.anonymization.blueprint_service.domain.ports.BlueprintRepository;
+import com.wenox.anonymization.blueprint_service.domain.ports.DumpRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
-@Service
 @RequiredArgsConstructor
 @Slf4j
 public class DefaultBlueprintService implements BlueprintService {
 
     private final BlueprintRepository blueprintRepository;
-    private final S3UploadHandler s3UploadHandler;
+    private final DumpRepository dumpRepository;
     private final BlueprintStatusUpdater blueprintStatusUpdater;
-    private final BlueprintMapper blueprintMapper;
 
     @Override
-    public String importBlueprint(ImportBlueprintRequest dto) {
-        Blueprint blueprint = blueprintMapper.fromImportRequest(dto);
+    public Blueprint getBlueprint(String blueprintId) {
+        return blueprintRepository.findById(blueprintId)
+                .orElseThrow(() -> new BlueprintNotFoundException("Blueprint not found with blueprintId: " + blueprintId));
+    }
+
+    @Override
+    public String importBlueprint(Blueprint blueprint) {
         blueprintRepository.save(blueprint);
 
         byte[] content;
         try {
-            content = dto.dumpFile().getBytes();
+            content = blueprint.getDumpFile().getBytes();
         } catch (IOException ex) {
-            log.error("Error when retrieving dump content for dto: {}", dto, ex);
+            log.error("Error when retrieving dump content for dto: {}", blueprint, ex);
             blueprintStatusUpdater.updateBlueprintStatusOnFailure(blueprint);
             return blueprint.getBlueprintId();
         }
@@ -41,16 +47,10 @@ public class DefaultBlueprintService implements BlueprintService {
     }
 
     private void handleUploadAndStatus(byte[] content, Blueprint blueprint) {
-        if (s3UploadHandler.uploadToS3(content, blueprint)) {
+        if (dumpRepository.uploadDump(content, blueprint)) {
             blueprintStatusUpdater.updateBlueprintStatusOnSuccess(blueprint);
         } else {
             blueprintStatusUpdater.updateBlueprintStatusOnFailure(blueprint);
         }
-    }
-
-    @Override
-    public Blueprint getBlueprint(String blueprintId) {
-        return blueprintRepository.findById(blueprintId)
-                .orElseThrow(() -> new BlueprintNotFoundException("Blueprint not found with blueprintId: " + blueprintId));
     }
 }

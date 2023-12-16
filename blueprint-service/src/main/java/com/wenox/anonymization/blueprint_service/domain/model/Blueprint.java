@@ -1,21 +1,21 @@
-package com.wenox.anonymization.blueprint_service;
+package com.wenox.anonymization.blueprint_service.domain.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.wenox.anonymization.shared_events_library.api.RestoreMode;
 import lombok.*;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @ToString
-@Document
 public class Blueprint {
 
-    @Id
     private String blueprintId;
+
+    @JsonIgnore
+    private MultipartFile dumpFile;
 
     private BlueprintStatus blueprintStatus;
 
@@ -30,8 +30,8 @@ public class Blueprint {
     private boolean dumpStoreSuccess;
 
     private String description;
-    private LocalDateTime createdDate;
 
+    private LocalDateTime createdDate;
 
     private String originalDumpName;
 }

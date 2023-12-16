@@ -1,5 +1,6 @@
-package com.wenox.anonymization.blueprint_service;
+package com.wenox.anonymization.blueprint_service.adapters.api;
 
+import com.wenox.anonymization.blueprint_service.domain.model.DatabaseType;
 import com.wenox.anonymization.shared_events_library.api.RestoreMode;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;

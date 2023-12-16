@@ -1,4 +1,4 @@
-package com.wenox.anonymization.blueprint_service;
+package com.wenox.anonymization.blueprint_service.domain.exception;
 
 public class BlueprintNotFoundException extends RuntimeException {
 

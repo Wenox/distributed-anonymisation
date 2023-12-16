@@ -1,5 +1,8 @@
-package com.wenox.anonymization.blueprint_service;
+package com.wenox.anonymization.blueprint_service.adapters.api;
 
+import com.wenox.anonymization.blueprint_service.adapters.api.ImportBlueprintRequest;
+import com.wenox.anonymization.blueprint_service.domain.model.Blueprint;
+import com.wenox.anonymization.blueprint_service.domain.model.BlueprintStatus;
 import org.springframework.stereotype.Component;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -10,8 +13,10 @@ public class BlueprintMapper {
 
     private final static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
-    public Blueprint fromImportRequest(ImportBlueprintRequest dto) {
+    public Blueprint fromRequest(ImportBlueprintRequest dto) {
         Blueprint blueprint = new Blueprint();
+        blueprint.setBlueprintId(UUID.randomUUID().toString());
+        blueprint.setDumpFile(dto.dumpFile());
         blueprint.setBlueprintStatus(BlueprintStatus.CREATED);
         blueprint.setDumpStoreSuccess(false);
         blueprint.setBlueprintDatabaseName(generateDatabaseName());
