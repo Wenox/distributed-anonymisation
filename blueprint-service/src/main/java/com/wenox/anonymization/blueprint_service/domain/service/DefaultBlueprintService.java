@@ -2,7 +2,7 @@ package com.wenox.anonymization.blueprint_service.domain.service;
 
 import com.wenox.anonymization.blueprint_service.domain.exception.BlueprintNotFoundException;
 import com.wenox.anonymization.blueprint_service.domain.model.Blueprint;
-import com.wenox.anonymization.blueprint_service.domain.ports.BlueprintMessagePublisher;
+import com.wenox.anonymization.blueprint_service.domain.ports.MessagePublisher;
 import com.wenox.anonymization.blueprint_service.domain.ports.BlueprintRepository;
 import com.wenox.anonymization.blueprint_service.domain.ports.DumpRepository;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ public class DefaultBlueprintService implements BlueprintService {
     private final BlueprintRepository blueprintRepository;
     private final DumpRepository dumpRepository;
     private final BlueprintSagaStatusUpdater blueprintSagaStatusUpdater;
-    private final BlueprintMessagePublisher blueprintMessagePublisher;
+    private final MessagePublisher messagePublisher;
 
     @Override
     public Blueprint getBlueprint(String blueprintId) {
@@ -51,7 +51,7 @@ public class DefaultBlueprintService implements BlueprintService {
     private void handleUploadAndStatus(byte[] content, Blueprint blueprint) {
         if (dumpRepository.uploadDump(content, blueprint)) {
             blueprintSagaStatusUpdater.updateSagaStatusOnDumpStoreSuccess(blueprint);
-            blueprintMessagePublisher.sendBlueprintCreated(blueprint);
+            messagePublisher.sendBlueprintCreated(blueprint);
         } else {
             blueprintSagaStatusUpdater.updateSagaStatusOnDumpStoreFailure(blueprint);
         }

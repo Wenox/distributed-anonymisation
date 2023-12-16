@@ -1,6 +1,6 @@
 package com.wenox.anonymization.blueprint_service.config;
 
-import com.wenox.anonymization.blueprint_service.domain.ports.BlueprintMessagePublisher;
+import com.wenox.anonymization.blueprint_service.domain.ports.MessagePublisher;
 import com.wenox.anonymization.blueprint_service.domain.ports.BlueprintRepository;
 import com.wenox.anonymization.blueprint_service.domain.ports.DumpRepository;
 import com.wenox.anonymization.blueprint_service.domain.service.*;
@@ -23,12 +23,12 @@ public class SpringConfig {
     BlueprintService blueprintService(BlueprintRepository blueprintRepository,
                                       DumpRepository dumpRepository,
                                       BlueprintSagaStatusUpdater blueprintStatusUpdater,
-                                      BlueprintMessagePublisher blueprintMessagePublisher) {
+                                      MessagePublisher messagePublisher) {
         return new DefaultBlueprintService(
                 blueprintRepository,
                 dumpRepository,
                 blueprintStatusUpdater,
-                blueprintMessagePublisher
+                messagePublisher
         );
     }
 

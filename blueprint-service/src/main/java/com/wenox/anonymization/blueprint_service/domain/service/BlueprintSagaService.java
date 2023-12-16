@@ -7,11 +7,11 @@ import com.wenox.anonymization.shared_events_library.MetadataExtractedSuccessEve
 
 public interface BlueprintSagaService {
 
-    void handleRestorationSuccess(DatabaseRestoredSuccessEvent event);
+    void handle(DatabaseRestoredSuccessEvent event);
 
-    void handleRestorationFailure(DatabaseRestoredFailureEvent event);
+    void handle(DatabaseRestoredFailureEvent event);
 
-    void handleExtractionSuccess(MetadataExtractedSuccessEvent event);
+    void handle(MetadataExtractedSuccessEvent event);
 
-    void handleExtractionFailure(MetadataExtractedFailureEvent event);
+    void handle(MetadataExtractedFailureEvent event);
 }
