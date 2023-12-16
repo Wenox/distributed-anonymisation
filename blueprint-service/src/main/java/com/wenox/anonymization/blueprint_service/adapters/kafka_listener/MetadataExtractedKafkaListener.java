@@ -1,4 +1,4 @@
-package com.wenox.anonymization.blueprint_service.adapters.listener;
+package com.wenox.anonymization.blueprint_service.adapters.kafka_listener;
 
 import com.wenox.anonymization.blueprint_service.domain.ports.MetadataExtractedListener;
 import com.wenox.anonymization.blueprint_service.domain.service.BlueprintSagaService;

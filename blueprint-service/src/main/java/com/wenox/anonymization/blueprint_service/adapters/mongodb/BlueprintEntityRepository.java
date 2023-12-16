@@ -1,4 +1,4 @@
-package com.wenox.anonymization.blueprint_service.adapters.db;
+package com.wenox.anonymization.blueprint_service.adapters.mongodb;
 
 
 import org.springframework.data.mongodb.repository.MongoRepository;

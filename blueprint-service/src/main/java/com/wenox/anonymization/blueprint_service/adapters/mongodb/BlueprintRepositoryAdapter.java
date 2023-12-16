@@ -1,4 +1,4 @@
-package com.wenox.anonymization.blueprint_service.adapters.db;
+package com.wenox.anonymization.blueprint_service.adapters.mongodb;
 
 import com.wenox.anonymization.blueprint_service.domain.model.Blueprint;
 import com.wenox.anonymization.blueprint_service.domain.ports.BlueprintRepository;

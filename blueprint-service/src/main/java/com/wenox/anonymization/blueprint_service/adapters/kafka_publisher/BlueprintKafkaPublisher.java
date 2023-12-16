@@ -1,4 +1,4 @@
-package com.wenox.anonymization.blueprint_service.adapters.message_publisher;
+package com.wenox.anonymization.blueprint_service.adapters.kafka_publisher;
 
 import com.wenox.anonymization.blueprint_service.domain.model.Blueprint;
 import com.wenox.anonymization.blueprint_service.domain.ports.BlueprintMessagePublisher;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class KafkaBlueprintMessagePublisher implements BlueprintMessagePublisher {
+public class BlueprintKafkaPublisher implements BlueprintMessagePublisher {
 
     private final KafkaTemplateWrapper<String, Object> loggingKafkaTemplate;
 
