@@ -3,6 +3,8 @@ package com.wenox.anonymization.database_restoration_service.config;
 import com.wenox.anonymization.database_restoration_service.domain.ports.*;
 import com.wenox.anonymization.database_restoration_service.domain.service.column_tuple.ColumnTupleService;
 import com.wenox.anonymization.database_restoration_service.domain.service.column_tuple.DefaultColumnTupleService;
+import com.wenox.anonymization.database_restoration_service.domain.service.messaging.BlueprintCreatedService;
+import com.wenox.anonymization.database_restoration_service.domain.service.messaging.MetadataExtractionFailureService;
 import com.wenox.anonymization.database_restoration_service.domain.service.mirror.DefaultMirrorService;
 import com.wenox.anonymization.database_restoration_service.domain.service.mirror.MirrorService;
 import com.wenox.anonymization.database_restoration_service.domain.service.restoration.DefaultRestorationService;
@@ -15,6 +17,28 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class SpringConfig {
 
+    @Bean
+    BlueprintCreatedService blueprintCreatedService(RestorationLifecycleService restorationLifecycleService,
+                                                    RestorationService restorationService,
+                                                    MessagePublisher messagePublisher) {
+        return new BlueprintCreatedService(
+                restorationLifecycleService,
+                restorationService,
+                messagePublisher
+        );
+    }
+
+    @Bean
+    MetadataExtractionFailureService metadataExtractionFailureService(DropDatabasePort dropDatabasePort,
+                                                                      ExistsDatabasePort existsDatabasePort,
+                                                                      MessagePublisher messagePublisher) {
+        return new MetadataExtractionFailureService(
+                dropDatabasePort,
+                existsDatabasePort,
+                messagePublisher
+        );
+    }
+    
     @Bean
     RestorationService restorationService(RestorationRepository restorationRepository) {
         return new DefaultRestorationService(restorationRepository);
@@ -46,6 +70,4 @@ public class SpringConfig {
                 restorationLifecycleService
         );
     }
-
-    
 }
