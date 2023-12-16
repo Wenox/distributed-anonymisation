@@ -1,9 +1,9 @@
 package com.wenox.anonymization.blueprint_service.domain.model;
 
-public enum BlueprintStatus {
+public enum BlueprintSagaStatus {
     CREATED,
-    S3_STORE_SUCCESS,
-    S3_STORE_FAILURE,
+    DUMP_STORE_SUCCESS,
+    DUMP_STORE_FAILURE,
     RESTORE_SUCCESS,
     RESTORE_FAILURE,
     METADATA_EXTRACTION_SUCCESS,

@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 public class SpringConfig {
 
     @Bean
-    BlueprintSagaService blueprintSagaService(BlueprintStatusUpdater blueprintStatusUpdater,
+    BlueprintSagaService blueprintSagaService(BlueprintSagaStatusUpdater blueprintStatusUpdater,
                                               DumpRepository dumpRepository) {
         return new DefaultBlueprintSagaService(
                 blueprintStatusUpdater,
@@ -22,20 +22,18 @@ public class SpringConfig {
     @Bean
     BlueprintService blueprintService(BlueprintRepository blueprintRepository,
                                       DumpRepository dumpRepository,
-                                      BlueprintStatusUpdater blueprintStatusUpdater) {
+                                      BlueprintSagaStatusUpdater blueprintStatusUpdater,
+                                      BlueprintMessagePublisher blueprintMessagePublisher) {
         return new DefaultBlueprintService(
                 blueprintRepository,
                 dumpRepository,
-                blueprintStatusUpdater
+                blueprintStatusUpdater,
+                blueprintMessagePublisher
         );
     }
 
     @Bean
-    BlueprintStatusUpdater blueprintStatusUpdater(BlueprintRepository blueprintRepository,
-                                                  BlueprintMessagePublisher blueprintMessagePublisher) {
-        return new BlueprintStatusUpdater(
-                blueprintRepository,
-                blueprintMessagePublisher
-        );
+    BlueprintSagaStatusUpdater blueprintStatusUpdater(BlueprintRepository blueprintRepository) {
+        return new BlueprintSagaStatusUpdater(blueprintRepository);
     }
 }

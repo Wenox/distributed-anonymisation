@@ -17,7 +17,7 @@ public class Blueprint {
     @JsonIgnore
     private MultipartFile dumpFile;
 
-    private BlueprintStatus blueprintStatus;
+    private BlueprintSagaStatus blueprintSagaStatus;
 
     private RestoreMode restoreMode;
 

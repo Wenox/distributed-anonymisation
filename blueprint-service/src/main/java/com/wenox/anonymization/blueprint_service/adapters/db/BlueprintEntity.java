@@ -1,7 +1,7 @@
 package com.wenox.anonymization.blueprint_service.adapters.db;
 
 import com.wenox.anonymization.blueprint_service.domain.model.Blueprint;
-import com.wenox.anonymization.blueprint_service.domain.model.BlueprintStatus;
+import com.wenox.anonymization.blueprint_service.domain.model.BlueprintSagaStatus;
 import com.wenox.anonymization.blueprint_service.domain.model.DatabaseType;
 import com.wenox.anonymization.shared_events_library.api.RestoreMode;
 import lombok.Getter;
@@ -23,7 +23,7 @@ class BlueprintEntity {
     @Id
     private String blueprintId;
 
-    private BlueprintStatus blueprintStatus;
+    private BlueprintSagaStatus blueprintSagaStatus;
 
     private RestoreMode restoreMode;
 
@@ -44,7 +44,7 @@ class BlueprintEntity {
     static BlueprintEntity fromDomain(Blueprint blueprint) {
         BlueprintEntity entity = new BlueprintEntity();
         entity.setBlueprintId(blueprint.getBlueprintId());
-        entity.setBlueprintStatus(blueprint.getBlueprintStatus());
+        entity.setBlueprintSagaStatus(blueprint.getBlueprintSagaStatus());
         entity.setRestoreMode(blueprint.getRestoreMode());
         entity.setDatabaseType(blueprint.getDatabaseType());
         entity.setTitle(blueprint.getTitle());
@@ -59,7 +59,7 @@ class BlueprintEntity {
     Blueprint toDomain() {
         Blueprint blueprint = new Blueprint();
         blueprint.setBlueprintId(this.getBlueprintId());
-        blueprint.setBlueprintStatus(this.getBlueprintStatus());
+        blueprint.setBlueprintSagaStatus(this.getBlueprintSagaStatus());
         blueprint.setRestoreMode(this.getRestoreMode());
         blueprint.setDatabaseType(this.getDatabaseType());
         blueprint.setTitle(this.getTitle());
