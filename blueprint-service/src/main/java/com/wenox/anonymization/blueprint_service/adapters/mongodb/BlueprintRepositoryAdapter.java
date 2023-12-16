@@ -19,7 +19,6 @@ class BlueprintRepositoryAdapter implements BlueprintRepository {
     @Override
     public Blueprint save(Blueprint blueprint) {
         BlueprintEntity entity = BlueprintEntity.fromDomain(blueprint);
-        log.info("Entity: {}", entity);
         BlueprintEntity savedEntity = blueprintEntityRepository.save(entity);
         return savedEntity.toDomain();
     }
