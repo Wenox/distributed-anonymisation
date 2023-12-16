@@ -8,11 +8,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 @Component
-public class BlueprintMapper {
+class BlueprintMapper {
 
     private final static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
 
-    public Blueprint fromRequest(ImportBlueprintRequest dto) {
+    Blueprint fromRequest(ImportBlueprintRequest dto) {
         Blueprint blueprint = new Blueprint();
         blueprint.setBlueprintId(UUID.randomUUID().toString());
         blueprint.setDumpFile(dto.dumpFile());

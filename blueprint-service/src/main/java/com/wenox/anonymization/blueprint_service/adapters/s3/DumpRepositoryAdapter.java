@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class DumpRepositoryAdapter implements DumpRepository {
+class DumpRepositoryAdapter implements DumpRepository {
 
     private final StorageService s3StorageService;
 

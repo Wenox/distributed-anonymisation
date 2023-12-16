@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class MetadataExtractedKafkaListener implements MetadataExtractedListener {
+class MetadataExtractedKafkaListener implements MetadataExtractedListener {
 
     private final BlueprintSagaService blueprintSagaService;
 

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class BlueprintKafkaPublisher implements BlueprintMessagePublisher {
+class BlueprintKafkaPublisher implements BlueprintMessagePublisher {
 
     private final KafkaTemplateWrapper<String, Object> loggingKafkaTemplate;
 

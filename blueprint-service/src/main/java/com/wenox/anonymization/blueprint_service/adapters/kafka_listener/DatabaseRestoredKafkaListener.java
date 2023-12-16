@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class DatabaseRestoredKafkaListener implements DatabaseRestoredListener {
+class DatabaseRestoredKafkaListener implements DatabaseRestoredListener {
 
     private final BlueprintSagaService blueprintSagaService;
 
