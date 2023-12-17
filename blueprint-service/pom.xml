@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.0.4</version>
+		<version>3.2.0</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.wenox.anonymization</groupId>
@@ -15,8 +15,18 @@
 	<description>Blueprint Service</description>
 	<properties>
 		<java.version>17</java.version>
+		<eureka.version>4.1.0</eureka.version>
 	</properties>
 	<dependencies>
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+			<version>${eureka.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>com.wenox.anonymization</groupId>
 			<artifactId>shared-s3-library</artifactId>
@@ -72,8 +82,7 @@
 			<artifactId>spring-kafka-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-	</dependencies>
-
+	</dependencies>-->
 	<build>
 		<plugins>
 			<plugin>
