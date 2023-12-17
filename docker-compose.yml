@@ -1,6 +1,42 @@
 version: '3.8'
 
 services:
+  elasticsearch:
+    image: elasticsearch:8.11.3
+    platform: linux/arm64
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+
+  logstash:
+    image: logstash:8.11.3
+    platform: linux/arm64
+    container_name: logstash
+    ports:
+      - "5001:5000"
+    volumes:
+      - ./logstash.yml:/usr/share/logstash/config/logstash.yml
+      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+    depends_on:
+      - elasticsearch
+
+  kibana:
+    image: kibana:8.11.3
+    platform: linux/arm64
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+
   spark-master:
     image: apache/spark:v3.4.0
     command: /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master -h 0.0.0.0
@@ -194,3 +230,6 @@ services:
     depends_on:
       - kafka
     restart: always
+
+volumes:
+  elasticsearch-data:
