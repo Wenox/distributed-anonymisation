@@ -5,6 +5,7 @@ import com.wenox.anonymization.blueprint_service.domain.model.Blueprint;
 import com.wenox.anonymization.blueprint_service.domain.ports.MessagePublisher;
 import com.wenox.anonymization.blueprint_service.domain.ports.BlueprintRepository;
 import com.wenox.anonymization.blueprint_service.domain.ports.DumpRepository;
+import com.wenox.anonymization.shared_events_library.BlueprintCreatedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -51,7 +52,12 @@ public class DefaultBlueprintService implements BlueprintService {
     private void handleUploadAndStatus(byte[] content, Blueprint blueprint) {
         if (dumpRepository.uploadDump(content, blueprint)) {
             blueprintSagaStatusUpdater.updateSagaStatusOnDumpStoreSuccess(blueprint);
-            messagePublisher.sendBlueprintCreated(blueprint);
+            messagePublisher.sendBlueprintCreated(new BlueprintCreatedEvent(
+                            blueprint.getBlueprintId(),
+                            blueprint.getBlueprintDatabaseName(),
+                            blueprint.getRestoreMode()
+                    )
+            );
         } else {
             blueprintSagaStatusUpdater.updateSagaStatusOnDumpStoreFailure(blueprint);
         }

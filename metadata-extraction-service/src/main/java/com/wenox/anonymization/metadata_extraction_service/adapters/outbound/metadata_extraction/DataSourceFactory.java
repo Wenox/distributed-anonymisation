@@ -1,5 +1,6 @@
-package com.wenox.anonymization.database_restoration_service.adapters.outbound.column_tuple;
+package com.wenox.anonymization.metadata_extraction_service.adapters.outbound.metadata_extraction;
 
+import com.wenox.anonymization.metadata_extraction_service.domain.model.DatabaseConnection;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
@@ -10,11 +11,11 @@ import javax.sql.DataSource;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-class DataSourceFactory {
+public class DataSourceFactory {
 
-    private final ColumnTupleDatabaseConnectionConfig lifecycleConfig;
+    private final DatabaseConfiguration databaseConfiguration;
 
-    DataSource getDataSource(DatabaseConnection databaseConnection) {
+    public DataSource getDataSource(DatabaseConnection databaseConnection) {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
 
         switch (databaseConnection.getDatabaseType()) {
@@ -36,8 +37,8 @@ class DataSourceFactory {
     }
 
     private String buildUrl(DatabaseConnection databaseConnection, String jdbcPrefix) {
-        String ipAddress = lifecycleConfig.getIsRunningOnCloud() ? lifecycleConfig.getPostgresIpAddress() : "localhost";
-        String port = lifecycleConfig.getIsRunningOnCloud() ? lifecycleConfig.getPostgresContainerPort() : lifecycleConfig.getPostgresHostPort();
+        String ipAddress = databaseConfiguration.getIsRunningOnCloud() ? databaseConfiguration.getPostgresIpAddress() : "localhost";
+        String port = databaseConfiguration.getIsRunningOnCloud() ? databaseConfiguration.getPostgresContainerPort() : databaseConfiguration.getPostgresHostPort();
         return String.format("%s://%s:%s/%s", jdbcPrefix, ipAddress, port, databaseConnection.getDatabaseName());
     }
 }

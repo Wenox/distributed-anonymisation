@@ -4,7 +4,7 @@ import com.wenox.anonymization.database_restoration_service.domain.ports.*;
 import com.wenox.anonymization.database_restoration_service.domain.service.column_tuple.ColumnTupleService;
 import com.wenox.anonymization.database_restoration_service.domain.service.column_tuple.DefaultColumnTupleService;
 import com.wenox.anonymization.database_restoration_service.domain.service.messaging.BlueprintCreatedService;
-import com.wenox.anonymization.database_restoration_service.domain.service.messaging.MetadataExtractionFailureService;
+import com.wenox.anonymization.database_restoration_service.domain.service.messaging.MetadataExtractedFailureService;
 import com.wenox.anonymization.database_restoration_service.domain.service.mirror.DefaultMirrorService;
 import com.wenox.anonymization.database_restoration_service.domain.service.mirror.MirrorService;
 import com.wenox.anonymization.database_restoration_service.domain.service.restoration.DefaultRestorationService;
@@ -29,16 +29,16 @@ public class SpringConfig {
     }
 
     @Bean
-    MetadataExtractionFailureService metadataExtractionFailureService(DropDatabasePort dropDatabasePort,
-                                                                      ExistsDatabasePort existsDatabasePort,
-                                                                      MessagePublisher messagePublisher) {
-        return new MetadataExtractionFailureService(
+    MetadataExtractedFailureService metadataExtractionFailureService(DropDatabasePort dropDatabasePort,
+                                                                     ExistsDatabasePort existsDatabasePort,
+                                                                     MessagePublisher messagePublisher) {
+        return new MetadataExtractedFailureService(
                 dropDatabasePort,
                 existsDatabasePort,
                 messagePublisher
         );
     }
-    
+
     @Bean
     RestorationService restorationService(RestorationRepository restorationRepository) {
         return new DefaultRestorationService(restorationRepository);
