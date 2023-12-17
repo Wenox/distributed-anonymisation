@@ -120,83 +120,17 @@ services:
     ports:
       - '3000:3000'
 
-  blueprints_mongodb:
+  mongodb:
     image: mongo
-    container_name: blueprints_mongodb
+    container_name: mongodb
     restart: always
     ports:
       - "27017:27017"
     environment:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
-      MONGO_INITDB_DATABASE: blueprints_db
     volumes:
-      - ./blueprint-service/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
-
-  metadata_mongodb:
-    image: mongo
-    container_name: metadata_mongodb
-    restart: always
-    ports:
-      - "27018:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
-      MONGO_INITDB_DATABASE: metadata_db
-    volumes:
-      - ./metadata-extraction-service/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
-
-  anonymization_saga_mongodb:
-    image: mongo
-    container_name: anonymization_saga_mongodb
-    restart: always
-    ports:
-      - "27023:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
-      MONGO_INITDB_DATABASE: anonymization_saga_db
-    volumes:
-      - ./anonymization-saga-service/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
-
-  restoration_mongodb:
-    image: mongo
-    container_name: restoration_mongodb
-    restart: always
-    ports:
-      - "27019:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
-      MONGO_INITDB_DATABASE: restorations_db
-    volumes:
-      - ./database-restoration-service/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
-
-  worksheet_mongodb:
-    image: mongo
-    container_name: worksheet_mongodb
-    restart: always
-    ports:
-      - "27020:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
-      MONGO_INITDB_DATABASE: worksheets_db
-    volumes:
-      - ./worksheet-service/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
-
-  anonymization_execution_mongodb:
-    image: mongo
-    container_name: anonymization_execution_mongodb
-    restart: always
-    ports:
-      - "27021:27017"
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: example
-      MONGO_INITDB_DATABASE: anonymization_execution_db
-    volumes:
-      - ./anonymization-execution-service/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
 
   zookeeper:
     image: 'bitnami/zookeeper:latest'
