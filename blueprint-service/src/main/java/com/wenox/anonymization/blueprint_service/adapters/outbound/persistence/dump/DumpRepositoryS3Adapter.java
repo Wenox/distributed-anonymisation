@@ -18,17 +18,18 @@ class DumpRepositoryS3Adapter implements DumpRepository {
     @Override
     public boolean uploadDump(byte[] content, Blueprint blueprint) {
         try {
-            log.info("Uploading to S3... BlueprintId: {}", blueprint.getBlueprintId());
+            log.info("Uploading Dump to S3... Blueprint : {}", blueprint);
             s3StorageService.uploadFile(content, S3Constants.BUCKET_BLUEPRINTS, blueprint.getBlueprintDatabaseName());
             return true;
         } catch (Exception e) {
-            log.error("Error while storing dump: ", e);
+            log.error("Error while uploading dump for Blueprint : {} ", blueprint, e);
             return false;
         }
     }
 
     @Override
     public void deleteDump(String databaseName) {
+        log.info("Deleting Dump from S3... Database : {}", databaseName);
         s3StorageService.deleteFile(S3Constants.BUCKET_BLUEPRINTS, databaseName);
     }
 }
