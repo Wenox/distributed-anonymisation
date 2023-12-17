@@ -1,7 +1,6 @@
 package com.wenox.anonymization.metadata_extraction_service.adapters.inbound.messaging;
 
 import com.wenox.anonymization.metadata_extraction_service.domain.service.messaging.DatabaseRestoredService;
-import com.wenox.anonymization.shared_events_library.DatabaseRestoredFailureEvent;
 import com.wenox.anonymization.shared_events_library.DatabaseRestoredSuccessEvent;
 import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
 import lombok.RequiredArgsConstructor;
@@ -20,10 +19,5 @@ public class DatabaseRestoredKafkaListener {
     void onRestoreSuccess(DatabaseRestoredSuccessEvent event) {
         log.info("Received {}", event);
         databaseRestoredService.handle(event);
-    }
-
-    @KafkaListener(topics = KafkaConstants.TOPIC_RESTORE_FAILURE, groupId = "metadata-extraction-service-group")
-    void onRestoreFailure(DatabaseRestoredFailureEvent event) {
-        log.info("Received {}", event);
     }
 }

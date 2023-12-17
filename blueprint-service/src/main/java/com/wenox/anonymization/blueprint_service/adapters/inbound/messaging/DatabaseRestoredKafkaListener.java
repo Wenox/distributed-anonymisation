@@ -27,7 +27,7 @@ class DatabaseRestoredKafkaListener {
     @KafkaListener(topics = KafkaConstants.TOPIC_RESTORE_FAILURE, groupId = "blueprint-service-group")
     @Retryable(retryFor = {Exception.class}, maxAttempts = 5, backoff = @Backoff(delay = 2000, multiplier = 2))
     void onRestoreFailure(DatabaseRestoredFailureEvent event) {
-        log.info("-----> Received compensating transaction: delete file from s3,  {}", event);
+        log.info("-----> Started compensating transaction: delete file from s3,  {}", event);
         blueprintSagaService.handle(event);
         log.info("<----- Finished compensating transaction, delete file from s3, {}", event);
     }
