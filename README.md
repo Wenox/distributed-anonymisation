@@ -10,3 +10,4 @@
 | Prefect – Dashboard | http://127.0.0.1:4200/     |
 | Prefect – Swagger   | http://127.0.0.1:4200/api  |
 | Prefect – Docs      | http://127.0.0.1:4200/docs |
+| Prometheus          | http://localhost:9090/     |
