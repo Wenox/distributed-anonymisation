@@ -1,4 +1,6 @@
 com.wenox.anonymization.shared_events_library.config.KafkaProducerConfig
 com.wenox.anonymization.shared_events_library.config.KafkaConsumerConfig
+com.wenox.anonymization.shared_events_library.config.KafkaDeadLetterConfig
+com.wenox.anonymization.shared_events_library.config.KafkaRetryConfig
 com.wenox.anonymization.shared_events_library.config.KafkaTopicConfig
 com.wenox.anonymization.shared_events_library.impl.LoggingKafkaTemplate
