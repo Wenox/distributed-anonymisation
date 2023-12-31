@@ -14,6 +14,7 @@ import org.springframework.web.filter.AbstractRequestLoggingFilter;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 
 import java.io.IOException;
+import java.util.List;
 
 @Slf4j
 @Component
@@ -24,6 +25,9 @@ public class LoggingFilter extends AbstractRequestLoggingFilter {
 
     @Value("${logging.filter.response.enabled:true}")
     private boolean shouldLogResponse;
+
+    @Value("${logging.filter.ignored-endpoints:}")
+    private List<String> blocklist;
 
     private final ObjectMapper objectMapper;
 
@@ -54,6 +58,11 @@ public class LoggingFilter extends AbstractRequestLoggingFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException, ServletException {
+        if (blocklist.stream().anyMatch(v -> v.equals(request.getRequestURI()))) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         ContentCachingResponseWrapper wrappedResponse = new ContentCachingResponseWrapper(response);
         try {
             if (shouldLogRequest) {
