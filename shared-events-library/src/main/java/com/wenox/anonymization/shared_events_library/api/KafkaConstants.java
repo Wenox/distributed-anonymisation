@@ -6,6 +6,8 @@ public final class KafkaConstants {
 
     }
 
+    public static final String TOPIC_DEAD_LETTER = "dead-letter";
+
     public static final String TOPIC_CREATED_BLUEPRINT = "created-blueprint";
     public static final String TOPIC_CREATED_WORKSHEET = "created-worksheet";
 

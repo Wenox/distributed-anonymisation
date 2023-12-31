@@ -14,6 +14,11 @@ import org.springframework.kafka.config.TopicBuilder;
 public class KafkaTopicConfig {
 
     @Bean
+    public NewTopic topicDeadLetter() {
+        return createNewTopic(KafkaConstants.TOPIC_DEAD_LETTER);
+    }
+
+    @Bean
     public NewTopic topicBlueprintCreated() {
         return createNewTopic(KafkaConstants.TOPIC_CREATED_BLUEPRINT);
     }
