@@ -21,8 +21,9 @@ public class DefaultBlueprintSagaService implements BlueprintSagaService {
 
     @Override
     public void handle(DatabaseRestoredFailureEvent event) {
-        blueprintSagaStatusUpdater.updateBlueprintSagaStatus(event.getBlueprintId(), BlueprintSagaStatus.RESTORE_FAILURE);
-        dumpRepository.deleteDump(event.getDatabaseName());
+        throw new RuntimeException("Failing fast");
+//        blueprintSagaStatusUpdater.updateBlueprintSagaStatus(event.getBlueprintId(), BlueprintSagaStatus.RESTORE_FAILURE);
+//        dumpRepository.deleteDump(event.getDatabaseName());
     }
 
     @Override

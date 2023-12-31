@@ -19,9 +19,10 @@ public class BlueprintCreatedService {
 
     public void handle(BlueprintCreatedEvent event) {
         try {
-            restorationLifecycleService.restore(event.getDatabaseName(), event.getRestoreMode());
-            restorationService.saveActiveRestoration(event);
-            messagePublisher.send(new DatabaseRestoredSuccessEvent(event.getBlueprintId(), event.getDatabaseName()));
+            throw new RuntimeException("Error occured during restoration");
+//            restorationLifecycleService.restore(event.getDatabaseName(), event.getRestoreMode());
+//            restorationService.saveActiveRestoration(event);
+//            messagePublisher.send(new DatabaseRestoredSuccessEvent(event.getBlueprintId(), event.getDatabaseName()));
         } catch (Exception ex) {
             log.error("Error during database restoration for event : {}", event, ex);
             restorationService.saveInactiveRestoration(event);

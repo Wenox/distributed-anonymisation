@@ -7,8 +7,6 @@ import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
-import org.springframework.retry.annotation.Backoff;
-import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -25,7 +23,6 @@ class DatabaseRestoredKafkaListener {
     }
 
     @KafkaListener(topics = KafkaConstants.TOPIC_RESTORE_FAILURE, groupId = "blueprint-service-group")
-    @Retryable(retryFor = {Exception.class}, maxAttempts = 5, backoff = @Backoff(delay = 2000, multiplier = 2))
     void onRestoreFailure(DatabaseRestoredFailureEvent event) {
         log.info("-----> Started compensating transaction: delete file from s3,  {}", event);
         blueprintSagaService.handle(event);
