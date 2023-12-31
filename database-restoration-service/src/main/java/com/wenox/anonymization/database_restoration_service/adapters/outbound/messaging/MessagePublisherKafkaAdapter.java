@@ -16,17 +16,17 @@ class MessagePublisherKafkaAdapter implements MessagePublisher {
     private final KafkaTemplateWrapper<String, Object> loggingKafkaTemplate;
 
     @Override
-    public void sendDatabaseRestoredSuccess(DatabaseRestoredSuccessEvent event) {
+    public void send(DatabaseRestoredSuccessEvent event) {
         loggingKafkaTemplate.send(KafkaConstants.TOPIC_RESTORE_SUCCESS, event);
     }
 
     @Override
-    public void sendDatabaseRestoredFailure(DatabaseRestoredFailureEvent event) {
+    public void send(DatabaseRestoredFailureEvent event) {
         loggingKafkaTemplate.send(KafkaConstants.TOPIC_RESTORE_FAILURE, event);
     }
 
     @Override
-    public void sendMetadataExtractedFailure(MetadataExtractedFailureEvent event) {
+    public void send(MetadataExtractedFailureEvent event) {
         loggingKafkaTemplate.send(KafkaConstants.TOPIC_RESTORE_FAILURE, event);
     }
 }

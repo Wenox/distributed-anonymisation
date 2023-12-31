@@ -6,9 +6,9 @@ import com.wenox.anonymization.shared_events_library.MetadataExtractedFailureEve
 
 public interface MessagePublisher {
 
-    void sendDatabaseRestoredSuccess(DatabaseRestoredSuccessEvent event);
+    void send(DatabaseRestoredSuccessEvent event);
 
-    void sendDatabaseRestoredFailure(DatabaseRestoredFailureEvent event);
+    void send(DatabaseRestoredFailureEvent event);
 
-    void sendMetadataExtractedFailure(MetadataExtractedFailureEvent event);
+    void send(MetadataExtractedFailureEvent event);
 }

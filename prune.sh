@@ -29,7 +29,7 @@ all_containers=$(docker ps -aq)
 
 # Loop through all container IDs
 for container in ${all_containers[@]}; do
-  
+
     # Check if the container ID is in the keep_containers array
     should_delete=true
     for keep_container in ${keep_containers[@]}; do

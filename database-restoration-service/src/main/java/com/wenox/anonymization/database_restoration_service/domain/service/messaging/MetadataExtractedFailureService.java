@@ -20,7 +20,7 @@ public class MetadataExtractedFailureService {
             if (existsDatabasePort.existsDatabase(event.getDatabaseName())) {
                 dropDatabasePort.dropDatabase(event.getDatabaseName());
             }
-            messagePublisher.sendMetadataExtractedFailure(event);
+            messagePublisher.send(event);
         } catch (Exception ex) {
             log.error("Error occurred during execution of compensating transaction for {}", event, ex);
         }
