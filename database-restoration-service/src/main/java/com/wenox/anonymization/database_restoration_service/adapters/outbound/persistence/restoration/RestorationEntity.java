@@ -15,8 +15,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 class RestorationEntity {
 
     @Id
-    private String restorationId;
-
     private String blueprintId;
 
     private String databaseName;
@@ -27,7 +25,6 @@ class RestorationEntity {
 
     Restoration toDomain() {
         Restoration restoration = new Restoration();
-        restoration.setRestorationId(this.getRestorationId());
         restoration.setBlueprintId(this.getBlueprintId());
         restoration.setDatabaseName(this.getDatabaseName());
         restoration.setActive(this.isActive());
@@ -37,7 +34,6 @@ class RestorationEntity {
 
     static RestorationEntity fromDomain(Restoration restoration) {
         RestorationEntity entity = new RestorationEntity();
-        entity.setRestorationId(restoration.getRestorationId());
         entity.setBlueprintId(restoration.getBlueprintId());
         entity.setDatabaseName(restoration.getDatabaseName());
         entity.setActive(restoration.isActive());

@@ -5,6 +5,7 @@ import java.util.concurrent.TimeoutException;
 
 import com.wenox.anonymization.database_restoration_service.domain.exception.UnsupportedRestoreModeException;
 import com.wenox.anonymization.database_restoration_service.domain.ports.CreateDatabasePort;
+import com.wenox.anonymization.database_restoration_service.domain.ports.DropDatabasePort;
 import com.wenox.anonymization.database_restoration_service.domain.ports.RestoreDatabasePort;
 import com.wenox.anonymization.shared_events_library.api.RestoreMode;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class DefaultRestorationLifecycleService implements RestorationLifecycleService {
 
+    private final DropDatabasePort dropDatabasePort;
     private final CreateDatabasePort createDatabasePort;
     private final RestoreDatabasePort restoreDatabasePort;
 
@@ -27,11 +29,13 @@ public class DefaultRestorationLifecycleService implements RestorationLifecycleS
     }
 
     private void restoreFromArchive(String dbName) throws IOException, InterruptedException, TimeoutException {
+        dropDatabasePort.dropDatabase(dbName);
         createDatabasePort.createDatabase(dbName);
         restoreDatabasePort.restoreArchiveDump(dbName);
     }
 
     private void restoreFromScript(String dbName) throws IOException, InterruptedException, TimeoutException {
+        dropDatabasePort.dropDatabase(dbName);
         createDatabasePort.createDatabase(dbName);
         restoreDatabasePort.restoreScriptDump(dbName);
     }

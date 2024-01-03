@@ -45,9 +45,11 @@ public class SpringConfig {
     }
 
     @Bean
-    RestorationLifecycleService restorationLifecycleService(CreateDatabasePort createDatabasePort,
+    RestorationLifecycleService restorationLifecycleService(DropDatabasePort dropDatabasePort,
+                                                            CreateDatabasePort createDatabasePort,
                                                             RestoreDatabasePort restoreDatabasePort) {
         return new DefaultRestorationLifecycleService(
+                dropDatabasePort,
                 createDatabasePort,
                 restoreDatabasePort
         );
