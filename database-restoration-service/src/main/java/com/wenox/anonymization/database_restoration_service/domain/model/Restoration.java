@@ -11,8 +11,6 @@ import lombok.*;
 @AllArgsConstructor
 public class Restoration {
 
-    private String restorationId;
-
     private String blueprintId;
 
     private String databaseName;
