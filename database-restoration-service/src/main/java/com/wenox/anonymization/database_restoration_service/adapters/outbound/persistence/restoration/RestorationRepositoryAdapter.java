@@ -14,11 +14,6 @@ class RestorationRepositoryAdapter implements RestorationRepository {
     private final RestorationEntityRepository restorationEntityRepository;
 
     @Override
-    public Optional<Restoration> findByBlueprintId(String blueprintId) {
-        return restorationEntityRepository.findByBlueprintId(blueprintId).map(RestorationEntity::toDomain);
-    }
-
-    @Override
     public Optional<Restoration> findById(String id) {
         return restorationEntityRepository.findById(id).map(RestorationEntity::toDomain);
     }

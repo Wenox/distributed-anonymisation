@@ -30,11 +30,11 @@ public class SpringConfig {
 
     @Bean
     MetadataExtractedFailureService metadataExtractionFailureService(DropDatabasePort dropDatabasePort,
-                                                                     ExistsDatabasePort existsDatabasePort,
+                                                                     RestorationService restorationService,
                                                                      MessagePublisher messagePublisher) {
         return new MetadataExtractedFailureService(
                 dropDatabasePort,
-                existsDatabasePort,
+                restorationService,
                 messagePublisher
         );
     }

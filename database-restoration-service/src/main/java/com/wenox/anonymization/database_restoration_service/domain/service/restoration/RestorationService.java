@@ -10,4 +10,6 @@ public interface RestorationService {
     void saveActiveRestoration(BlueprintCreatedEvent event);
 
     void saveInactiveRestoration(BlueprintCreatedEvent event);
+
+    void markAsInactive(String id);
 }

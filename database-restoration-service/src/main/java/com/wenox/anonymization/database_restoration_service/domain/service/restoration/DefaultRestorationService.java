@@ -12,7 +12,7 @@ public class DefaultRestorationService implements RestorationService {
     private final RestorationRepository restorationRepository;
 
     public Restoration getRestorationByBlueprintId(String blueprintId) {
-        return restorationRepository.findByBlueprintId(blueprintId)
+        return restorationRepository.findById(blueprintId)
                 .orElseThrow(() -> new RestorationNotFoundException("Restoration not found with blueprintId: " + blueprintId));
     }
 
@@ -22,5 +22,11 @@ public class DefaultRestorationService implements RestorationService {
 
     public void saveInactiveRestoration(BlueprintCreatedEvent event) {
         restorationRepository.save(Restoration.toInactiveRestoration(event));
+    }
+
+    public void markAsInactive(String id) {
+        Restoration restoration = getRestorationByBlueprintId(id);
+        restoration.setActive(false);
+        restorationRepository.save(restoration);
     }
 }
