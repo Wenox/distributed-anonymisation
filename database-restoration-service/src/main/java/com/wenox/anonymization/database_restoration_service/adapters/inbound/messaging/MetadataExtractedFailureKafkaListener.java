@@ -6,6 +6,7 @@ import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -16,9 +17,10 @@ class MetadataExtractedFailureKafkaListener {
     private final MetadataExtractedFailureService metadataExtractedFailureService;
 
     @KafkaListener(topics = KafkaConstants.TOPIC_METADATA_FAILURE, groupId = "blueprint-service-group")
-    void onExtractionFailure(MetadataExtractedFailureEvent event) {
+    void onExtractionFailure(MetadataExtractedFailureEvent event, Acknowledgment ack) {
         log.info("-----> Started compensating transaction {}", event);
         metadataExtractedFailureService.handle(event);
         log.info("<----- Finished compensating transaction {}", event);
+        ack.acknowledge();
     }
 }

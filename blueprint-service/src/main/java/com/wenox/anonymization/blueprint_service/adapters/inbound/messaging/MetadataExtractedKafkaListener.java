@@ -7,6 +7,7 @@ import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -17,14 +18,16 @@ class MetadataExtractedKafkaListener {
     private final BlueprintSagaService blueprintSagaService;
 
     @KafkaListener(topics = KafkaConstants.TOPIC_METADATA_SUCCESS, groupId = "blueprint-service-group")
-    void onExtractSuccess(MetadataExtractedSuccessEvent event) {
+    void onExtractSuccess(MetadataExtractedSuccessEvent event, Acknowledgment ack) {
         log.info("Received {}", event);
         blueprintSagaService.handle(event);
+        ack.acknowledge();
     }
 
     @KafkaListener(topics = KafkaConstants.TOPIC_METADATA_FAILURE, groupId = "blueprint-service-group")
-    void onExtractFailure(MetadataExtractedFailureEvent event) {
+    void onExtractFailure(MetadataExtractedFailureEvent event, Acknowledgment ack) {
         log.info("Received {}", event);
         blueprintSagaService.handle(event);
+        ack.acknowledge();
     }
 }

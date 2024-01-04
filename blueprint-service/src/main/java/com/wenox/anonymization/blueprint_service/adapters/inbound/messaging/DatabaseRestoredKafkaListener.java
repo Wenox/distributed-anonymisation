@@ -25,9 +25,10 @@ class DatabaseRestoredKafkaListener {
     }
 
     @KafkaListener(topics = KafkaConstants.TOPIC_RESTORE_FAILURE, groupId = "blueprint-service-group")
-    void onRestoreFailure(DatabaseRestoredFailureEvent event) {
+    void onRestoreFailure(DatabaseRestoredFailureEvent event, Acknowledgment ack) {
         log.info("-----> Started compensating transaction: delete file from s3,  {}", event);
         blueprintSagaService.handle(event);
         log.info("<----- Finished compensating transaction, delete file from s3, {}", event);
+        ack.acknowledge();
     }
 }
