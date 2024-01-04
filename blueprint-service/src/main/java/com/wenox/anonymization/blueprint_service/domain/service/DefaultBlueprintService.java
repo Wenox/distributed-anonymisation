@@ -43,6 +43,7 @@ public class DefaultBlueprintService implements BlueprintService {
         CompletableFuture.runAsync(() -> handleUploadAndStatus(content, blueprint))
                 .exceptionally(ex -> {
                     log.error("Error for blueprint {} while updating blueprint after S3 upload.", blueprint, ex);
+                    blueprintSagaStatusUpdater.updateSagaStatusOnDumpStoreFailure(blueprint);
                     return null;
                 });
 

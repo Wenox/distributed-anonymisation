@@ -16,6 +16,8 @@ class DumpRepositoryS3Adapter implements DumpRepository {
     private final StorageService s3StorageService;
 
     @Override
+    // todo: can use retry to increase resiliency
+    // todo: circuit breaker to increase resiliency
     public boolean uploadDump(byte[] content, Blueprint blueprint) {
         try {
             log.info("Uploading Dump to S3... Blueprint : {}", blueprint);

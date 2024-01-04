@@ -18,7 +18,7 @@ class BlueprintMapper {
         blueprint.setDumpFile(dto.dumpFile());
         blueprint.setBlueprintSagaStatus(BlueprintSagaStatus.CREATED);
         blueprint.setDumpStoreSuccess(false);
-        blueprint.setBlueprintDatabaseName(generateDatabaseName());
+        blueprint.setBlueprintDatabaseName(generateDatabaseName()); //todo
         blueprint.setRestoreMode(dto.restoreMode());
         blueprint.setDatabaseType(dto.databaseType());
         blueprint.setTitle(dto.title());
