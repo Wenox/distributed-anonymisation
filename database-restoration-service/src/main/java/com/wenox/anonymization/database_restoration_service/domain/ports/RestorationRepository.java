@@ -6,8 +6,6 @@ import java.util.Optional;
 
 public interface RestorationRepository {
 
-    Optional<Restoration> findByBlueprintId(String blueprintId);
-
     Optional<Restoration> findById(String id);
 
     Restoration save(Restoration restoration);

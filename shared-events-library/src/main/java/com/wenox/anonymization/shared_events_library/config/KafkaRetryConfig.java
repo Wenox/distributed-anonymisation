@@ -24,15 +24,21 @@ public class KafkaRetryConfig {
     @Bean
     BackOff backoff() {
         if (!backoffProperties.isEnabled()) {
-            log.info("Retrying in Kafka Consumer is disabled, will not use backoff...");
+            log.info("Retrying in Kafka Consumer is disabled, backoff will not be used...");
             return new FixedBackOff(0L, 0L);
         }
 
         return switch (backoffProperties.getType()) {
             case FIXED ->
-                    new FixedBackOff(backoffProperties.getFixed().getInterval(), backoffProperties.getFixed().getMaxAttempts());
+                    new FixedBackOff(
+                            backoffProperties.getFixed().getInterval(),
+                            backoffProperties.getFixed().getMaxAttempts()
+                    );
             case EXPONENTIAL ->
-                    new ExponentialBackOff(backoffProperties.getExponential().getInitialInterval(), backoffProperties.getExponential().getMultiplier());
+                    new ExponentialBackOff(
+                            backoffProperties.getExponential().getInitialInterval(),
+                            backoffProperties.getExponential().getMultiplier()
+                    );
         };
     }
 
