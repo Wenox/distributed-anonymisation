@@ -34,4 +34,9 @@ public class Blueprint {
     private LocalDateTime createdDate;
 
     private String originalDumpName;
+
+    public Blueprint toStale() {
+        this.blueprintSagaStatus = BlueprintSagaStatus.STALE;
+        return this;
+    }
 }

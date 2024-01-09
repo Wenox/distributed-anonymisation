@@ -6,7 +6,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 
 @Component
@@ -26,5 +29,24 @@ class BlueprintRepositoryMongoAdapter implements BlueprintRepository {
     @Override
     public Optional<Blueprint> findById(String id) {
         return blueprintEntityRepository.findById(id).map(BlueprintEntity::toDomain);
+    }
+
+    @Override
+    public Stream<Blueprint> fetchStaleBlueprints(LocalDateTime thresholdTime) {
+        return blueprintEntityRepository.findByCreatedDateBefore(thresholdTime)
+                .stream()
+                .map(BlueprintEntity::toDomain);
+    }
+
+    @Override
+    public List<Blueprint> saveAll(Stream<Blueprint> blueprints) {
+        List<BlueprintEntity> entities = blueprints
+                .map(BlueprintEntity::fromDomain)
+                .toList();
+
+        return blueprintEntityRepository.saveAll(entities)
+                .stream()
+                .map(BlueprintEntity::toDomain)
+                .toList();
     }
 }
