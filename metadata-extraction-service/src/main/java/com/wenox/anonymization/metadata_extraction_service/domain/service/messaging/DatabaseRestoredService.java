@@ -24,12 +24,11 @@ public class DatabaseRestoredService {
     public void handle(DatabaseRestoredSuccessEvent event) {
         try {
             DatabaseConnection connection = DatabaseConnection.forPostgres(event.getDatabaseName());
-            final Metadata metadata = metadataExtractionService.extractMetadata(connection);
+            Metadata metadata = metadataExtractionService.extractMetadata(connection);
             metadata.setBlueprintId(event.getBlueprintId());
-            log.info("Saving metadata: {}", metadata);
             metadataRepository.save(metadata);
             messagePublisher.sendMetadataExtractedSuccess(new MetadataExtractedSuccessEvent(event.getBlueprintId()));
-        } catch (final Exception ex) {
+        } catch (Exception ex) {
             log.error("Error during metadata extraction for {}", event, ex);
             messagePublisher.sendMetadataExtractedFailure(new MetadataExtractedFailureEvent(event.getBlueprintId(), event.getDatabaseName(), ex.getMessage(), ex));
         }
