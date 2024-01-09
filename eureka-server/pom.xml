@@ -9,9 +9,9 @@
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>com.wenox.anonymization</groupId>
-	<artifactId>eureka-service</artifactId>
+	<artifactId>eureka-server</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>eureka-service</name>
+	<name>eureka-server</name>
 	<description>Eureka Server</description>
 	<properties>
 		<java.version>17</java.version>
