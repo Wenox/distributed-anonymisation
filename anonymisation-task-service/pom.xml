@@ -8,11 +8,11 @@
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
   <groupId>com.anonymization</groupId>
-  <artifactId>anonymization-etl-service</artifactId>
+  <artifactId>anonymisation-task-service</artifactId>
   <packaging>jar</packaging>
   <version>1.0-SNAPSHOT</version>
-  <name>Anonymization ETL Service</name>
-  <description>Anonymization ETL implementation with Spark Structured Streaming</description>
+  <name>Anonymisation Task Service</name>
+  <description>ETL implementation with Spark Structured Streaming</description>
   <properties>
     <java.version>17</java.version>
   </properties>
