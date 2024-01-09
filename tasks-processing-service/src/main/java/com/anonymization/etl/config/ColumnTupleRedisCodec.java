@@ -1,4 +1,4 @@
-package com.anonymization.etl;
+package com.anonymization.etl.config;
 
 import com.anonymization.etl.domain.ColumnTuple;
 import io.lettuce.core.codec.RedisCodec;

@@ -8,9 +8,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @SpringBootApplication
 @EnableScheduling
 @EnableAsync
-public class AnonymizationEtlService {
+public class TasksProcessingService {
 
     public static void main(String[] args) {
-        SpringApplication.run(AnonymizationEtlService.class, args);
+        SpringApplication.run(TasksProcessingService.class, args);
     }
 }

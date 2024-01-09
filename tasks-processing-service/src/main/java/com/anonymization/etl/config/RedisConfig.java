@@ -1,6 +1,5 @@
 package com.anonymization.etl.config;
 
-import com.anonymization.etl.ColumnTupleRedisCodec;
 import com.anonymization.etl.domain.ColumnTuple;
 import io.lettuce.core.RedisClient;
 import io.lettuce.core.api.StatefulRedisConnection;

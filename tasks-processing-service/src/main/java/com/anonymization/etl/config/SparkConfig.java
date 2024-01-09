@@ -16,7 +16,7 @@ public class SparkConfig {
     public SparkConf sparkConf() {
         log.info("Creating spark config");
         return new SparkConf()
-                .setAppName("AnonymizationEtlService")
+                .setAppName("TasksProcessingService")
                 .setMaster("local[*]");
     }
 
@@ -32,7 +32,7 @@ public class SparkConfig {
         SparkSession spark = SparkSession
                 .builder()
                 .sparkContext(javaSparkContext.sc())
-                .appName("AnonymizationEtlService")
+                .appName("TasksProcessingService")
                 .getOrCreate();
 
         spark.streams().addListener(new CustomStreamingQueryListener());

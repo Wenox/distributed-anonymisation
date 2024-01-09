@@ -8,10 +8,10 @@
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
   <groupId>com.anonymization</groupId>
-  <artifactId>anonymisation-task-service</artifactId>
+  <artifactId>tasks-processing-service</artifactId>
   <packaging>jar</packaging>
   <version>1.0-SNAPSHOT</version>
-  <name>Anonymisation Task Service</name>
+  <name>Tasks Processing Service</name>
   <description>ETL implementation with Spark Structured Streaming</description>
   <properties>
     <java.version>17</java.version>
