@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.anonymization</groupId>
-    <artifactId>anonymization-execution-service</artifactId>
+    <artifactId>anonymisation-execution-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>Anonymization Execution Service</name>
-    <description>Anonymization Execution Service</description>
+    <name>Anonymisation Execution Service</name>
+    <description>Anonymisation Execution Service</description>
     <properties>
         <java.version>17</java.version>
         <eureka.version>4.1.0</eureka.version>
