@@ -7,18 +7,18 @@ import lombok.Value;
 class DatabaseConnection {
 
     DatabaseType databaseType;
-    String databaseName;
+    String db;
     String username;
     String password;
 
-    private DatabaseConnection(DatabaseType databaseType, String databaseName, String username, String password) {
+    private DatabaseConnection(DatabaseType databaseType, String db, String username, String password) {
         this.databaseType = databaseType;
-        this.databaseName = databaseName;
+        this.db = db;
         this.username = username;
         this.password = password;
     }
 
-    static DatabaseConnection forPostgres(String databaseName) {
-        return new DatabaseConnection(DatabaseType.POSTGRESQL, databaseName, "postgres", "postgres");
+    static DatabaseConnection forPostgres(String db) {
+        return new DatabaseConnection(DatabaseType.POSTGRESQL, db, "postgres", "postgres");
     }
 }

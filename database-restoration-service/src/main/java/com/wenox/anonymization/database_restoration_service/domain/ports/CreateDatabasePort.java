@@ -5,5 +5,5 @@ import java.util.concurrent.TimeoutException;
 
 public interface CreateDatabasePort {
 
-    void createDatabase(String dbName) throws IOException, InterruptedException, TimeoutException;
+    void createDatabase(String db) throws IOException, InterruptedException, TimeoutException;
 }

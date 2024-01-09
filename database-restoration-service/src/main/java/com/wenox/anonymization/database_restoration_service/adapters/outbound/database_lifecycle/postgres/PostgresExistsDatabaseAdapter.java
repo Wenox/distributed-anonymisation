@@ -26,10 +26,10 @@ class PostgresExistsDatabaseAdapter implements ExistsDatabasePort {
     private Integer timeout;
 
     @Override
-    public boolean existsDatabase(String dbName) throws IOException, InterruptedException, TimeoutException {
-        log.info("Checking if database {} exists", dbName);
+    public boolean existsDatabase(String db) throws IOException, InterruptedException, TimeoutException {
+        log.info("Checking if database {} exists", db);
 
-        String command = commandFactory.generateExistsDatabaseCommand(dbName);
+        String command = commandFactory.generateExistsDatabaseCommand(db);
 
         ProcessResult result = new ProcessExecutor()
                 .command("bash", "-c", command)
@@ -43,11 +43,11 @@ class PostgresExistsDatabaseAdapter implements ExistsDatabasePort {
         }
 
         if (result.getOutput().getUTF8().contains("1")) {
-            log.info("Database {} exists", dbName);
+            log.info("Database {} exists", db);
             return true;
         }
 
-        log.info("Database {} does not exist", dbName);
+        log.info("Database {} does not exist", db);
         return false;
     }
 }

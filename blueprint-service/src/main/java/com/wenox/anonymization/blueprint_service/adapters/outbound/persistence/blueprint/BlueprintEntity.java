@@ -31,8 +31,6 @@ class BlueprintEntity {
 
     private String title;
 
-    private String blueprintDatabaseName;
-
     private boolean dumpStoreSuccess;
 
     private String description;
@@ -48,7 +46,6 @@ class BlueprintEntity {
         entity.setRestoreMode(blueprint.getRestoreMode());
         entity.setDatabaseType(blueprint.getDatabaseType());
         entity.setTitle(blueprint.getTitle());
-        entity.setBlueprintDatabaseName(blueprint.getBlueprintDatabaseName());
         entity.setDumpStoreSuccess(blueprint.isDumpStoreSuccess());
         entity.setDescription(blueprint.getDescription());
         entity.setCreatedDate(blueprint.getCreatedDate());
@@ -63,7 +60,6 @@ class BlueprintEntity {
         blueprint.setRestoreMode(this.getRestoreMode());
         blueprint.setDatabaseType(this.getDatabaseType());
         blueprint.setTitle(this.getTitle());
-        blueprint.setBlueprintDatabaseName(this.getBlueprintDatabaseName());
         blueprint.setDumpStoreSuccess(this.isDumpStoreSuccess());
         blueprint.setDescription(this.getDescription());
         blueprint.setCreatedDate(this.getCreatedDate());

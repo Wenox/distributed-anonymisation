@@ -13,8 +13,6 @@ public class Restoration {
 
     private String blueprintId;
 
-    private String databaseName;
-
     private boolean isActive = false;
 
     private String runnerIp;
@@ -22,7 +20,6 @@ public class Restoration {
     public static Restoration toActiveRestoration(BlueprintCreatedEvent event) {
         return Restoration.builder()
                 .blueprintId(event.getBlueprintId())
-                .databaseName(event.getDatabaseName())
                 .isActive(true)
                 .runnerIp("localhost")
                 .build();
@@ -31,7 +28,6 @@ public class Restoration {
     public static Restoration toInactiveRestoration(BlueprintCreatedEvent event) {
         return Restoration.builder()
                 .blueprintId(event.getBlueprintId())
-                .databaseName(event.getDatabaseName())
                 .isActive(false)
                 .runnerIp("localhost")
                 .build();

@@ -4,5 +4,5 @@ import com.wenox.anonymization.database_restoration_service.domain.model.ColumnT
 
 public interface ColumnTuplePort {
 
-    ColumnTuple fetchColumnTuple(String databaseName, String tableName, String primaryKeyColumnName, String columnName);
+    ColumnTuple fetchColumnTuple(String db, String tableName, String primaryKeyColumnName, String columnName);
 }

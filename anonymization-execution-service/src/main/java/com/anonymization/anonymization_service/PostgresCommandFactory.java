@@ -31,26 +31,26 @@ public class PostgresCommandFactory implements CommandFactory {
     private final ConnectionProperties connectionProperties;
 
     @Override
-    public List<String> generateExecuteScriptCommand(String dbName) {
-        return buildExecuteScriptCommand(dbName);
+    public List<String> generateExecuteScriptCommand(String db) {
+        return buildExecuteScriptCommand(db);
     }
 
-    private List<String> buildExecuteScriptCommand(String dbName) {
-        return buildCommand(command, dbName);
+    private List<String> buildExecuteScriptCommand(String db) {
+        return buildCommand(command, db);
     }
 
     @Override
-    public List<String> generateDumpToArchiveCommand(String dbName) {
-        return buildCommand(dumpToArchiveCommand, dbName);
+    public List<String> generateDumpToArchiveCommand(String db) {
+        return buildCommand(dumpToArchiveCommand, db);
     }
 
-    private List<String> buildCommand(String commandTemplate, String dbName) {
+    private List<String> buildCommand(String commandTemplate, String db) {
         String formattedCommand = MessageFormat.format(
                 commandTemplate,
                 connectionProperties.getHost(),
                 connectionProperties.getPort(),
                 connectionProperties.getUsername(),
-                dbName
+                db
         );
         return Arrays.asList(formattedCommand.split(WHITESPACE_PATTERN));
     }

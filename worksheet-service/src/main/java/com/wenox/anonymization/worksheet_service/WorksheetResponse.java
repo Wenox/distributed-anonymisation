@@ -19,8 +19,6 @@ public class WorksheetResponse {
 
     private String worksheetName;
 
-    private String databaseName;
-
     private RestoreMode restoreMode;
 
     private Metadata metadata;

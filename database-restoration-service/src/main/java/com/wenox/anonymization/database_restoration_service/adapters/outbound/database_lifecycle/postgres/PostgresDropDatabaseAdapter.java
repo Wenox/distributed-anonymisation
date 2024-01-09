@@ -26,10 +26,10 @@ class PostgresDropDatabaseAdapter implements DropDatabasePort {
     private Integer timeout;
 
     @Override
-    public void dropDatabase(String dbName) throws IOException, InterruptedException, TimeoutException {
-        log.info("Dropping database {}", dbName);
+    public void dropDatabase(String db) throws IOException, InterruptedException, TimeoutException {
+        log.info("Dropping database {}", db);
 
-        List<String> command = commandFactory.generateDropDatabaseCommand(dbName);
+        List<String> command = commandFactory.generateDropDatabaseCommand(db);
 
         int exitCode = new ProcessExecutor()
                 .command(command)
@@ -39,9 +39,9 @@ class PostgresDropDatabaseAdapter implements DropDatabasePort {
                 .getExitValue();
 
         if (exitCode != 0) {
-            throw new DropDatabaseException(String.format("Drop database '%s' using command '%s' failed with exit code: %d", dbName, command, exitCode));
+            throw new DropDatabaseException(String.format("Drop database '%s' using command '%s' failed with exit code: %d", db, command, exitCode));
         }
 
-        log.info("Successfully dropped database {} using command {}", dbName, command);
+        log.info("Successfully dropped database {} using command {}", db, command);
     }
 }

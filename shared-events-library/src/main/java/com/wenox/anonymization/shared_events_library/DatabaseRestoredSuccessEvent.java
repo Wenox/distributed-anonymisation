@@ -9,5 +9,4 @@ import lombok.Value;
 @AllArgsConstructor
 public class DatabaseRestoredSuccessEvent {
     String blueprintId;
-    String databaseName;
 }

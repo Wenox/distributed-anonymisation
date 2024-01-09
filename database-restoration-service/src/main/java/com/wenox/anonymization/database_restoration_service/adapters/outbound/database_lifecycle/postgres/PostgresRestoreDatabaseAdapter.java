@@ -31,20 +31,20 @@ class PostgresRestoreDatabaseAdapter implements RestoreDatabasePort {
     private Integer timeout;
 
     @Override
-    public void restoreScriptDump(String dbName) throws IOException, InterruptedException, TimeoutException {
-        log.info("Restoring database {} from script", dbName);
-        String s3fileName = dbName.startsWith("mirror-") ? dbName.substring("mirror-".length()) : dbName;
+    public void restoreScriptDump(String db) throws IOException, InterruptedException, TimeoutException {
+        log.info("Restoring database {} from script", db);
+        String s3fileName = db.startsWith("mirror-") ? db.substring("mirror-".length()) : db;
         try (InputStream inputStream = storageService.downloadFile(S3Constants.BUCKET_BLUEPRINTS, s3fileName)) {
-            restoreDumpFromInputStream(inputStream, commandFactory.generateRestoreFromScriptCommand(dbName));
+            restoreDumpFromInputStream(inputStream, commandFactory.generateRestoreFromScriptCommand(db));
         }
     }
 
     @Override
-    public void restoreArchiveDump(String dbName) throws IOException, InterruptedException, TimeoutException {
-        log.info("Restoring database {} from archive", dbName);
-        String s3fileName = dbName.startsWith("mirror-") ? dbName.substring("mirror-".length()) : dbName;
+    public void restoreArchiveDump(String db) throws IOException, InterruptedException, TimeoutException {
+        log.info("Restoring database {} from archive", db);
+        String s3fileName = db.startsWith("mirror-") ? db.substring("mirror-".length()) : db;
         try (InputStream inputStream = storageService.downloadFile(S3Constants.BUCKET_BLUEPRINTS, s3fileName)) {
-            restoreDumpFromInputStream(inputStream, commandFactory.generateRestoreFromArchiveCommand(dbName));
+            restoreDumpFromInputStream(inputStream, commandFactory.generateRestoreFromArchiveCommand(db));
         }
     }
 

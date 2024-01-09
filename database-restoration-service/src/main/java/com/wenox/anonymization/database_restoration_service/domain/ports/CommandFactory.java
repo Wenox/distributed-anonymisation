@@ -4,13 +4,13 @@ import java.util.List;
 
 public interface CommandFactory {
 
-    List<String> generateCreateDatabaseCommand(String dbName);
+    List<String> generateCreateDatabaseCommand(String db);
 
-    List<String> generateDropDatabaseCommand(String dbName);
+    List<String> generateDropDatabaseCommand(String db);
 
-    String generateExistsDatabaseCommand(String dbName);
+    String generateExistsDatabaseCommand(String db);
 
-    List<String> generateRestoreFromArchiveCommand(String dbName);
+    List<String> generateRestoreFromArchiveCommand(String db);
 
-    List<String> generateRestoreFromScriptCommand(String dbName);
+    List<String> generateRestoreFromScriptCommand(String db);
 }

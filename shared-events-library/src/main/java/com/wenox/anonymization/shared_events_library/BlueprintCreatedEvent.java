@@ -8,6 +8,5 @@ import lombok.*;
 @AllArgsConstructor
 public class BlueprintCreatedEvent {
     String blueprintId;
-    String databaseName;
     RestoreMode restoreMode;
 }

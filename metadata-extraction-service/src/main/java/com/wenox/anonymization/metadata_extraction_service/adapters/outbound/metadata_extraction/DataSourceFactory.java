@@ -27,7 +27,7 @@ public class DataSourceFactory {
                 dataSource.setDriverClassName("com.mysql.jdbc.Driver");
                 dataSource.setUrl(buildUrl(databaseConnection, "jdbc:mysql"));
             }
-            default -> throw new RuntimeException("Unsupported database type: " + databaseConnection.getDatabaseName());
+            default -> throw new RuntimeException("Unsupported database type: " + databaseConnection.getDb());
         }
 
         dataSource.setUsername(databaseConnection.getUsername());
@@ -39,6 +39,6 @@ public class DataSourceFactory {
     private String buildUrl(DatabaseConnection databaseConnection, String jdbcPrefix) {
         String ipAddress = databaseConfiguration.getIsRunningOnCloud() ? databaseConfiguration.getPostgresIpAddress() : "localhost";
         String port = databaseConfiguration.getIsRunningOnCloud() ? databaseConfiguration.getPostgresContainerPort() : databaseConfiguration.getPostgresHostPort();
-        return String.format("%s://%s:%s/%s", jdbcPrefix, ipAddress, port, databaseConnection.getDatabaseName());
+        return String.format("%s://%s:%s/%s", jdbcPrefix, ipAddress, port, databaseConnection.getDb());
     }
 }

@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 class CreateMirrorResponse {
 
     @JsonProperty("db_name")
-    private String dbName;
+    private String db;
 }

@@ -113,7 +113,6 @@ def execute_anonymization_script(saga, db_name):
     logger.info(f"-----> Step 4: Executing anonymization script: {saga.worksheet_id}...")
     try:
         anonymization_execution_path = "http://localhost:8500/api/v1/execute-anonymization"
-        timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
         file_name = f"{saga.worksheet_id}/result-output.sql"
         response = async_request_with_circuit_breaker_and_retries("POST", anonymization_execution_path,
                                                                   json={"db_name": db_name, "file_path": file_name},

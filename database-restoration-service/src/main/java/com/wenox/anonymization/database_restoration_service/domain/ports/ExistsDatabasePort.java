@@ -5,5 +5,5 @@ import java.util.concurrent.TimeoutException;
 
 public interface ExistsDatabasePort {
 
-    boolean existsDatabase(String dbName) throws IOException, InterruptedException, TimeoutException;
+    boolean existsDatabase(String db) throws IOException, InterruptedException, TimeoutException;
 }

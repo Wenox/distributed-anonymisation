@@ -9,8 +9,6 @@ public class Restoration {
 
     private String blueprintId;
 
-    private String databaseName;
-
     private boolean isActive;
 
     private String runnerIp;

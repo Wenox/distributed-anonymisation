@@ -20,24 +20,24 @@ public class DefaultRestorationLifecycleService implements RestorationLifecycleS
     private final RestoreDatabasePort restoreDatabasePort;
 
     @Override
-    public void restore(String dbName, RestoreMode restoreMode) throws IOException, InterruptedException, TimeoutException {
+    public void restore(String db, RestoreMode restoreMode) throws IOException, InterruptedException, TimeoutException {
         switch (restoreMode) {
-            case ARCHIVE -> restoreFromArchive(dbName);
-            case SCRIPT -> restoreFromScript(dbName);
-            default -> throw new UnsupportedRestoreModeException(String.format("Error restoring database: %s because of unsupported database restore mode: %s", dbName, restoreMode));
+            case ARCHIVE -> restoreFromArchive(db);
+            case SCRIPT -> restoreFromScript(db);
+            default -> throw new UnsupportedRestoreModeException(String.format("Error restoring database: %s because of unsupported database restore mode: %s", db, restoreMode));
         }
     }
 
-    private void restoreFromArchive(String dbName) throws IOException, InterruptedException, TimeoutException {
-        dropDatabasePort.dropDatabase(dbName);
-        createDatabasePort.createDatabase(dbName);
-        restoreDatabasePort.restoreArchiveDump(dbName);
+    private void restoreFromArchive(String db) throws IOException, InterruptedException, TimeoutException {
+        dropDatabasePort.dropDatabase(db);
+        createDatabasePort.createDatabase(db);
+        restoreDatabasePort.restoreArchiveDump(db);
     }
 
-    private void restoreFromScript(String dbName) throws IOException, InterruptedException, TimeoutException {
-        dropDatabasePort.dropDatabase(dbName);
-        createDatabasePort.createDatabase(dbName);
-        restoreDatabasePort.restoreScriptDump(dbName);
+    private void restoreFromScript(String db) throws IOException, InterruptedException, TimeoutException {
+        dropDatabasePort.dropDatabase(db);
+        createDatabasePort.createDatabase(db);
+        restoreDatabasePort.restoreScriptDump(db);
     }
 }
 

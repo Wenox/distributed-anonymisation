@@ -6,5 +6,5 @@ public interface DumpRepository {
 
     boolean uploadDump(byte[] content, Blueprint blueprint);
 
-    void deleteDump(String databaseName);
+    void deleteDump(String blueprintId);
 }

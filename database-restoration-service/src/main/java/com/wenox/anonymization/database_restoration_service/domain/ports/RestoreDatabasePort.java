@@ -5,7 +5,7 @@ import java.util.concurrent.TimeoutException;
 
 public interface RestoreDatabasePort {
 
-    void restoreScriptDump(String dbName) throws IOException, InterruptedException, TimeoutException;
+    void restoreScriptDump(String db) throws IOException, InterruptedException, TimeoutException;
 
-    void restoreArchiveDump(String dbName) throws IOException, InterruptedException, TimeoutException;
+    void restoreArchiveDump(String db) throws IOException, InterruptedException, TimeoutException;
 }

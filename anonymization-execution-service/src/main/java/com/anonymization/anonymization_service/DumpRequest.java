@@ -12,5 +12,5 @@ import lombok.ToString;
 @Data
 public class DumpRequest {
     @JsonProperty("db_name")
-    private String dbName;
+    private String db;
 }

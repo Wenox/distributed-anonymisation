@@ -21,7 +21,7 @@ public class DefaultBlueprintSagaService implements BlueprintSagaService {
 
     @Override
     public void handle(DatabaseRestoredFailureEvent event) {
-        dumpRepository.deleteDump(event.getDatabaseName());
+        dumpRepository.deleteDump(event.getBlueprintId());
         blueprintSagaStatusUpdater.updateBlueprintSagaStatus(event.getBlueprintId(), BlueprintSagaStatus.RESTORE_FAILURE);
     }
 
@@ -32,7 +32,7 @@ public class DefaultBlueprintSagaService implements BlueprintSagaService {
 
     @Override
     public void handle(MetadataExtractedFailureEvent event) {
-        dumpRepository.deleteDump(event.getDatabaseName());
+        dumpRepository.deleteDump(event.getBlueprintId());
         blueprintSagaStatusUpdater.updateBlueprintSagaStatus(event.getBlueprintId(), BlueprintSagaStatus.METADATA_EXTRACTION_FAILURE);
     }
 }

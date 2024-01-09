@@ -17,8 +17,6 @@ class RestorationEntity {
     @Id
     private String blueprintId;
 
-    private String databaseName;
-
     private boolean isActive = false;
 
     private String runnerIp;
@@ -26,7 +24,6 @@ class RestorationEntity {
     Restoration toDomain() {
         Restoration restoration = new Restoration();
         restoration.setBlueprintId(this.getBlueprintId());
-        restoration.setDatabaseName(this.getDatabaseName());
         restoration.setActive(this.isActive());
         restoration.setRunnerIp(this.getRunnerIp());
         return restoration;
@@ -35,7 +32,6 @@ class RestorationEntity {
     static RestorationEntity fromDomain(Restoration restoration) {
         RestorationEntity entity = new RestorationEntity();
         entity.setBlueprintId(restoration.getBlueprintId());
-        entity.setDatabaseName(restoration.getDatabaseName());
         entity.setActive(restoration.isActive());
         entity.setRunnerIp(restoration.getRunnerIp());
         return entity;

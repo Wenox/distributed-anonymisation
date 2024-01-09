@@ -22,61 +22,61 @@ class PostgresCommandFactoryAdapter implements CommandFactory {
     private final CommandProperties commandProperties;
 
     @Override
-    public List<String> generateCreateDatabaseCommand(String dbName) {
-        return buildCreateDatabaseCommand(dbName);
+    public List<String> generateCreateDatabaseCommand(String db) {
+        return buildCreateDatabaseCommand(db);
     }
 
     @Override
-    public List<String> generateDropDatabaseCommand(String dbName) {
-        return buildDropDatabaseCommand(dbName);
+    public List<String> generateDropDatabaseCommand(String db) {
+        return buildDropDatabaseCommand(db);
     }
 
     @Override
-    public String generateExistsDatabaseCommand(String dbName) {
+    public String generateExistsDatabaseCommand(String db) {
         return MessageFormat.format(
                 commandProperties.getExistsDatabase(),
                 connectionProperties.getHost(),
                 connectionProperties.getPort(),
                 connectionProperties.getUsername(),
-                dbName
+                db
         );
     }
 
     @Override
-    public List<String> generateRestoreFromArchiveCommand(String dbName) {
-        return buildRestoreFromArchiveCommand(dbName);
+    public List<String> generateRestoreFromArchiveCommand(String db) {
+        return buildRestoreFromArchiveCommand(db);
     }
 
     @Override
-    public List<String> generateRestoreFromScriptCommand(String dbName) {
-        return buildRestoreFromScriptCommand(dbName);
+    public List<String> generateRestoreFromScriptCommand(String db) {
+        return buildRestoreFromScriptCommand(db);
     }
 
-    private List<String> buildCommand(String commandTemplate, String dbName) {
+    private List<String> buildCommand(String commandTemplate, String db) {
         String formattedCommand = MessageFormat.format(
                 commandTemplate,
                 connectionProperties.getHost(),
                 connectionProperties.getPort(),
                 connectionProperties.getUsername(),
-                dbName
+                db
         );
 
         return Arrays.asList(formattedCommand.split(WHITESPACE_PATTERN));
     }
 
-    private List<String> buildCreateDatabaseCommand(String dbName) {
-        return buildCommand(commandProperties.getCreateDatabase(), dbName);
+    private List<String> buildCreateDatabaseCommand(String db) {
+        return buildCommand(commandProperties.getCreateDatabase(), db);
     }
 
-    private List<String> buildDropDatabaseCommand(String dbName) {
-        return buildCommand(commandProperties.getDropDatabase(), dbName);
+    private List<String> buildDropDatabaseCommand(String db) {
+        return buildCommand(commandProperties.getDropDatabase(), db);
     }
 
-    private List<String> buildRestoreFromArchiveCommand(String dbName) {
-        return buildCommand(commandProperties.getRestoreDump().getFromArchive(), dbName);
+    private List<String> buildRestoreFromArchiveCommand(String db) {
+        return buildCommand(commandProperties.getRestoreDump().getFromArchive(), db);
     }
 
-    private List<String> buildRestoreFromScriptCommand(String dbName) {
-        return buildCommand(commandProperties.getRestoreDump().getFromScript(), dbName);
+    private List<String> buildRestoreFromScriptCommand(String db) {
+        return buildCommand(commandProperties.getRestoreDump().getFromScript(), db);
     }
 }

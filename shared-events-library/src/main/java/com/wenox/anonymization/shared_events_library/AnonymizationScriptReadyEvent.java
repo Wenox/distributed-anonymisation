@@ -12,5 +12,4 @@ public class AnonymizationScriptReadyEvent {
     private String sagaId;
     private String worksheetId;
     private RestoreMode restoreMode;
-    private String databaseName;
 }

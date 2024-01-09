@@ -13,7 +13,6 @@ import lombok.Value;
 public class WorksheetCreatedEvent {
     String worksheetId;
     String blueprintId;
-    String databaseName;
     RestoreMode restoreMode;
 }
 

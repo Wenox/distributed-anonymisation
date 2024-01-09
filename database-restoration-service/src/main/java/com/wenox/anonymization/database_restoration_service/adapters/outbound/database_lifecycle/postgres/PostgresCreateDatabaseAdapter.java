@@ -26,10 +26,10 @@ class PostgresCreateDatabaseAdapter implements CreateDatabasePort {
     private Integer timeout;
 
     @Override
-    public void createDatabase(String dbName) throws IOException, InterruptedException, TimeoutException {
-        log.info("Creating database {}", dbName);
+    public void createDatabase(String db) throws IOException, InterruptedException, TimeoutException {
+        log.info("Creating database {}", db);
 
-        List<String> command = commandFactory.generateCreateDatabaseCommand(dbName);
+        List<String> command = commandFactory.generateCreateDatabaseCommand(db);
 
         int exitCode = new ProcessExecutor()
                 .command(command)
@@ -39,9 +39,9 @@ class PostgresCreateDatabaseAdapter implements CreateDatabasePort {
                 .getExitValue();
 
         if (exitCode != 0) {
-            throw new CreateDatabaseException(String.format("Create database '%s' using command '%s' failed with exit code: %d", dbName, command, exitCode));
+            throw new CreateDatabaseException(String.format("Create database '%s' using command '%s' failed with exit code: %d", db, command, exitCode));
         }
 
-        log.info("Successfully created database {} using command {}", dbName, command);
+        log.info("Successfully created database {} using command {}", db, command);
     }
 }

@@ -18,7 +18,7 @@ public class MetadataExtractedFailureService {
 
     public void handle(MetadataExtractedFailureEvent event) {
         try {
-            dropDatabasePort.dropDatabase(event.getDatabaseName());
+            dropDatabasePort.dropDatabase(event.getBlueprintId());
             restorationService.markAsInactive(event.getBlueprintId());
             messagePublisher.send(event);
         } catch (Exception ex) {

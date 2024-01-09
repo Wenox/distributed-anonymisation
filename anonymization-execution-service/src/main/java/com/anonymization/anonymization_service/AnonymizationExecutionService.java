@@ -5,7 +5,6 @@ import com.wenox.anonymization.s3.api.StorageService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.zeroturnaround.exec.ProcessExecutor;
@@ -26,14 +25,11 @@ public class AnonymizationExecutionService {
     private final StorageService storageService;
     private final CommandFactory commandFactory;
 
-    @Value("${command.s3-upload}")
-    private String s3UploadCommand;
-
     @PostMapping
     public ResponseEntity<?> executeAnonymizationScript(@Valid @RequestBody TriggerRequest dto) {
         log.info("=====> Received dto: {}", dto);
         try {
-            return ResponseEntity.ok(restoreScriptDump(dto.getDbName(), dto.getFilePath()));
+            return ResponseEntity.ok(restoreScriptDump(dto.getDb(), dto.getFilePath()));
         } catch (Exception ex) {
             log.error("Error occurred during processing of dto: {}", dto, ex);
             ex.printStackTrace();
@@ -41,10 +37,10 @@ public class AnonymizationExecutionService {
         }
     }
 
-    public ExecuteScriptResponse restoreScriptDump(String dbName, String file) throws IOException, TimeoutException, InterruptedException {
-        log.info("Executing script {} against database {}", file, dbName);
+    public ExecuteScriptResponse restoreScriptDump(String db, String file) throws IOException, TimeoutException, InterruptedException {
+        log.info("Executing script {} against database {}", file, db);
         try (InputStream inputStream = storageService.downloadFile(S3Constants.BUCKET_SCRIPTS, file)) {
-            restoreDumpFromInputStream(inputStream, commandFactory.generateExecuteScriptCommand(dbName));
+            restoreDumpFromInputStream(inputStream, commandFactory.generateExecuteScriptCommand(db));
         }
         return new ExecuteScriptResponse("Executed script successfully");
     }
@@ -69,7 +65,7 @@ public class AnonymizationExecutionService {
     public ResponseEntity<?> generateDump(@Valid @RequestBody DumpRequest dto) {
         log.info("=====> Received dto: {}", dto);
         try {
-            return ResponseEntity.ok(dumpAndSaveInS3(dto.getDbName(), "resulting_dump_script.sql"));
+            return ResponseEntity.ok(dumpAndSaveInS3(dto.getDb(), "resulting_dump_script.sql"));
         } catch (Exception ex) {
             log.error("Error occurred during processing of dto: {}", dto, ex);
             ex.printStackTrace();
@@ -77,9 +73,9 @@ public class AnonymizationExecutionService {
         }
     }
 
-    public GenerateDumpResponse dumpAndSaveInS3(String dbName, String file) throws IOException, TimeoutException, InterruptedException {
+    public GenerateDumpResponse dumpAndSaveInS3(String db, String file) throws IOException, TimeoutException, InterruptedException {
         // todo
-        String command = String.format("pg_dump -h localhost -p 5432 -U postgres -Fp %s --verbose | aws s3 cp - s3://%s/%s", dbName, S3Constants.BUCKET_DUMPS, file);
+        String command = String.format("pg_dump -h localhost -p 5432 -U postgres -Fp %s --verbose | aws s3 cp - s3://%s/%s", db, S3Constants.BUCKET_DUMPS, file);
         log.info("Executing command: {}", command);
 
         int exitCode = new ProcessExecutor()

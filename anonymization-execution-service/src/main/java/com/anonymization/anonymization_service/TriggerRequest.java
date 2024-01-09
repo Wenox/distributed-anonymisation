@@ -17,5 +17,5 @@ public class TriggerRequest {
     private String filePath;
     @NotEmpty
     @JsonProperty("db_name")
-    private String dbName;
+    private String db;
 }

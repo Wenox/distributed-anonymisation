@@ -17,15 +17,12 @@ public class WorksheetProjection {
 
     private String blueprintId;
 
-    private String databaseName;
-
     private RestoreMode restoreMode;
 
     public static WorksheetProjection from(WorksheetCreatedEvent event) {
         WorksheetProjection projection = new WorksheetProjection();
         projection.setWorksheetId(event.getWorksheetId());
         projection.setBlueprintId(event.getBlueprintId());
-        projection.setDatabaseName(event.getDatabaseName());
         projection.setRestoreMode(event.getRestoreMode());
         return projection;
     }

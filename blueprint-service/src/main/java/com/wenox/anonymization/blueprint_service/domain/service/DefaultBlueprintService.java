@@ -53,12 +53,7 @@ public class DefaultBlueprintService implements BlueprintService {
     private void handleUploadAndStatus(byte[] content, Blueprint blueprint) {
         if (dumpRepository.uploadDump(content, blueprint)) {
             blueprintSagaStatusUpdater.updateSagaStatusOnDumpStoreSuccess(blueprint);
-            messagePublisher.sendBlueprintCreated(new BlueprintCreatedEvent(
-                            blueprint.getBlueprintId(),
-                            blueprint.getBlueprintDatabaseName(),
-                            blueprint.getRestoreMode()
-                    )
-            );
+            messagePublisher.sendBlueprintCreated(new BlueprintCreatedEvent(blueprint.getBlueprintId(), blueprint.getRestoreMode()));
         } else {
             blueprintSagaStatusUpdater.updateSagaStatusOnDumpStoreFailure(blueprint);
         }

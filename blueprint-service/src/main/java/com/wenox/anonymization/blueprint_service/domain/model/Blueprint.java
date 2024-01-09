@@ -25,8 +25,6 @@ public class Blueprint {
 
     private String title;
 
-    private String blueprintDatabaseName;
-
     private boolean dumpStoreSuccess;
 
     private String description;

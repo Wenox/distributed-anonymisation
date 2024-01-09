@@ -19,19 +19,15 @@ public class DefaultMirrorService implements MirrorService {
         WorksheetProjection worksheet = worksheetProjectionRepository.findById(worksheetId)
                 .orElseThrow(() -> new WorksheetNotFoundException("Worksheet not found with id: " + worksheetId));
 
-        String mirrorDatabaseName = generateMirrorDatabaseName(worksheet);
+        final String mirrorDb = "mirror-" + worksheet.getBlueprintId();
 
         try {
-            restorationLifecycleService.restore(mirrorDatabaseName, worksheet.getRestoreMode());
+            restorationLifecycleService.restore(mirrorDb, worksheet.getRestoreMode());
         } catch (Exception ex) {
             log.error("Error creating Mirror database for worksheet : {}", worksheet, ex);
             throw new MirrorCreationException("Error creating Mirror database for worksheet : " + worksheet, ex);
         }
 
-        return mirrorDatabaseName;
-    }
-
-    private String generateMirrorDatabaseName(WorksheetProjection worksheet) {
-        return "mirror-" + worksheet.getDatabaseName();
+        return mirrorDb;
     }
 }

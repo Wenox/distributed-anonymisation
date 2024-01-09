@@ -23,6 +23,6 @@ public class DefaultColumnTupleService implements ColumnTupleService {
             throw new InactiveRestorationException("Unable to get column data: Restoration is inactive! Restoration: " + restoration);
         }
 
-        return columnTuplePort.fetchColumnTuple(restoration.getDatabaseName(), table, column, pk);
+        return columnTuplePort.fetchColumnTuple(restoration.getBlueprintId(), table, column, pk);
     }
 }

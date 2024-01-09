@@ -21,15 +21,12 @@ class WorksheetProjectionEntity {
 
     private String blueprintId;
 
-    private String databaseName;
-
     private RestoreMode restoreMode;
 
     static WorksheetProjection toDomain(WorksheetProjectionEntity entity) {
         WorksheetProjection worksheetProjection = new WorksheetProjection();
         worksheetProjection.setWorksheetId(entity.getWorksheetId());
         worksheetProjection.setBlueprintId(entity.getBlueprintId());
-        worksheetProjection.setDatabaseName(entity.getDatabaseName());
         worksheetProjection.setRestoreMode(entity.getRestoreMode());
         return worksheetProjection;
     }
@@ -38,7 +35,6 @@ class WorksheetProjectionEntity {
         WorksheetProjectionEntity entity = new WorksheetProjectionEntity();
         entity.setWorksheetId(worksheetProjection.getWorksheetId());
         entity.setBlueprintId(worksheetProjection.getBlueprintId());
-        entity.setDatabaseName(worksheetProjection.getDatabaseName());
         entity.setRestoreMode(worksheetProjection.getRestoreMode());
         return entity;
     }

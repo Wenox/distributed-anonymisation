@@ -11,7 +11,7 @@ class MirrorFacade {
     private final MirrorService mirrorService;
 
     CreateMirrorResponse createMirror(CreateMirrorRequest dto) {
-        String mirrorDatabaseName = mirrorService.createMirror(dto.getWorksheetId());
-        return new CreateMirrorResponse(mirrorDatabaseName);
+        String mirrorDb = mirrorService.createMirror(dto.getWorksheetId());
+        return new CreateMirrorResponse(mirrorDb);
     }
 }

@@ -7,5 +7,5 @@ import java.util.concurrent.TimeoutException;
 
 public interface RestorationLifecycleService {
 
-    void restore(final String databaseName, final RestoreMode restoreMode) throws IOException, InterruptedException, TimeoutException;
+    void restore(final String db, final RestoreMode restoreMode) throws IOException, InterruptedException, TimeoutException;
 }

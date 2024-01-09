@@ -17,7 +17,6 @@ public class WorksheetMapper {
         worksheet.setMetadata(response.getMetadata());
         worksheet.setBlueprintId(request.blueprintId());
         worksheet.setWorksheetName(request.worksheetName());
-        worksheet.setDatabaseName(response.getBlueprint().blueprintDatabaseName());
         worksheet.setRestoreMode(response.getBlueprint().restoreMode());
         log.info("Creating worksheet : {}", worksheet);
         return worksheet;
@@ -28,7 +27,6 @@ public class WorksheetMapper {
                 .builder()
                 .worksheetId(response.getWorksheet().getWorksheetId())
                 .blueprintId(response.getWorksheet().getBlueprintId())
-                .databaseName(response.getWorksheet().getDatabaseName())
                 .restoreMode(response.getWorksheet().getRestoreMode())
                 .build();
     }
@@ -41,7 +39,6 @@ public class WorksheetMapper {
                 .metadata(worksheet.getMetadata())
                 .worksheetName(worksheet.getWorksheetName())
                 .restoreMode(worksheet.getRestoreMode())
-                .databaseName(worksheet.getDatabaseName())
                 .build();
     }
 }
