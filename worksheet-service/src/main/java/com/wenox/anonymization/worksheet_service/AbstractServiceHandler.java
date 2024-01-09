@@ -23,6 +23,8 @@ import java.time.Duration;
 public abstract class AbstractServiceHandler<T> {
 
     protected final WebClient.Builder webClientBuilder;
+    private final Retry retryPolicy;
+    private final CircuitBreaker circuitBreaker;
 
     protected abstract String getServiceUrl();
     protected abstract Class<T> getResponseType();
@@ -58,10 +60,6 @@ public abstract class AbstractServiceHandler<T> {
     }
 
     private Publisher<Either<ErrorInfo, T>> applyResilience(Publisher<Either<ErrorInfo, T>> publisher) {
-        RetryConfig retryConfig = createRetryConfig();
-        Retry retryPolicy = Retry.of("worksheetServiceRetry", retryConfig);
-        CircuitBreaker circuitBreaker = createCircuitBreaker();
-
         return Flux.from(publisher)
                 .transformDeferred(RetryOperator.of(retryPolicy))
                 .transformDeferred(CircuitBreakerOperator.of(circuitBreaker));
