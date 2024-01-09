@@ -86,7 +86,7 @@ services:
     ports:
       - "9042:9042"
     volumes:
-      - ./anonymization-etl-service:/docker-entrypoint-initdb.d/
+      - ./tasks-processing-service:/docker-entrypoint-initdb.d/
     environment:
       - CASSANDRA_CLUSTER_NAME=MyCassandraCluster
       - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
@@ -98,8 +98,8 @@ services:
     depends_on:
       - cassandra
     volumes:
-      - ./anonymization-etl-service:/anonymization-etl-service
-    command: /bin/bash -c 'for i in `seq 1 60`; do cqlsh cassandra -e "describe cluster" && break || sleep 5; done && cqlsh cassandra -f /anonymization-etl-service/init.cql'
+      - ./tasks-processing-service:/tasks-processing-service
+    command: /bin/bash -c 'for i in `seq 1 60`; do cqlsh cassandra -e "describe cluster" && break || sleep 5; done && cqlsh cassandra -f /tasks-processing-service/init.cql'
 
   prometheus:
     image: prom/prometheus:latest

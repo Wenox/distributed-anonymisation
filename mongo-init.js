@@ -1,13 +1,11 @@
-function createDbAndUser(db, user, pwd) {
-
-    var createdDb = db.getSiblingDB(db);
+function createDbAndUser(dbName, user, pwd) {
+    var createdDb = db.getSiblingDB(dbName);
 
     createdDb.createCollection('initCollection');
-
     createdDb.createUser({
         user: user,
         pwd: pwd,
-        roles: [{ role: 'readWrite', db: db }]
+        roles: [{ role: 'readWrite', db: dbName }]
     });
 }
 
