@@ -1,4 +1,4 @@
-module com.wenox/lambda-anonymization-merger
+module com.wenox/lambda-fragments-merger
 
 go 1.20
 
