@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/blueprints")
 @RequiredArgsConstructor
@@ -23,6 +25,11 @@ class BlueprintApi {
     @GetMapping
     ResponseEntity<Blueprint> getBlueprint(@RequestParam("blueprint_id") String blueprintId) {
         return ResponseEntity.ok(blueprintFacade.getBlueprint(blueprintId));
+    }
+
+    @GetMapping("/dashboard")
+    ResponseEntity<List<BlueprintForDashboard>> getBlueprintsForDashboard() {
+        return ResponseEntity.ok(blueprintFacade.getBlueprintsForDashboard());
     }
 
     @ExceptionHandler(BlueprintNotFoundException.class)

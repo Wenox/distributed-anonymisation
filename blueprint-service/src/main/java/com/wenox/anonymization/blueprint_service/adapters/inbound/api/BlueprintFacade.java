@@ -5,6 +5,8 @@ import com.wenox.anonymization.blueprint_service.domain.service.BlueprintService
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 class BlueprintFacade {
@@ -19,5 +21,12 @@ class BlueprintFacade {
 
     Blueprint getBlueprint(String id) {
         return blueprintService.getBlueprint(id);
+    }
+
+    List<BlueprintForDashboard> getBlueprintsForDashboard() {
+        return blueprintService.getBlueprintsForDashboard()
+                .stream()
+                .map(BlueprintForDashboard::from)
+                .toList();
     }
 }

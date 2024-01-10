@@ -16,4 +16,6 @@ public interface BlueprintRepository {
     Stream<Blueprint> fetchStaleBlueprints(LocalDateTime thresholdTime);
 
     List<Blueprint> saveAll(Stream<Blueprint> blueprints);
+
+    List<Blueprint> getBlueprintsForDashboard();
 }

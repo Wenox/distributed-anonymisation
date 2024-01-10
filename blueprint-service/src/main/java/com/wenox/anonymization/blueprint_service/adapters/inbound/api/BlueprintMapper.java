@@ -13,7 +13,7 @@ class BlueprintMapper {
         Blueprint blueprint = new Blueprint();
         blueprint.setBlueprintId(UUID.randomUUID().toString());
         blueprint.setDumpFile(dto.dumpFile());
-        blueprint.setBlueprintSagaStatus(BlueprintSagaStatus.CREATED);
+        blueprint.setBlueprintSagaStatus(BlueprintSagaStatus.INITIALIZED);
         blueprint.setDumpStoreSuccess(false);
         blueprint.setRestoreMode(dto.restoreMode());
         blueprint.setDatabaseType(dto.databaseType());

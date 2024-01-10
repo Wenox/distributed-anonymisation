@@ -1,7 +1,7 @@
 package com.wenox.anonymization.blueprint_service.domain.model;
 
 public enum BlueprintSagaStatus {
-    CREATED,
+    INITIALIZED,
     STALE,
     DUMP_STORE_SUCCESS,
     DUMP_STORE_FAILURE,

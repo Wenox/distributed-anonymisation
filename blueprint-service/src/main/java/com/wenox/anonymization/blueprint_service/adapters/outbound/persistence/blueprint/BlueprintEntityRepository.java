@@ -11,4 +11,6 @@ import java.util.List;
 interface BlueprintEntityRepository extends MongoRepository<BlueprintEntity, String> {
 
     List<BlueprintEntity> findByCreatedDateBefore(LocalDateTime thresholdTime);
+
+    List<BlueprintEntity> findTopByOrderByCreatedDateDesc(int count);
 }

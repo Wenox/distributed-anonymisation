@@ -4,6 +4,7 @@ import com.wenox.anonymization.blueprint_service.domain.model.Blueprint;
 import com.wenox.anonymization.blueprint_service.domain.ports.BlueprintRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -18,6 +19,9 @@ import java.util.stream.Stream;
 class BlueprintRepositoryMongoAdapter implements BlueprintRepository {
 
     private final BlueprintEntityRepository blueprintEntityRepository;
+
+    @Value("${importing.dashboard.display-count:5}")
+    private int dashboardDisplayCount;
 
     @Override
     public Blueprint save(Blueprint blueprint) {
@@ -45,6 +49,14 @@ class BlueprintRepositoryMongoAdapter implements BlueprintRepository {
                 .toList();
 
         return blueprintEntityRepository.saveAll(entities)
+                .stream()
+                .map(BlueprintEntity::toDomain)
+                .toList();
+    }
+
+    @Override
+    public List<Blueprint> getBlueprintsForDashboard() {
+        return blueprintEntityRepository.findTopByOrderByCreatedDateDesc(dashboardDisplayCount)
                 .stream()
                 .map(BlueprintEntity::toDomain)
                 .toList();
