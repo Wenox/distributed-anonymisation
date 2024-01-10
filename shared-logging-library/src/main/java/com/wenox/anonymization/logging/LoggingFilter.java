@@ -66,7 +66,7 @@ public class LoggingFilter extends AbstractRequestLoggingFilter {
         ContentCachingResponseWrapper wrappedResponse = new ContentCachingResponseWrapper(response);
         try {
             if (shouldLogRequest) {
-                beforeRequest(request, createMessage(request, "-----> Request: ", ""));
+                beforeRequest(request, createMessage(request, "=====> Request: ", ""));
             }
             filterChain.doFilter(request, wrappedResponse);
         } finally {
@@ -75,9 +75,9 @@ public class LoggingFilter extends AbstractRequestLoggingFilter {
                 int status = wrappedResponse.getStatus();
                 HttpStatus httpStatus = HttpStatus.valueOf(status);
                 if (isJson(responseBody)) {
-                    log.info("<----- Response (HTTP {} {}):\n{}", status, httpStatus.getReasonPhrase(), prettyPrintJson(responseBody));
+                    log.info("<===== Response (HTTP {} {}):\n{}", status, httpStatus.getReasonPhrase(), prettyPrintJson(responseBody));
                 } else {
-                    log.info("<----- Response (HTTP {} {}): {}", status, httpStatus.getReasonPhrase(), responseBody);
+                    log.info("<===== Response (HTTP {} {}): {}", status, httpStatus.getReasonPhrase(), responseBody);
                 }
             }
             wrappedResponse.copyBodyToResponse();
