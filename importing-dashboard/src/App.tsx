@@ -6,13 +6,17 @@ import axios from "axios";
 function App() {
   const [blueprints, setBlueprints] = useState([]);
 
-  useEffect(() => {
-      axios.get('/importing/dashboard')
-        .then(response => setBlueprints(response.data))
-        .catch(error => {
-          console.error('Error while fetching the blueprints!', error);
-        });
-  }, []);
+    useEffect(() => {
+        const fetchBlueprints = () => {
+            axios.get('/importing/dashboard')
+                .then(response => setBlueprints(response.data))
+                .catch(error => console.error('Error while fetching the blueprints!', error));
+        };
+
+        fetchBlueprints();
+        const intervalId = setInterval(fetchBlueprints, 50);
+        return () => clearInterval(intervalId);
+    }, []);
 
   // const blueprints = [
   //   { "title": "Employees", "status": "INITIALIZED", "blueprintId": "667f2ed9-45de-43e0-8e10-9d52bd78cd4c" },
