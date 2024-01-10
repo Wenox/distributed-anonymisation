@@ -1,6 +1,7 @@
 package com.wenox.anonymization.blueprint_service.adapters.outbound.persistence.blueprint;
 
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,5 +13,5 @@ interface BlueprintEntityRepository extends MongoRepository<BlueprintEntity, Str
 
     List<BlueprintEntity> findByCreatedDateBefore(LocalDateTime thresholdTime);
 
-    List<BlueprintEntity> findTopByOrderByCreatedDateDesc(int count);
+    List<BlueprintEntity> findTopByOrderByCreatedDateDesc(Pageable pageable);
 }

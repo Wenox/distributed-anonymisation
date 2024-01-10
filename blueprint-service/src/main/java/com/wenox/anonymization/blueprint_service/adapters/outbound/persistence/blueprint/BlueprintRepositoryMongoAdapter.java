@@ -5,6 +5,7 @@ import com.wenox.anonymization.blueprint_service.domain.ports.BlueprintRepositor
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
@@ -56,7 +57,7 @@ class BlueprintRepositoryMongoAdapter implements BlueprintRepository {
 
     @Override
     public List<Blueprint> getBlueprintsForDashboard() {
-        return blueprintEntityRepository.findTopByOrderByCreatedDateDesc(dashboardDisplayCount)
+        return blueprintEntityRepository.findTopByOrderByCreatedDateDesc(PageRequest.of(0, 5))
                 .stream()
                 .map(BlueprintEntity::toDomain)
                 .toList();

@@ -13,18 +13,24 @@ type DashboardProps = {
 };
 
 const Dashboard: React.FC<DashboardProps> = ({ blueprints }) => {
+    const isBlueprintsEmpty = !blueprints || blueprints.length === 0;
+
     return (
         <div className="dashboard-container">
             <h1>Importing process dashboard</h1>
-            {blueprints.map(blueprint => (
-                <div key={blueprint.blueprintId} className="blueprint-row">
-                    <div className="blueprint-info">
-                        <h3>{blueprint.title}</h3>
-                        <p>{blueprint.blueprintId}</p>
+            {isBlueprintsEmpty ? (
+                <h3 style={{ color: 'red' }}>No saga instances in the system...</h3>
+            ) : (
+                blueprints.map(blueprint => (
+                    <div key={blueprint.blueprintId} className="blueprint-row">
+                        <div className="blueprint-info">
+                            <h3>{blueprint.title}</h3>
+                            <p>{blueprint.blueprintId}</p>
+                        </div>
+                        <StatusBoxes status={blueprint.status} type={determineType(blueprint.status)} />
                     </div>
-                    <StatusBoxes status={blueprint.status} type={determineType(blueprint.status)} />
-                </div>
-            ))}
+                ))
+            )}
         </div>
     );
 };
