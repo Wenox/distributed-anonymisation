@@ -41,5 +41,5 @@ client = pymongo.MongoClient(MONGODB_CONNECTION_URI)
 
 
 # Get the database and collection
-db = client.anonymization_saga_db
+db = client.ANONYMISATION_ORCHESTRATION_DB
 saga_collection = db.saga
