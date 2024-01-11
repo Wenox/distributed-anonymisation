@@ -16,6 +16,5 @@ public class TriggerRequest {
     @JsonProperty("file_path")
     private String filePath;
     @NotEmpty
-    @JsonProperty("db_name")
-    private String db;
+    private String mirrorId;
 }
