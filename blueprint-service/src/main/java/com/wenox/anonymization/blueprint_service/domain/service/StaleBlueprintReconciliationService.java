@@ -9,6 +9,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -25,9 +26,10 @@ public class StaleBlueprintReconciliationService {
     public void detectStaleBlueprints() {
         log.info("Stale blueprints reconciliation started...");
         LocalDateTime thresholdTime = LocalDateTime.now().minusSeconds(thresholdSeconds);
-        Stream<Blueprint> staleBlueprints = blueprintRepository.fetchStaleBlueprints(thresholdTime);
+        List<Blueprint> staleBlueprints = blueprintRepository.fetchStaleBlueprints(thresholdTime);
         staleBlueprints.forEach(Blueprint::toStale);
         blueprintRepository.saveAll(staleBlueprints);
+        // todo: - manually update saga status, check if dump exists and delete it!
         log.info("Stale blueprints reconciliation ended. Reconciled blueprints : {} before time : {}", staleBlueprints, thresholdTime);
     }
 }

@@ -37,15 +37,17 @@ class BlueprintRepositoryMongoAdapter implements BlueprintRepository {
     }
 
     @Override
-    public Stream<Blueprint> fetchStaleBlueprints(LocalDateTime thresholdTime) {
+    public List<Blueprint> fetchStaleBlueprints(LocalDateTime thresholdTime) {
         return blueprintEntityRepository.findByCreatedDateBefore(thresholdTime)
                 .stream()
-                .map(BlueprintEntity::toDomain);
+                .map(BlueprintEntity::toDomain)
+                .toList();
     }
 
     @Override
-    public List<Blueprint> saveAll(Stream<Blueprint> blueprints) {
+    public List<Blueprint> saveAll(List<Blueprint> blueprints) {
         List<BlueprintEntity> entities = blueprints
+                .stream()
                 .map(BlueprintEntity::fromDomain)
                 .toList();
 

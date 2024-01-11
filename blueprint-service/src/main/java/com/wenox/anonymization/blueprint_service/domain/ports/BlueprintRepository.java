@@ -13,9 +13,9 @@ public interface BlueprintRepository {
 
     Optional<Blueprint> findById(String id);
 
-    Stream<Blueprint> fetchStaleBlueprints(LocalDateTime thresholdTime);
+    List<Blueprint> fetchStaleBlueprints(LocalDateTime thresholdTime);
 
-    List<Blueprint> saveAll(Stream<Blueprint> blueprints);
+    List<Blueprint> saveAll(List<Blueprint> blueprints);
 
     List<Blueprint> getBlueprintsForDashboard();
 }
