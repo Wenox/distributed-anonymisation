@@ -10,7 +10,6 @@ public class CustomStreamingQueryListener extends StreamingQueryListener {
 
     @Override
     public void onQueryStarted(QueryStartedEvent event) {
-        // You can implement custom logic when the query starts.
         logger.info("Query started");
     }
 
@@ -26,7 +25,6 @@ public class CustomStreamingQueryListener extends StreamingQueryListener {
 
     @Override
     public void onQueryTerminated(QueryTerminatedEvent event) {
-        // You can implement custom logic when the query terminates.
         logger.info("on query terminated");
     }
 }

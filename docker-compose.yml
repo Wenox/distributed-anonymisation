@@ -55,16 +55,16 @@ services:
     volumes:
       - ./spark-worker-1-work:/opt/spark/work
 
-  spark-worker-2:
-    image: apache/spark:v3.4.0
-    command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
-    environment:
-      - "SPARK_WORKER_MEMORY=1g"
-      - "SPARK_WORKER_CORES=1"
-    depends_on:
-      - spark-master
-    volumes:
-      - ./spark-worker-2-work:/opt/spark/work
+#  spark-worker-2:
+#    image: apache/spark:v3.4.0
+#    command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
+#    environment:
+#      - "SPARK_WORKER_MEMORY=1g"
+#      - "SPARK_WORKER_CORES=1"
+#    depends_on:
+#      - spark-master
+#    volumes:
+#      - ./spark-worker-2-work:/opt/spark/work
 
   redis:
     image: redis:7.0.11

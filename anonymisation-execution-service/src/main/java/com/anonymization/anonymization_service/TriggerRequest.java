@@ -1,6 +1,5 @@
 package com.anonymization.anonymization_service;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,7 +12,6 @@ import lombok.ToString;
 @ToString
 public class TriggerRequest {
     @NotEmpty
-    @JsonProperty("file_path")
     private String filePath;
     @NotEmpty
     private String mirrorId;

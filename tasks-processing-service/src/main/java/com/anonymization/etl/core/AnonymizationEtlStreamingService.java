@@ -10,8 +10,6 @@ import com.anonymization.etl.source.StreamingSource;
 import com.anonymization.etl.transform.script.Column2Script;
 import com.anonymization.etl.transform.script.Column2ScriptService;
 import com.anonymization.etl.transform.operations.TransformService;
-import io.github.resilience4j.circuitbreaker.CircuitBreaker;
-import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import io.vavr.control.Try;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,7 +38,6 @@ public class AnonymizationEtlStreamingService implements EtlStreamingService, Se
     private final StreamingSink streamingSink;
     private final BroadcastSettings broadcastSettings;
 
-    private transient final CircuitBreakerRegistry circuitBreakerRegistry;
     private transient final RetryTemplate retryTemplate;
 
     private final ExtractService extractService;
@@ -118,8 +115,6 @@ public class AnonymizationEtlStreamingService implements EtlStreamingService, Se
 
         BroadcastFacade broadcastFacade = BroadcastFacade.create(broadcastSettings);
 
-        CircuitBreaker circuitBreaker = getCircuitBreaker();
-
         Try<Void> result = Try.run(() -> {
 
             // Step 1: Read from Kafka
@@ -156,15 +151,6 @@ public class AnonymizationEtlStreamingService implements EtlStreamingService, Se
             log.error("Error occurred during ETL processing", throwable);
             return null;
         });
-
-        circuitBreaker.executeSupplier(() -> result);
-    }
-
-    private CircuitBreaker getCircuitBreaker() {
-        CircuitBreaker circuitBreaker = circuitBreakerRegistry.circuitBreaker("etlStreamingCircuitBreaker");
-        circuitBreaker.getEventPublisher()
-                .onStateTransition(event -> log.info("Circuit breaker state transition: {}", event));
-        return circuitBreaker;
     }
 }
 

@@ -11,4 +11,5 @@ import lombok.ToString;
 @Data
 public class DumpRequest {
     private String mirrorId;
+    private String dumpPath;
 }

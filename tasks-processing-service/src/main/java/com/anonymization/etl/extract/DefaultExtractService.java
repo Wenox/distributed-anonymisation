@@ -22,11 +22,12 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class DefaultExtractService implements ExtractService {
 
-    @Value("${restoration-service.column-tuple.endpoint}")
+    @Value("${restoration-service.column-tuples.endpoint}")
     private String endpoint;
 
     @Override
     public Tuple2<ColumnTuple, AnonymizationTask> extract(AnonymizationTask task, BroadcastFacade broadcastFacade) {
+        log.info("-----> Step 1: – extracting column tuple for task: {}", task);
         ColumnTuple columnTuple = fetchColumnTuple(task, broadcastFacade);
         sendExtractionSuccessNotification(broadcastFacade, task.getTaskId());
         return Tuple2.apply(columnTuple, task);

@@ -2,7 +2,7 @@
 # This script deletes all objects in specified S3 buckets
 
 # List of S3 buckets to delete objects from
-BUCKETS=("anonymisation-fragments" "anonymisation-scripts" "blueprints-for-anonymisation")
+BUCKETS=("anonymisation-fragments" "anonymisation-scripts" "blueprints-for-anonymisation" "anonymisation-dumps")
 
 # Function to delete all objects in a given S3 bucket
 delete_objects() {

@@ -29,22 +29,22 @@ public class TaskStatusUpdater {
                 .collect(Collectors.toMap(StatusUpdateStrategy::getApplicableStatus, Function.identity()));
     }
 
-    @KafkaListener(topics = KafkaConstants.TOPIC_EXTRACTION_SUCCESS, groupId = "blueprint-service-group")
+    @KafkaListener(topics = KafkaConstants.TOPIC_EXTRACTION_SUCCESS, groupId = "blueprint-service-group", containerFactory = "worksheetKafkaListenerContainerFactory")
     void onExtracted(String taskId) {
         updateStatus(taskId, TaskStatus.EXTRACTED);
     }
 
-    @KafkaListener(topics = KafkaConstants.TOPIC_TRANSFORMATION_ANONYMIZE_SUCCESS, groupId = "blueprint-service-group")
+    @KafkaListener(topics = KafkaConstants.TOPIC_TRANSFORMATION_ANONYMIZE_SUCCESS, groupId = "blueprint-service-group", containerFactory = "worksheetKafkaListenerContainerFactory")
     void onTransformedAnonymization(String taskId) {
         updateStatus(taskId, TaskStatus.TRANSFORMED_ANONYMIZATION);
     }
 
-    @KafkaListener(topics = KafkaConstants.TOPIC_TRANSFORMATION_SCRIPT_SUCCESS, groupId = "blueprint-service-group")
+    @KafkaListener(topics = KafkaConstants.TOPIC_TRANSFORMATION_SCRIPT_SUCCESS, groupId = "blueprint-service-group", containerFactory = "worksheetKafkaListenerContainerFactory")
     void onTransformedSqlScript(String taskId) {
         updateStatus(taskId, TaskStatus.TRANSFORMED_SQL_SCRIPT);
     }
 
-    @KafkaListener(topics = KafkaConstants.TOPIC_LOAD_SUCCESS, groupId = "blueprint-service-group")
+    @KafkaListener(topics = KafkaConstants.TOPIC_LOAD_SUCCESS, groupId = "blueprint-service-group", containerFactory = "worksheetKafkaListenerContainerFactory")
     void onLoaded(String taskId) {
         updateStatus(taskId, TaskStatus.FINISHED);
     }

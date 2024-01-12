@@ -65,7 +65,7 @@ public class AnonymizationExecutionService {
     public ResponseEntity<?> generateDump(@Valid @RequestBody DumpRequest dto) {
         log.info("=====> Received dto: {}", dto);
         try {
-            return ResponseEntity.ok(dumpAndSaveInS3(dto.getMirrorId(), "resulting_dump_script.sql"));
+            return ResponseEntity.ok(dumpAndSaveInS3(dto.getMirrorId(), dto.getDumpPath()));
         } catch (Exception ex) {
             log.error("Error occurred during processing of dto: {}", dto, ex);
             ex.printStackTrace();

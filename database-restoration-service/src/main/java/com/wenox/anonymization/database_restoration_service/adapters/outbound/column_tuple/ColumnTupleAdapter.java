@@ -16,6 +16,6 @@ class ColumnTupleAdapter implements ColumnTuplePort {
     public ColumnTuple fetchColumnTuple(String db, String table, String pk, String column) {
         DatabaseConnection connection = DatabaseConnection.forPostgres(db);
         QuerySelector querySelector = new JdbcTemplateQuerySelector(dataSourceFactory.getDataSource(connection));
-        return querySelector.select(table, pk, column);
+        return querySelector.select(table, column, pk);
     }
 }

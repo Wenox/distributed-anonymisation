@@ -6,15 +6,15 @@ from prefect import flow, task
 from pydantic import BaseModel
 from starlette.background import BackgroundTasks
 from retry import retry
+
+from config import ANONYMISATION_FRAGMENTS_BUCKET, ANONYMISATION_SCRIPTS_BUCKET, FRAGMENTS_MERGER_LAMBDA
 from fragments_population import get_tasks_statuses
 from http_client import async_request_with_circuit_breaker_and_retries
 from mirror import create_mirror
 from outcome import Outcome, outcomes_collection, update_outcome_status, OutcomeStatus, update_to_mirror_ready
-from trigger_lambda import router as trigger_lambda_router, INPUT_BUCKET, OUTPUT_BUCKET, LAMBDA_NAME
 from logger_config import setup_logger
 
 app = FastAPI()
-app.include_router(trigger_lambda_router)
 
 logger = setup_logger(__name__)
 
@@ -48,8 +48,17 @@ def start_create_mirror(outcome: Outcome):
 
 
 @task(name="Check fragments readiness")
-@retry(tries=5, delay=1.0, max_delay=1.0, backoff=1, jitter=(0, 0), logger=logger)
 def check_fragments_readiness(outcome: Outcome):
+    try:
+        check_fragments_readiness_delegate(outcome)
+        return True
+    except Exception as e:
+        logger.error("Check fragments readiness --- failed")
+        return False
+
+
+@retry(tries=5, delay=1.0, max_delay=1.0, backoff=1, jitter=(0, 0), logger=logger)
+def check_fragments_readiness_delegate(outcome: Outcome):
     logger.info(f"-----> Step 3: Checking fragments readiness for worksheet: {outcome.worksheet_id}...")
     response, success = get_tasks_statuses(outcome.worksheet_id)
 
@@ -59,18 +68,18 @@ def check_fragments_readiness(outcome: Outcome):
             update_outcome_status(outcome, OutcomeStatus.FRAGMENTS_READY)
             logger.info(f"<----- Step 3: Fragments are ready. Updated outcome to {OutcomeStatus.FRAGMENTS_READY}")
         else:
-            logger.info("Some anonymisation tasks not successful...")
+            logger.info("Not all anonymisation tasks have been completed yet.")
+            update_outcome_status(outcome, OutcomeStatus.FRAGMENTS_NOT_READY)
             if is_still_processing_tasks(tasks_by_status=response['tasksByStatus']):
-                logger.info("Still processing some anonymisation tasks...")
-                raise Exception("Still processing some anonymisation tasks...")
+                logger.info(f"<----- Step 3: Some tasks are still processing... Updated outcome to {OutcomeStatus.FRAGMENTS_NOT_READY}.")
+                raise Exception("Some tasks are still processing")
             else:
-                logger.info("Some anonymisation tasks were failed.")
-                raise Exception("Some anonymisation tasks were failed, retrying...")
+                logger.info(f"<----- Step 3: Some tasks have failed... Updated outcome to {OutcomeStatus.FRAGMENTS_NOT_READY}.")
+                raise Exception("Some tasks have failed")
     else:
         update_outcome_status(outcome, OutcomeStatus.FRAGMENTS_NOT_READY)
-        logger.info(f"<----- Step 3: Fragments are not yet ready. Updated outcome to {OutcomeStatus.FRAGMENTS_NOT_READY}.")
-
-    return response, success
+        logger.info(f"<----- Step 3: Could not verify if all anonymisation tasks have completed. Updated outcome to {OutcomeStatus.FRAGMENTS_NOT_READY}.")
+        raise Exception("Could not verify task completion")
 
 
 def is_still_processing_tasks(tasks_by_status):
@@ -86,15 +95,15 @@ def merge_anonymisation_fragments(outcome: Outcome):
     try:
         lambda_client = boto3.client('lambda', region_name='eu-west-2')
         payload = {
-            "inputBucket": INPUT_BUCKET,
+            "inputBucket": ANONYMISATION_FRAGMENTS_BUCKET,
             "inputDirectory": outcome.worksheet_id,
-            "outputBucket": OUTPUT_BUCKET,
-            "outputScript": 'result-output.sql',
+            "outputBucket": ANONYMISATION_SCRIPTS_BUCKET,
+            "outputScript": f"{outcome.outcome_id}.sql"
         }
 
         logger.info(f"==========> AWS Lambda Request:\n{json.dumps(payload, indent=4)}")
         lambda_response = lambda_client.invoke(
-            FunctionName=LAMBDA_NAME,
+            FunctionName=FRAGMENTS_MERGER_LAMBDA,
             InvocationType='RequestResponse',
             Payload=json.dumps(payload),
         )
@@ -111,14 +120,14 @@ def merge_anonymisation_fragments(outcome: Outcome):
         logger.info(f"<----- Step 4: Merging anonymisation fragments failed. Updated outcome to {OutcomeStatus.FRAGMENTS_MERGE_FAILED}")
         return None, False
 
+
 @task(name="Execute anonymisation script")
 def execute_anonymisation_script(outcome):
     logger.info(f"-----> Step 5: Executing anonymisation script for worksheet: {outcome.worksheet_id}...")
     try:
         anonymization_execution_path = "http://localhost:8500/api/v1/execute-anonymization"
-        file_name = f"{outcome.worksheet_id}/result-output.sql"
         response = async_request_with_circuit_breaker_and_retries("POST", anonymization_execution_path,
-                                                                  json={"mirrorId": outcome.mirror_id, "file_path": file_name},
+                                                                  json={"mirrorId": outcome.mirror_id, "filePath": f"{outcome.worksheet_id}/{outcome.outcome_id}.sql"},
                                                                   timeout=60)
         return response.json()
     except Exception as e:
@@ -134,7 +143,8 @@ def generate_anonymisation_dump(outcome):
     try:
         generate_dump_path = "http://localhost:8500/api/v1/execute-anonymization/generate-dump"
         response = async_request_with_circuit_breaker_and_retries("POST", generate_dump_path,
-                                                                  json={"mirrorId": outcome.mirror_id},
+                                                                  json={"mirrorId": outcome.mirror_id,
+                                                                        "dumpPath": f"{outcome.worksheet_id}/{outcome.outcome_id}.sql"},
                                                                   timeout=60)
         return response.json()
     except Exception as e:
@@ -151,9 +161,9 @@ def exporting_process_saga(outcome):
         logger.info("Finishing exporting saga: mirror creation failed")
         return
 
-    response, success = check_fragments_readiness(outcome)
+    success = check_fragments_readiness(outcome)
     if not success:
-        logger.info("Finishing exporting saga: some fragments are not ready")
+        logger.info("Finishing exporting saga: fragments readiness failed")
         return
 
     response, success = merge_anonymisation_fragments(outcome)

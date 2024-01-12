@@ -23,7 +23,7 @@ public class DefaultTransformService implements TransformService {
     @Override
     public Tuple2<ColumnTuple, AnonymizationTask> anonymize(Tuple2<ColumnTuple, AnonymizationTask> input,
                                                             Broadcast<KafkaSink> kafkaSinkBroadcast) {
-        log.info("Transforming task: {}", input._2);
+        log.info("-----> Step 2: – transforming – applying anonymisation for task: {}", input._2);
 
         Tuple2<ColumnTuple, AnonymizationTask> result;
 
@@ -46,23 +46,15 @@ public class DefaultTransformService implements TransformService {
 
     private Tuple2<ColumnTuple, AnonymizationTask> transformSuppressionTask(ColumnTuple columnTuple, AnonymizationTask task) {
         String token = String.valueOf(task.getConfiguration().get("token"));
-        System.out.println("token object: " + token);
-
-        System.out.println("previous values: " + columnTuple.getValues());
         List<String> newValues = columnTuple.getValues()
                 .stream()
                 .map(value -> token)
                 .toList();
-
-        System.out.println("new values: " + newValues);
-
         return Tuple2.apply(columnTuple.copyWithValues(newValues), task);
     }
 
     private Tuple2<ColumnTuple, AnonymizationTask> transformShuffleTask(ColumnTuple columnTuple, AnonymizationTask task) {
         boolean repetitions = Boolean.parseBoolean(task.getConfiguration().get("repetitions"));
-        System.out.println("repetitions object: " + repetitions);
-
         if (!repetitions) {
             Collections.shuffle(columnTuple.getValues());
             return Tuple2.apply(columnTuple, task);
