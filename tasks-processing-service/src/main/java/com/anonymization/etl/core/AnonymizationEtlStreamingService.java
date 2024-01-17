@@ -1,8 +1,7 @@
 package com.anonymization.etl.core;
 
 import com.anonymization.etl.domain.ColumnTuple;
-import com.anonymization.etl.domain.SuccessEvent;
-import com.anonymization.etl.domain.tasks.AnonymizationTask;
+import com.anonymization.etl.domain.tasks.Task;
 import com.anonymization.etl.extract.ExtractService;
 import com.anonymization.etl.load.LoadService;
 import com.anonymization.etl.sink.StreamingSink;
@@ -46,24 +45,26 @@ public class AnonymizationEtlStreamingService implements EtlStreamingService, Se
     private final LoadService loadService;
 
     private final Lock lock = new ReentrantLock();
+    private final static int LOCK_TIME = 5;
 
     @PostConstruct
     public void init() {
-        new Thread(this::startEtlStreamingQuery).start();
+        new Thread(this::startEtlPipelineStreaming).start();
     }
 
-    private void startEtlStreamingQuery() {
+    private void startEtlPipelineStreaming() {
         retryTemplate.execute(retryContext -> {
             processEtlStreaming();
             return null;
         });
     }
 
-    @Scheduled(fixedDelayString = "${streaming.restartInterval:60000}")
+    @Scheduled(fixedDelayString = "${task-processing.etl-pipeline.restart-interval:60000}")
+    @Override
     public void checkAndRestartEtlStreamingQuery() throws InterruptedException {
-        if (lock.tryLock(5, TimeUnit.SECONDS)) {
+        if (lock.tryLock(LOCK_TIME, TimeUnit.SECONDS)) {
             try {
-                startEtlStreamingQuery();
+                startEtlPipelineStreaming();
             } finally {
                 lock.unlock();
             }
@@ -108,9 +109,10 @@ public class AnonymizationEtlStreamingService implements EtlStreamingService, Se
      * Each step publishes Kafka message for external observability.
      *
      * ...Further processing is performed by other services (e.g., execution of SQL scripts against Restoration Database)
-     * ...For example by anonymization-saga-service.
+     * ...For example by anonymisation-orchestration-service.
      * */
     @Async
+    @Override
     public void processEtlStreaming() {
 
         BroadcastFacade broadcastFacade = BroadcastFacade.create(broadcastSettings);
@@ -118,29 +120,29 @@ public class AnonymizationEtlStreamingService implements EtlStreamingService, Se
         Try<Void> result = Try.run(() -> {
 
             // Step 1: Read from Kafka
-            Dataset<AnonymizationTask> repartitionedInputDF = streamingSource.fetchTasks().repartition(4);
+            Dataset<Task> partitionedDataset = streamingSource.fetchTasks().repartition(2);
 
             // Step 2: Extract
-            Dataset<Tuple2<ColumnTuple, AnonymizationTask>> extractedTuple = repartitionedInputDF.map(
-                    (MapFunction<AnonymizationTask, Tuple2<ColumnTuple, AnonymizationTask>>) task -> extractService.extract(task, broadcastFacade),
-                    Encoders.tuple(Encoders.bean(ColumnTuple.class), Encoders.bean(AnonymizationTask.class))
+            Dataset<Tuple2<ColumnTuple, Task>> extractedTuple = partitionedDataset.map(
+                    (MapFunction<Task, Tuple2<ColumnTuple, Task>>) task -> extractService.extract(task, broadcastFacade),
+                    Encoders.tuple(Encoders.bean(ColumnTuple.class), Encoders.bean(Task.class))
             );
 
             // Step 3: Transform - Anonymization
-            Dataset<Tuple2<ColumnTuple, AnonymizationTask>> anonymizedTuple = extractedTuple.map(
-                    (MapFunction<Tuple2<ColumnTuple, AnonymizationTask>, Tuple2<ColumnTuple, AnonymizationTask>>) task -> transformService.anonymize(task, broadcastFacade.getKafkaSinkBroadcast()),
-                    Encoders.tuple(Encoders.bean(ColumnTuple.class), Encoders.bean(AnonymizationTask.class))
+            Dataset<Tuple2<ColumnTuple, Task>> anonymizedTuple = extractedTuple.map(
+                    (MapFunction<Tuple2<ColumnTuple, Task>, Tuple2<ColumnTuple, Task>>) task -> transformService.anonymize(task, broadcastFacade.getKafkaSinkBroadcast()),
+                    Encoders.tuple(Encoders.bean(ColumnTuple.class), Encoders.bean(Task.class))
             );
 
             // Step 4: Transform – SQL script
-            Dataset<Tuple2<Column2Script, AnonymizationTask>> scriptTuple = anonymizedTuple.map(
-                    (MapFunction<Tuple2<ColumnTuple, AnonymizationTask>, Tuple2<Column2Script, AnonymizationTask>>) task -> column2ScriptService.create(task, broadcastFacade.getKafkaSinkBroadcast()),
-                    Encoders.tuple(Encoders.bean(Column2Script.class), Encoders.bean(AnonymizationTask.class))
+            Dataset<Tuple2<Column2Script, Task>> scriptTuple = anonymizedTuple.map(
+                    (MapFunction<Tuple2<ColumnTuple, Task>, Tuple2<Column2Script, Task>>) task -> column2ScriptService.create(task, broadcastFacade.getKafkaSinkBroadcast()),
+                    Encoders.tuple(Encoders.bean(Column2Script.class), Encoders.bean(Task.class))
             );
 
-            // Step 5: Load partial files into S3
+            // Step 5: Load fragments into S3
             Dataset<String> finishedTasks = scriptTuple.map(
-                    (MapFunction<Tuple2<Column2Script, AnonymizationTask>, String>) task -> loadService.load(task, broadcastFacade.getS3SinkBroadcast()),
+                    (MapFunction<Tuple2<Column2Script, Task>, String>) task -> loadService.load(task, broadcastFacade.getS3SinkBroadcast()),
                     Encoders.bean(String.class)
             );
 

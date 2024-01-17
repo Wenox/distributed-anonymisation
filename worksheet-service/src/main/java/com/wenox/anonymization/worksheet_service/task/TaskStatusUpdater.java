@@ -31,22 +31,22 @@ public class TaskStatusUpdater {
 
     @KafkaListener(topics = KafkaConstants.TOPIC_EXTRACTION_SUCCESS, groupId = "blueprint-service-group", containerFactory = "worksheetKafkaListenerContainerFactory")
     void onExtracted(String taskId) {
-        updateStatus(taskId, TaskStatus.EXTRACTED);
+        updateStatus(taskId, TaskStatus.EXTRACTED_COLUMN_TUPLE);
     }
 
     @KafkaListener(topics = KafkaConstants.TOPIC_TRANSFORMATION_ANONYMIZE_SUCCESS, groupId = "blueprint-service-group", containerFactory = "worksheetKafkaListenerContainerFactory")
     void onTransformedAnonymization(String taskId) {
-        updateStatus(taskId, TaskStatus.TRANSFORMED_ANONYMIZATION);
+        updateStatus(taskId, TaskStatus.APPLIED_ANONYMISATION);
     }
 
     @KafkaListener(topics = KafkaConstants.TOPIC_TRANSFORMATION_SCRIPT_SUCCESS, groupId = "blueprint-service-group", containerFactory = "worksheetKafkaListenerContainerFactory")
     void onTransformedSqlScript(String taskId) {
-        updateStatus(taskId, TaskStatus.TRANSFORMED_SQL_SCRIPT);
+        updateStatus(taskId, TaskStatus.CREATED_FRAGMENT);
     }
 
     @KafkaListener(topics = KafkaConstants.TOPIC_LOAD_SUCCESS, groupId = "blueprint-service-group", containerFactory = "worksheetKafkaListenerContainerFactory")
     void onLoaded(String taskId) {
-        updateStatus(taskId, TaskStatus.FINISHED);
+        updateStatus(taskId, TaskStatus.LOADED_FRAGMENT);
     }
 
     private void updateStatus(String taskId, TaskStatus newStatus) {
@@ -73,18 +73,18 @@ interface StatusUpdateStrategy {
 class ExtractedStatusUpdateStrategy implements StatusUpdateStrategy {
     @Override
     public boolean canUpdateStatus(Operation operation) {
-        return operation.getStatus() == TaskStatus.STARTED;
+        return operation.getStatus() == TaskStatus.INITIALIZED;
     }
 
     @Override
     public TaskStatus getApplicableStatus() {
-        return TaskStatus.EXTRACTED;
+        return TaskStatus.EXTRACTED_COLUMN_TUPLE;
     }
 }
 
 @Component
 class TransformedAnonymizationStatusUpdateStrategy implements StatusUpdateStrategy {
-    private final Set<TaskStatus> postTransformedAnonymization = Set.of(TaskStatus.TRANSFORMED_ANONYMIZATION, TaskStatus.TRANSFORMED_SQL_SCRIPT, TaskStatus.FINISHED);
+    private final Set<TaskStatus> postTransformedAnonymization = Set.of(TaskStatus.APPLIED_ANONYMISATION, TaskStatus.CREATED_FRAGMENT, TaskStatus.LOADED_FRAGMENT);
 
     @Override
     public boolean canUpdateStatus(Operation operation) {
@@ -93,13 +93,13 @@ class TransformedAnonymizationStatusUpdateStrategy implements StatusUpdateStrate
 
     @Override
     public TaskStatus getApplicableStatus() {
-        return TaskStatus.TRANSFORMED_ANONYMIZATION;
+        return TaskStatus.APPLIED_ANONYMISATION;
     }
 }
 
 @Component
 class TransformedSqlScriptStatusUpdateStrategy implements StatusUpdateStrategy {
-    private final Set<TaskStatus> postTransformedSqlScript = Set.of(TaskStatus.TRANSFORMED_SQL_SCRIPT, TaskStatus.FINISHED);
+    private final Set<TaskStatus> postTransformedSqlScript = Set.of(TaskStatus.CREATED_FRAGMENT, TaskStatus.LOADED_FRAGMENT);
 
     @Override
     public boolean canUpdateStatus(Operation operation) {
@@ -108,7 +108,7 @@ class TransformedSqlScriptStatusUpdateStrategy implements StatusUpdateStrategy {
 
     @Override
     public TaskStatus getApplicableStatus() {
-        return TaskStatus.TRANSFORMED_SQL_SCRIPT;
+        return TaskStatus.CREATED_FRAGMENT;
     }
 }
 
@@ -116,12 +116,12 @@ class TransformedSqlScriptStatusUpdateStrategy implements StatusUpdateStrategy {
 class FinishedStatusUpdateStrategy implements StatusUpdateStrategy {
     @Override
     public boolean canUpdateStatus(Operation operation) {
-        return operation.getStatus() != TaskStatus.FINISHED;
+        return operation.getStatus() != TaskStatus.LOADED_FRAGMENT;
     }
 
     @Override
     public TaskStatus getApplicableStatus() {
-        return TaskStatus.FINISHED;
+        return TaskStatus.LOADED_FRAGMENT;
     }
 }
 

@@ -1,7 +1,7 @@
 package com.anonymization.etl.config.tests;
 
 import com.anonymization.etl.domain.OperationType;
-import com.anonymization.etl.domain.tasks.AnonymizationTask;
+import com.anonymization.etl.domain.tasks.Task;
 import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,7 +47,7 @@ public class AnonymizationTaskSimulator implements Serializable {
     public void sendAnonymizationTasks(String blueprintId, int numberOfTasks, String topic) {
         var now = LocalDateTime.now();
         for (int i = 0; i < numberOfTasks; i++) {
-            AnonymizationTask suppressionTask = new AnonymizationTask();
+            Task suppressionTask = new Task();
             suppressionTask.setTaskId("suppressionTask-" + i);
             suppressionTask.setType(OperationType.SUPPRESSION);
             suppressionTask.setTableName("employees");
@@ -64,7 +64,7 @@ public class AnonymizationTaskSimulator implements Serializable {
         }
 
         for (int i = 0; i < numberOfTasks; i++) {
-            AnonymizationTask shuffleTask = new AnonymizationTask();
+            Task shuffleTask = new Task();
             shuffleTask.setTaskId("shuffleTask-" + i);
             shuffleTask.setType(OperationType.SHUFFLE);
             shuffleTask.setTableName("employees");

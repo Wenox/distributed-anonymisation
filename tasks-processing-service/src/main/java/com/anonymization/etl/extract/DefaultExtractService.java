@@ -2,7 +2,7 @@ package com.anonymization.etl.extract;
 
 import com.anonymization.etl.core.BroadcastFacade;
 import com.anonymization.etl.domain.ColumnTuple;
-import com.anonymization.etl.domain.tasks.AnonymizationTask;
+import com.anonymization.etl.domain.tasks.Task;
 import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,7 +10,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriBuilder;
-import org.springframework.web.util.UriComponentsBuilder;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Schedulers;
 import scala.Tuple2;
@@ -26,16 +25,15 @@ public class DefaultExtractService implements ExtractService {
     private String endpoint;
 
     @Override
-    public Tuple2<ColumnTuple, AnonymizationTask> extract(AnonymizationTask task, BroadcastFacade broadcastFacade) {
+    public Tuple2<ColumnTuple, Task> extract(Task task, BroadcastFacade broadcastFacade) {
         log.info("-----> Step 1: – extracting column tuple for task: {}", task);
         ColumnTuple columnTuple = fetchColumnTuple(task, broadcastFacade);
         sendExtractionSuccessNotification(broadcastFacade, task.getTaskId());
         return Tuple2.apply(columnTuple, task);
     }
 
-    private ColumnTuple fetchColumnTuple(AnonymizationTask task, BroadcastFacade broadcastFacade) {
+    private ColumnTuple fetchColumnTuple(Task task, BroadcastFacade broadcastFacade) {
         String redisKey = buildRedisKey(task);
-
         return getColumnTupleFromRedis(broadcastFacade, redisKey)
                 .orElseGet(() -> fetchAndCacheColumnTupleFromApi(broadcastFacade, task, redisKey));
     }
@@ -44,7 +42,7 @@ public class DefaultExtractService implements ExtractService {
         broadcastFacade.getKafkaSinkBroadcast().getValue().send(KafkaConstants.TOPIC_EXTRACTION_SUCCESS, taskId);
     }
 
-    private String buildRedisKey(AnonymizationTask task) {
+    private String buildRedisKey(Task task) {
         return String.join(":", task.getTableName(), task.getColumnName(), task.getBlueprintId());
     }
 
@@ -52,14 +50,14 @@ public class DefaultExtractService implements ExtractService {
         return Optional.ofNullable(broadcastFacade.redis().get(redisKey));
     }
 
-    private ColumnTuple fetchAndCacheColumnTupleFromApi(BroadcastFacade broadcastFacade, AnonymizationTask task, String redisKey) {
+    private ColumnTuple fetchAndCacheColumnTupleFromApi(BroadcastFacade broadcastFacade, Task task, String redisKey) {
         ColumnTuple columnTuple = fetchColumnTupleFromApi(task, broadcastFacade);
         broadcastFacade.redis().set(redisKey, columnTuple);
 
         return columnTuple;
     }
 
-    private ColumnTuple fetchColumnTupleFromApi(AnonymizationTask task, BroadcastFacade broadcastFacade) {
+    private ColumnTuple fetchColumnTupleFromApi(Task task, BroadcastFacade broadcastFacade) {
         return broadcastFacade.webClient()
                 .getWebClient()
                 .get()
@@ -74,7 +72,7 @@ public class DefaultExtractService implements ExtractService {
                 .block();
     }
 
-    private URI buildColumnTupleUri(UriBuilder uriBuilder, AnonymizationTask task) {
+    private URI buildColumnTupleUri(UriBuilder uriBuilder, Task task) {
         return uriBuilder.path(endpoint)
                 .queryParam("blueprint_id", task.getBlueprintId())
                 .queryParam("table", task.getTableName())

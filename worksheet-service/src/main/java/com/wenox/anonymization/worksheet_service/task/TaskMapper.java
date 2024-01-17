@@ -12,11 +12,11 @@ import java.util.Map;
 
 @Slf4j
 @Component
-public class AnonymizationTaskMapper {
+public class TaskMapper {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public AnonymizationTask toAnonymizationTask(Operation operation, Worksheet worksheet) {
+    public Task toTask(Operation operation, Worksheet worksheet) {
 
         Map<String, String> configuration = new HashMap<>();
         try {
@@ -25,7 +25,7 @@ public class AnonymizationTaskMapper {
             log.error("Error deserializing operation settings {} to Map. Using empty settings instead. Operation: {}", operation.getSettings(), operation, ex);
         }
 
-        return AnonymizationTask
+        return Task
                 .builder()
                 .type(operation.getOperationType())
                 .taskId(operation.getKey().getTaskId())

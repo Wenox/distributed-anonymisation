@@ -7,6 +7,6 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class SuppressionTask extends AnonymizationTask {
+public class SuppressionTask extends Task {
     private String token;
 }

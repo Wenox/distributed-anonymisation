@@ -2,7 +2,7 @@ package com.anonymization.etl.transform.operations;
 
 import com.anonymization.etl.core.KafkaSink;
 import com.anonymization.etl.domain.ColumnTuple;
-import com.anonymization.etl.domain.tasks.AnonymizationTask;
+import com.anonymization.etl.domain.tasks.Task;
 import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.spark.broadcast.Broadcast;
@@ -21,11 +21,11 @@ public class DefaultTransformService implements TransformService {
     private final Random rng = new Random(System.currentTimeMillis());
 
     @Override
-    public Tuple2<ColumnTuple, AnonymizationTask> anonymize(Tuple2<ColumnTuple, AnonymizationTask> input,
-                                                            Broadcast<KafkaSink> kafkaSinkBroadcast) {
+    public Tuple2<ColumnTuple, Task> anonymize(Tuple2<ColumnTuple, Task> input,
+                                               Broadcast<KafkaSink> kafkaSinkBroadcast) {
         log.info("-----> Step 2: – transforming – applying anonymisation for task: {}", input._2);
 
-        Tuple2<ColumnTuple, AnonymizationTask> result;
+        Tuple2<ColumnTuple, Task> result;
 
         switch (input._2.getType()) {
             case SUPPRESSION -> result = transformSuppressionTask(input._1, input._2);
@@ -44,7 +44,7 @@ public class DefaultTransformService implements TransformService {
         kafkaSinkBroadcast.getValue().send(KafkaConstants.TOPIC_TRANSFORMATION_ANONYMIZE_SUCCESS, taskId);
     }
 
-    private Tuple2<ColumnTuple, AnonymizationTask> transformSuppressionTask(ColumnTuple columnTuple, AnonymizationTask task) {
+    private Tuple2<ColumnTuple, Task> transformSuppressionTask(ColumnTuple columnTuple, Task task) {
         String token = String.valueOf(task.getConfiguration().get("token"));
         List<String> newValues = columnTuple.getValues()
                 .stream()
@@ -53,7 +53,7 @@ public class DefaultTransformService implements TransformService {
         return Tuple2.apply(columnTuple.copyWithValues(newValues), task);
     }
 
-    private Tuple2<ColumnTuple, AnonymizationTask> transformShuffleTask(ColumnTuple columnTuple, AnonymizationTask task) {
+    private Tuple2<ColumnTuple, Task> transformShuffleTask(ColumnTuple columnTuple, Task task) {
         boolean repetitions = Boolean.parseBoolean(task.getConfiguration().get("repetitions"));
         if (!repetitions) {
             Collections.shuffle(columnTuple.getValues());

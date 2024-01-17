@@ -1,7 +1,7 @@
 package com.anonymization.etl.load;
 
 import com.anonymization.etl.core.S3Sink;
-import com.anonymization.etl.domain.tasks.AnonymizationTask;
+import com.anonymization.etl.domain.tasks.Task;
 import com.anonymization.etl.transform.script.Column2Script;
 import com.wenox.anonymization.s3.S3Constants;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import scala.Tuple2;
 @RequiredArgsConstructor
 public class DefaultLoadService implements LoadService {
 
-    public String load(Tuple2<Column2Script, AnonymizationTask> scriptTuple, Broadcast<S3Sink> s3SinkBroadcast) {
+    public String load(Tuple2<Column2Script, Task> scriptTuple, Broadcast<S3Sink> s3SinkBroadcast) {
         log.info("-----> Step 4: – loading fragment into Amazon S3 for task: {}", scriptTuple._2);
 
         String key = String.format("%s/%s/%s/%s.sql", scriptTuple._2.getWorksheetId(), scriptTuple._2.getTableName(), scriptTuple._2.getColumnName(), scriptTuple._2.getType().name());

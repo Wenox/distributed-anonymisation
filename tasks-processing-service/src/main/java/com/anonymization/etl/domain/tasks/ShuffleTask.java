@@ -7,6 +7,6 @@ import lombok.ToString;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
-public class ShuffleTask extends AnonymizationTask {
+public class ShuffleTask extends Task {
     private Boolean repetitions;
 }

@@ -10,7 +10,7 @@ import java.util.Map;
 @Data
 @ToString
 @Builder
-public class AnonymizationTask {
+public class Task {
     private OperationType type;
     private String taskId;
     private String worksheetId;

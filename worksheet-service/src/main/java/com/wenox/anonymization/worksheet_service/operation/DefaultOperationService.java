@@ -8,8 +8,8 @@ import com.wenox.anonymization.worksheet_service.WorksheetRepository;
 import com.wenox.anonymization.worksheet_service.domain.*;
 import com.wenox.anonymization.worksheet_service.exception.WorksheetNotFoundException;
 import com.wenox.anonymization.worksheet_service.operation.base.AddOperationRequest;
-import com.wenox.anonymization.worksheet_service.task.AnonymizationTask;
-import com.wenox.anonymization.worksheet_service.task.AnonymizationTaskMapper;
+import com.wenox.anonymization.worksheet_service.task.Task;
+import com.wenox.anonymization.worksheet_service.task.TaskMapper;
 import io.vavr.control.Either;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +28,7 @@ public class DefaultOperationService implements OperationService {
     private final OperationRepository operationRepository;
     private final WorksheetRepository worksheetRepository;
     private final OperationMapper<AddOperationRequest> operationMapper;
-    private final AnonymizationTaskMapper anonymizationTaskMapper;
+    private final TaskMapper taskMapper;
     private final KafkaTemplateWrapper<String, Object> kafkaTemplateWrapper;
 
     @Override
@@ -44,7 +44,7 @@ public class DefaultOperationService implements OperationService {
                     tasksByStatus.get(operation.getStatus()).add(operation.getKey().getTaskId());
                     numberOfTasks.incrementAndGet();
                 })
-                .allMatch(operation -> operation.getStatus() == TaskStatus.FINISHED);
+                .allMatch(operation -> operation.getStatus() == TaskStatus.LOADED_FRAGMENT);
 
         return TasksInWorksheetResponse.builder()
                 .tasksByStatus(tasksByStatus)
@@ -105,7 +105,7 @@ public class DefaultOperationService implements OperationService {
 
         operationRepository.save(operation);
 
-        AnonymizationTask task = anonymizationTaskMapper.toAnonymizationTask(operation, worksheet);
+        Task task = taskMapper.toTask(operation, worksheet);
         kafkaTemplateWrapper.send(KafkaConstants.TOPIC_OPERATIONS, task);
 
         return Either.right(operationMapper.toResponse(operation, worksheet));

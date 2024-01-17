@@ -8,7 +8,7 @@ import java.util.Map;
 
 @Data
 @ToString
-public class AnonymizationTask {
+public class Task {
     private OperationType type;
     private String taskId;
     private String worksheetId;

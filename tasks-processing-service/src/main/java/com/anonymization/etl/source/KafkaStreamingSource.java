@@ -1,6 +1,6 @@
 package com.anonymization.etl.source;
 
-import com.anonymization.etl.domain.tasks.AnonymizationTask;
+import com.anonymization.etl.domain.tasks.Task;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,7 @@ public class KafkaStreamingSource implements StreamingSource {
 
     private final SparkSession sparkSession;
 
-    public Dataset<AnonymizationTask> fetchTasks() {
+    public Dataset<Task> fetchTasks() {
         return sparkSession.readStream()
                 .format("kafka")
                 .option("kafka.bootstrap.servers", "localhost:9093")
@@ -30,13 +30,13 @@ public class KafkaStreamingSource implements StreamingSource {
                 .load()
                 .selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
                 .as(Encoders.tuple(Encoders.STRING(), Encoders.STRING()))
-                .map((MapFunction<Tuple2<String, String>, AnonymizationTask>) tuple -> deserializeAnonymizationTask(tuple._2), Encoders.bean(AnonymizationTask.class));
+                .map((MapFunction<Tuple2<String, String>, Task>) tuple -> deserializeTask(tuple._2), Encoders.bean(Task.class));
     }
 
-    public AnonymizationTask deserializeAnonymizationTask(String value) {
+    public Task deserializeTask(String value) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
-            return objectMapper.readValue(value, AnonymizationTask.class);
+            return objectMapper.readValue(value, Task.class);
         } catch (IOException e) {
             log.error("Error deserializing JSON", e);
             throw new RuntimeException("Error deserializing JSON", e);
