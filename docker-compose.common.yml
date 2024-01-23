@@ -1,6 +1,24 @@
 version: '3.8'
 
 services:
+  eureka-server:
+    build:
+      context: eureka-server/
+      dockerfile: Dockerfile
+    ports:
+      - "8761:8761"
+    networks:
+      - platform
+
+  api-gateway:
+    build:
+      context: api-gateway/
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    networks:
+      - platform
+
   elasticsearch:
     image: elasticsearch:8.11.3
     platform: linux/arm64
@@ -13,6 +31,8 @@ services:
       - "9200:9200"
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data
+    networks:
+      - platform
 
   logstash:
     image: logstash:8.11.3
@@ -23,6 +43,8 @@ services:
     volumes:
       - ./logstash.yml:/usr/share/logstash/config/logstash.yml
       - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+    networks:
+      - platform
     depends_on:
       - elasticsearch
 
@@ -34,72 +56,10 @@ services:
       - "5601:5601"
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    networks:
+      - platform
     depends_on:
       - elasticsearch
-
-  spark-master:
-    image: apache/spark:v3.4.0
-    command: /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master -h 0.0.0.0
-    ports:
-      - "7077:7077"
-      - "8082:8080"
-
-  spark-worker-1:
-    image: apache/spark:v3.4.0
-    command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
-    environment:
-      - "SPARK_WORKER_MEMORY=1g"
-      - "SPARK_WORKER_CORES=1"
-    depends_on:
-      - spark-master
-    volumes:
-      - ./spark-worker-1-work:/opt/spark/work
-
-#  spark-worker-2:
-#    image: apache/spark:v3.4.0
-#    command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
-#    environment:
-#      - "SPARK_WORKER_MEMORY=1g"
-#      - "SPARK_WORKER_CORES=1"
-#    depends_on:
-#      - spark-master
-#    volumes:
-#      - ./spark-worker-2-work:/opt/spark/work
-
-  redis:
-    image: redis:7.0.11
-    container_name: redis
-    ports:
-      - "6379:6379"
-
-  redisinsight:
-    image: redislabs/redisinsight:latest
-    container_name: redisinsight
-    ports:
-      - "8011:8001"
-    volumes:
-      - ./redisinsight:/db
-
-  cassandra:
-    image: cassandra:4.1.1
-    container_name: cassandra
-    ports:
-      - "9042:9042"
-    volumes:
-      - ./tasks-processing-service:/docker-entrypoint-initdb.d/
-    environment:
-      - CASSANDRA_CLUSTER_NAME=MyCassandraCluster
-      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
-      - CQLSH_INIT_FILE=/docker-entrypoint-initdb.d/init.cql
-
-  cassandra-init:
-    image: cassandra:4.1.1
-    container_name: cassandra-init
-    depends_on:
-      - cassandra
-    volumes:
-      - ./tasks-processing-service:/tasks-processing-service
-    command: /bin/bash -c 'for i in `seq 1 60`; do cqlsh cassandra -e "describe cluster" && break || sleep 5; done && cqlsh cassandra -f /tasks-processing-service/init.cql'
 
   prometheus:
     image: prom/prometheus:latest
@@ -113,6 +73,8 @@ services:
       - '--web.console.templates=/usr/share/prometheus/consoles'
     ports:
       - '9090:9090'
+    networks:
+      - platform
 
   grafana:
     image: grafana/grafana:latest
@@ -122,6 +84,8 @@ services:
     volumes:
       - ./datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
       - grafana-data:/var/lib/grafana
+    networks:
+      - platform
 
   mongodb:
     image: mongo
@@ -134,6 +98,8 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: example
     volumes:
       - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    networks:
+      - platform
 
   zookeeper:
     image: 'bitnami/zookeeper:latest'
@@ -141,10 +107,12 @@ services:
     ports:
       - '2181:2181'
     environment:
-      - ALLOW_ANONYMOUS_LOGIN=yes
+      - ALLOW_ANONYMOUS_LOGIN=YES
+    networks:
+      - platform
   kafka:
     image: 'bitnami/kafka:latest'
-    container_name: 'kafka'
+    container_name: kafka
     ports:
       - '9093:9093'
     environment:
@@ -152,8 +120,10 @@ services:
       - ALLOW_PLAINTEXT_LISTENER=yes
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
       - KAFKA_CFG_LISTENERS=CLIENT://:9092,EXTERNAL://:9093
-      - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://kafka:9092,EXTERNAL://localhost:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://kafka:9092,EXTERNAL://kafka:9093
       - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=CLIENT
+    networks:
+      - platform
     depends_on:
       - zookeeper
 
@@ -165,10 +135,16 @@ services:
     environment:
       - KAFKA_CLUSTERS_0_NAME=local
       - KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS=kafka:9092
+    networks:
+      - platform
     depends_on:
       - kafka
-    restart: always
 
 volumes:
   elasticsearch-data:
   grafana-data:
+
+networks:
+  platform:
+    name: platform_network
+    driver: bridge

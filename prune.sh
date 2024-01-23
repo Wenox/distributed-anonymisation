@@ -1,5 +1,8 @@
 #!/bin/bash
 
+echo "Deleting networks"
+yes | docker network prune
+
 # Container IDs to keep
 keep_containers=()
 

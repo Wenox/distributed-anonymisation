@@ -14,7 +14,7 @@ public class ColumnTupleDatabaseConnectionConfig {
     private final String postgresContainerPort;
 
     public ColumnTupleDatabaseConnectionConfig(@Value("${server.environment.cloud}") Boolean isRunningOnCloud,
-                                               @Value("${POSTGRES_IP_ADDRESS:localhost}") String postgresIpAddress,
+                                               @Value("${POSTGRES_IP_ADDRESS:postgres}") String postgresIpAddress,
                                                @Value("${POSTGRES_HOST_PORT:5432}") String postgresHostPort,
                                                @Value("${POSTGRES_CONTAINER_PORT:5432}") String postgresContainerPort) {
         this.isRunningOnCloud = isRunningOnCloud;

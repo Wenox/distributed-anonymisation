@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - platform_network
+
+  blueprint-service:
+    build:
+      context: blueprint-service/
+      dockerfile: Dockerfile
+    ports:
+      - "8100:8100"
+    networks:
+      - platform_network
+
+  database-restoration-service:
+    build:
+      context: database-restoration-service/
+      dockerfile: Dockerfile
+    ports:
+      - "8200:8200"
+    environment:
+      - PGPASSWORD=postgres
+    networks:
+      - platform_network
+
+  metadata-extraction-service:
+    build:
+      context: metadata-extraction-service/
+      dockerfile: Dockerfile
+    ports:
+      - "8300:8300"
+    networks:
+      - platform_network
+
+volumes:
+  postgres_data:
+
+networks:
+  platform_network:
+    external: true

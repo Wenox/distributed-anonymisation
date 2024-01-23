@@ -13,7 +13,9 @@ import javax.sql.DataSource;
 @RequiredArgsConstructor
 public class DataSourceFactory {
 
-    private final DatabaseConfiguration databaseConfiguration;
+    // quick poc
+    private static final String POSTGRES_HOST = "postgres";
+    private static final String POSTGRES_PORT = "5432";
 
     public DataSource getDataSource(DatabaseConnection databaseConnection) {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
@@ -37,8 +39,6 @@ public class DataSourceFactory {
     }
 
     private String buildUrl(DatabaseConnection databaseConnection, String jdbcPrefix) {
-        String ipAddress = databaseConfiguration.getIsRunningOnCloud() ? databaseConfiguration.getPostgresIpAddress() : "localhost";
-        String port = databaseConfiguration.getIsRunningOnCloud() ? databaseConfiguration.getPostgresContainerPort() : databaseConfiguration.getPostgresHostPort();
-        return String.format("%s://%s:%s/%s", jdbcPrefix, ipAddress, port, databaseConnection.getDb());
+        return String.format("%s://%s:%s/%s", jdbcPrefix, POSTGRES_HOST, POSTGRES_PORT, databaseConnection.getDb());
     }
 }

@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "restoration.db")
 public class ConnectionProperties {
     private String host;
+    private String password;
     private String port;
     private String username;
 }
