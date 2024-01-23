@@ -1,21 +1,28 @@
 version: '3.8'
 
 services:
-  eureka-server:
-    build:
-      context: eureka-server/
-      dockerfile: Dockerfile
-    ports:
-      - "8761:8761"
-    networks:
-      - platform
-
   api-gateway:
     build:
       context: api-gateway/
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
+    networks:
+      - platform
+
+  importing-dashboard:
+    build: importing-dashboard/
+    ports:
+      - "80:80"
+    volumes:
+      - node-modules:/app/node_modules
+
+  eureka-server:
+    build:
+      context: eureka-server/
+      dockerfile: Dockerfile
+    ports:
+      - "8761:8761"
     networks:
       - platform
 
@@ -87,6 +94,19 @@ services:
     networks:
       - platform
 
+  postgres:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - platform
+
   mongodb:
     image: mongo
     container_name: mongodb
@@ -143,6 +163,8 @@ services:
 volumes:
   elasticsearch-data:
   grafana-data:
+  postgres-data:
+  node-modules:
 
 networks:
   platform:
