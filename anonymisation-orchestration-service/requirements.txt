@@ -10,3 +10,4 @@ aiobreaker
 python-dotenv
 starlette
 retry
+py-eureka-client

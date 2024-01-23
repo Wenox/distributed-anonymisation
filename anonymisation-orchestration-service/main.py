@@ -1,6 +1,7 @@
 import json
 
 import boto3
+from py_eureka_client import eureka_client
 from fastapi import FastAPI
 from prefect import flow, task
 from pydantic import BaseModel
@@ -18,6 +19,21 @@ app = FastAPI()
 
 logger = setup_logger(__name__)
 
+eureka_server = "http://eureka-server:8761/eureka/"
+app_name = "anonymisation-orchestration-service"
+instance_port = 9000
+instance_host = "anonymisation-orchestration-service"
+
+@app.on_event("startup")
+async def startup_event():
+    logger.info(f"Registering with Eureka... App Name: {app_name}")
+    # Initialize Eureka client (which may handle registration internally)
+    await eureka_client.init_async(
+        eureka_server=eureka_server,
+        app_name=app_name,
+        instance_port=instance_port,
+        instance_host=instance_host
+    )
 
 class TriggerRequest(BaseModel):
     worksheet_id: str
@@ -125,7 +141,7 @@ def merge_anonymisation_fragments(outcome: Outcome):
 def execute_anonymisation_script(outcome):
     logger.info(f"-----> Step 5: Executing anonymisation script for worksheet: {outcome.worksheet_id}...")
     try:
-        anonymization_execution_path = "http://localhost:8500/api/v1/execute-anonymization"
+        anonymization_execution_path = "http://anonymisation-execution-service:8500/api/v1/execute-anonymization"
         response = async_request_with_circuit_breaker_and_retries("POST", anonymization_execution_path,
                                                                   json={"mirrorId": outcome.mirror_id, "filePath": f"{outcome.worksheet_id}/{outcome.outcome_id}.sql"},
                                                                   timeout=60)
@@ -141,7 +157,7 @@ def execute_anonymisation_script(outcome):
 def generate_anonymisation_dump(outcome):
     logger.info(f"-----> Step 6: Generating anonymisation dump: {outcome.worksheet_id}...")
     try:
-        generate_dump_path = "http://localhost:8500/api/v1/execute-anonymization/generate-dump"
+        generate_dump_path = "http://anonymisation-execution-service:8500/api/v1/execute-anonymization/generate-dump"
         response = async_request_with_circuit_breaker_and_retries("POST", generate_dump_path,
                                                                   json={"mirrorId": outcome.mirror_id,
                                                                         "dumpPath": f"{outcome.worksheet_id}/{outcome.outcome_id}.sql"},

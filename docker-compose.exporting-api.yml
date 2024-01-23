@@ -1,0 +1,26 @@
+version: '3.8'
+
+services:
+  anonymisation-execution-service:
+    build:
+      context: anonymisation-execution-service/
+      dockerfile: Dockerfile
+    ports:
+      - "8500:8500"
+    networks:
+      - platform_network
+
+  anonymisation-orchestration-service:
+    build:
+      context: anonymisation-orchestration-service/
+      dockerfile: Dockerfile
+    ports:
+      - "9000:9000"
+    env_file:
+      - anonymisation-orchestration-service/.env
+    networks:
+      - platform_network
+
+networks:
+  platform_network:
+    external: true
