@@ -13,7 +13,7 @@ import java.util.Map;
 @Configuration
 public class KafkaTestsConfig {
 
-    private String bootstrapAddress = "localhost:9093";
+    private String bootstrapAddress = "kafka:9093";
 
     // producer
     @Bean

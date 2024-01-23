@@ -1,0 +1,116 @@
+version: '3.8'
+
+services:
+  worksheet-service:
+    build:
+      context: worksheet-service/
+      dockerfile: Dockerfile
+    ports:
+      - "8400:8400"
+    volumes:
+      - cassandra_data:/var/lib/cassandra
+    networks:
+      - platform_network
+    depends_on:
+      - cassandra-init
+
+  tasks-processing-service:
+    build:
+      context: database-restoration-service/
+      dockerfile: Dockerfile
+    ports:
+      - "8700:8700"
+    environment:
+      - PGPASSWORD=postgres
+    networks:
+      - platform_network
+    depends_on:
+      - redis
+
+  spark-master:
+    image: apache/spark:v3.4.0
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master -h 0.0.0.0
+    ports:
+      - "7077:7077"
+      - "8082:8080"
+    networks:
+      - platform_network
+
+  spark-worker:
+    image: apache/spark:v3.4.0
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
+    environment:
+      - "SPARK_WORKER_MEMORY=1g"
+      - "SPARK_WORKER_CORES=1"
+    volumes:
+      - spark-worker:/opt/spark/work
+    networks:
+      - platform_network
+    depends_on:
+      - spark-master
+
+  redis:
+    image: redis:7.0.11
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - platform_network
+
+  redisinsight:
+    image: redislabs/redisinsight:latest
+    container_name: redisinsight
+    ports:
+      - "8011:8001"
+    volumes:
+      - redis_insight:/db
+    networks:
+      - platform_network
+
+  cassandra:
+    image: cassandra:4.1.1
+    container_name: cassandra
+    ports:
+      - "9042:9042"
+    environment:
+      - CASSANDRA_CLUSTER_NAME=MyCassandraCluster
+      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+      - CQLSH_INIT_FILE=/docker-entrypoint-initdb.d/init.cql
+    volumes:
+      - cassandra_data:/var/lib/cassandra
+      - ./worksheet-service:/docker-entrypoint-initdb.d/
+    networks:
+      - platform_network
+
+  cassandra-init:
+    image: cassandra:4.1.1
+    container_name: cassandra-init
+    depends_on:
+      - cassandra
+    volumes:
+      - cassandra_data:/var/lib/cassandra
+      - ./worksheet-service:/worksheet-service
+    command: >
+      /bin/bash -c '
+      for i in `seq 1 60`; do
+        cqlsh cassandra -e "describe cluster" && break || sleep 5;
+      done && 
+      cqlsh cassandra -f /worksheet-service/init.cql &&
+      touch /var/lib/cassandra/init_done_flag'
+    ## Worksheet-service should start up only after cassandra-init finished execution
+    ## Empty file 'init_done_flag' is utilised for this
+    networks:
+      - platform_network
+
+volumes:
+  postgres_data:
+  redis_data:
+  redis_insight:
+  cassandra_data:
+  spark-worker:
+
+networks:
+  platform_network:
+    external: true

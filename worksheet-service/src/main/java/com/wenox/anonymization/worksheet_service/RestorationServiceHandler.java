@@ -17,7 +17,7 @@ public class RestorationServiceHandler extends AbstractServiceHandler<Restoratio
     protected String getServiceUrl() {
         // todo:
         // Consul or Kubernetes
-        return "http://localhost:8200/api/v1/restorations";
+        return "http://database-restoration-service:8200/api/v1/restorations";
     }
 
     @Override

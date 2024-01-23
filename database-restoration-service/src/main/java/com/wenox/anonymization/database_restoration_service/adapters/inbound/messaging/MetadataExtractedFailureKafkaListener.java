@@ -16,7 +16,7 @@ class MetadataExtractedFailureKafkaListener {
 
     private final MetadataExtractedFailureService metadataExtractedFailureService;
 
-    @KafkaListener(topics = KafkaConstants.TOPIC_METADATA_FAILURE, groupId = "blueprint-service-group")
+    @KafkaListener(topics = KafkaConstants.TOPIC_METADATA_FAILURE, groupId = "database-restoration-service-group")
     void onExtractionFailure(MetadataExtractedFailureEvent event, Acknowledgment ack) {
         log.info("-----> Started compensating transaction {}", event);
         metadataExtractedFailureService.handle(event);

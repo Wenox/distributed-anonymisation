@@ -86,7 +86,7 @@ services:
     ports:
       - "9042:9042"
     volumes:
-      - ./tasks-processing-service:/docker-entrypoint-initdb.d/
+      - ./worksheet-service:/docker-entrypoint-initdb.d/
     environment:
       - CASSANDRA_CLUSTER_NAME=MyCassandraCluster
       - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
@@ -99,7 +99,7 @@ services:
       - cassandra
     volumes:
       - ./tasks-processing-service:/tasks-processing-service
-    command: /bin/bash -c 'for i in `seq 1 60`; do cqlsh cassandra -e "describe cluster" && break || sleep 5; done && cqlsh cassandra -f /tasks-processing-service/init.cql'
+    command: /bin/bash -c 'for i in `seq 1 60`; do cqlsh cassandra -e "describe cluster" && break || sleep 5; done && cqlsh cassandra -f /worksheet-service/init.cql'
 
   prometheus:
     image: prom/prometheus:latest

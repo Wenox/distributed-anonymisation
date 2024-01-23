@@ -29,22 +29,22 @@ public class TaskStatusUpdater {
                 .collect(Collectors.toMap(StatusUpdateStrategy::getApplicableStatus, Function.identity()));
     }
 
-    @KafkaListener(topics = KafkaConstants.TOPIC_EXTRACTION_SUCCESS, groupId = "blueprint-service-group", containerFactory = "worksheetKafkaListenerContainerFactory")
+    @KafkaListener(topics = KafkaConstants.TOPIC_EXTRACTION_SUCCESS, groupId = "worksheet-service-group", containerFactory = "worksheetKafkaListenerContainerFactory")
     void onExtracted(String taskId) {
         updateStatus(taskId, TaskStatus.EXTRACTED_COLUMN_TUPLE);
     }
 
-    @KafkaListener(topics = KafkaConstants.TOPIC_TRANSFORMATION_ANONYMIZE_SUCCESS, groupId = "blueprint-service-group", containerFactory = "worksheetKafkaListenerContainerFactory")
+    @KafkaListener(topics = KafkaConstants.TOPIC_TRANSFORMATION_ANONYMIZE_SUCCESS, groupId = "worksheet-service-group", containerFactory = "worksheetKafkaListenerContainerFactory")
     void onTransformedAnonymization(String taskId) {
         updateStatus(taskId, TaskStatus.APPLIED_ANONYMISATION);
     }
 
-    @KafkaListener(topics = KafkaConstants.TOPIC_TRANSFORMATION_SCRIPT_SUCCESS, groupId = "blueprint-service-group", containerFactory = "worksheetKafkaListenerContainerFactory")
+    @KafkaListener(topics = KafkaConstants.TOPIC_TRANSFORMATION_SCRIPT_SUCCESS, groupId = "worksheet-service-group", containerFactory = "worksheetKafkaListenerContainerFactory")
     void onTransformedSqlScript(String taskId) {
         updateStatus(taskId, TaskStatus.CREATED_FRAGMENT);
     }
 
-    @KafkaListener(topics = KafkaConstants.TOPIC_LOAD_SUCCESS, groupId = "blueprint-service-group", containerFactory = "worksheetKafkaListenerContainerFactory")
+    @KafkaListener(topics = KafkaConstants.TOPIC_LOAD_SUCCESS, groupId = "worksheet-service-group", containerFactory = "worksheetKafkaListenerContainerFactory")
     void onLoaded(String taskId) {
         updateStatus(taskId, TaskStatus.LOADED_FRAGMENT);
     }

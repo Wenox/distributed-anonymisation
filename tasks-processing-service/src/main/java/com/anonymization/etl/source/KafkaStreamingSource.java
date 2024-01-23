@@ -24,7 +24,7 @@ public class KafkaStreamingSource implements StreamingSource {
     public Dataset<Task> fetchTasks() {
         return sparkSession.readStream()
                 .format("kafka")
-                .option("kafka.bootstrap.servers", "localhost:9093")
+                .option("kafka.bootstrap.servers", "kafka:9093")
                 .option("subscribe", KafkaConstants.TOPIC_OPERATIONS)
                 .option("startingOffsets", "earliest")
                 .load()
