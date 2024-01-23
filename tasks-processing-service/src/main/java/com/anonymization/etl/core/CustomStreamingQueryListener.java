@@ -10,22 +10,22 @@ public class CustomStreamingQueryListener extends StreamingQueryListener {
 
     @Override
     public void onQueryStarted(QueryStartedEvent event) {
-        logger.info("Query started");
+        logger.info("Query started - anonymisation tasks");
     }
 
     @Override
     public void onQueryProgress(QueryProgressEvent event) {
         long numRows = event.progress().numInputRows();
         if (numRows == 0) {
-            logger.info("No new messages");
+            logger.info("No new anonymisation tasks...");
         } else {
-            logger.info("New messages");
+            logger.info("New anonymisation tasks...");
         }
     }
 
     @Override
     public void onQueryTerminated(QueryTerminatedEvent event) {
-        logger.info("on query terminated");
+        logger.info("Query finished - anonymisation tasks");
     }
 }
 

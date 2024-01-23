@@ -8,16 +8,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class ColumnTupleDatabaseConnectionConfig {
 
-    private final Boolean isRunningOnCloud;
     private final String postgresIpAddress;
     private final String postgresHostPort;
     private final String postgresContainerPort;
 
-    public ColumnTupleDatabaseConnectionConfig(@Value("${server.environment.cloud}") Boolean isRunningOnCloud,
-                                               @Value("${POSTGRES_IP_ADDRESS:postgres}") String postgresIpAddress,
+    public ColumnTupleDatabaseConnectionConfig(@Value("${POSTGRES_IP_ADDRESS:postgres}") String postgresIpAddress,
                                                @Value("${POSTGRES_HOST_PORT:5432}") String postgresHostPort,
                                                @Value("${POSTGRES_CONTAINER_PORT:5432}") String postgresContainerPort) {
-        this.isRunningOnCloud = isRunningOnCloud;
         this.postgresIpAddress = postgresIpAddress;
         this.postgresHostPort = postgresHostPort;
         this.postgresContainerPort = postgresContainerPort;

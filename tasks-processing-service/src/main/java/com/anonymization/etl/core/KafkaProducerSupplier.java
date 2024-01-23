@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringSerializer;
-import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import java.io.Serializable;
 import java.util.Properties;

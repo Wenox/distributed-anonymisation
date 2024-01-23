@@ -23,7 +23,7 @@ public class DefaultTransformService implements TransformService {
     @Override
     public Tuple2<ColumnTuple, Task> anonymize(Tuple2<ColumnTuple, Task> input,
                                                Broadcast<KafkaSink> kafkaSinkBroadcast) {
-        log.info("-----> Step 2: – transforming – applying anonymisation for task: {}", input._2);
+        log.info("-----> Step 2: Transforming - applying anonymisation for task: {}", input._2);
 
         Tuple2<ColumnTuple, Task> result;
 

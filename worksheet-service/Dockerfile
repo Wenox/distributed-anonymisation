@@ -34,7 +34,5 @@ EXPOSE 8400
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-# Set the entrypoint script
+# Run the app
 ENTRYPOINT ["/entrypoint.sh"]
-## Run the application
-#ENTRYPOINT ["java", "-jar", "/app.jar"]

@@ -36,8 +36,6 @@ class DataSourceFactory {
     }
 
     private String buildUrl(DatabaseConnection databaseConnection, String jdbcPrefix) {
-        String ipAddress = lifecycleConfig.getIsRunningOnCloud() ? lifecycleConfig.getPostgresIpAddress() : "localhost";
-        String port = lifecycleConfig.getIsRunningOnCloud() ? lifecycleConfig.getPostgresContainerPort() : lifecycleConfig.getPostgresHostPort();
-        return String.format("%s://%s:%s/%s", jdbcPrefix, ipAddress, port, databaseConnection.getDb());
+        return String.format("%s://%s:%s/%s", jdbcPrefix, lifecycleConfig.getPostgresIpAddress(), lifecycleConfig.getPostgresHostPort(), databaseConnection.getDb());
     }
 }

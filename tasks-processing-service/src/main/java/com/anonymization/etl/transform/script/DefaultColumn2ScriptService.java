@@ -19,7 +19,7 @@ public class DefaultColumn2ScriptService implements Column2ScriptService {
     @Override
     public Tuple2<Column2Script, Task> create(Tuple2<ColumnTuple, Task> tuple2,
                                               Broadcast<KafkaSink> kafkaSinkBroadcast) {
-        log.info("-----> Step 3: – transforming – creating anonymisation fragment script for task: {}", tuple2._2);
+        log.info("-----> Step 3: Transforming - creating anonymisation fragment script for task: {}", tuple2._2);
 
         var task = tuple2._2;
         var columnTuple = tuple2._1;

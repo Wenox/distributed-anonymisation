@@ -1,7 +1,6 @@
 package com.anonymization.etl.core;
 
 import software.amazon.awssdk.services.s3.S3Client;
-import com.wenox.anonymization.s3.S3Constants;
 import lombok.extern.slf4j.Slf4j;
 import scala.reflect.ClassTag;
 import scala.reflect.ClassTag$;

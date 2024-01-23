@@ -1,8 +1,8 @@
 # Spark
 .spark_checkpoint
-spark-worker-1-work
-spark-worker-2-work
+spark-worker
 .DS_Store
+.env
 
 # Redis
 redisinsight

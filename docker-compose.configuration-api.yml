@@ -16,12 +16,14 @@ services:
 
   tasks-processing-service:
     build:
-      context: database-restoration-service/
+      context: tasks-processing-service/
       dockerfile: Dockerfile
     ports:
       - "8700:8700"
+      - "4040:4040"
     environment:
-      - PGPASSWORD=postgres
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
     networks:
       - platform_network
     depends_on:
@@ -43,7 +45,7 @@ services:
       - "SPARK_WORKER_MEMORY=1g"
       - "SPARK_WORKER_CORES=1"
     volumes:
-      - spark-worker:/opt/spark/work
+      - ./spark-worker:/opt/spark/work
     networks:
       - platform_network
     depends_on:
@@ -109,7 +111,6 @@ volumes:
   redis_data:
   redis_insight:
   cassandra_data:
-  spark-worker:
 
 networks:
   platform_network:

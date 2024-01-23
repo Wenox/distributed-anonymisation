@@ -26,7 +26,7 @@ public class DefaultExtractService implements ExtractService {
 
     @Override
     public Tuple2<ColumnTuple, Task> extract(Task task, BroadcastFacade broadcastFacade) {
-        log.info("-----> Step 1: – extracting column tuple for task: {}", task);
+        log.info("-----> Step 1: Extracting column tuple for task: {}", task);
         ColumnTuple columnTuple = fetchColumnTuple(task, broadcastFacade);
         sendExtractionSuccessNotification(broadcastFacade, task.getTaskId());
         return Tuple2.apply(columnTuple, task);

@@ -53,6 +53,7 @@ public class AnonymizationEtlStreamingService implements EtlStreamingService, Se
     }
 
     private void startEtlPipelineStreaming() {
+        log.info("Starting Streaming ETL Data Pipeline – anonymisation tasks processing");
         retryTemplate.execute(retryContext -> {
             processEtlStreaming();
             return null;
@@ -62,6 +63,7 @@ public class AnonymizationEtlStreamingService implements EtlStreamingService, Se
     @Scheduled(fixedDelayString = "${task-processing.etl-pipeline.restart-interval:60000}")
     @Override
     public void checkAndRestartEtlStreamingQuery() throws InterruptedException {
+        log.info("Trying to acquire lock for Streaming ETL Data Pipeline...");
         if (lock.tryLock(LOCK_TIME, TimeUnit.SECONDS)) {
             try {
                 startEtlPipelineStreaming();
