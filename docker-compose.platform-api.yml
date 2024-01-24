@@ -1,0 +1,287 @@
+#
+# This file aggregates all containers
+# comprising the Distributed Platform
+#
+version: '3.8'
+
+services:
+  api-gateway:
+    build:
+      context: api-gateway/
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+
+  importing-dashboard:
+    build: importing-dashboard/
+    ports:
+      - "80:80"
+    volumes:
+      - node-modules:/app/node_modules
+
+  eureka-server:
+    build:
+      context: eureka-server/
+      dockerfile: Dockerfile
+    ports:
+      - "8761:8761"
+
+  worksheet-service:
+    build:
+      context: worksheet-service/
+      dockerfile: Dockerfile
+    ports:
+      - "8400:8400"
+    volumes:
+      - cassandra_data:/var/lib/cassandra
+    depends_on:
+      - cassandra-init
+
+  tasks-processing-service:
+    build:
+      context: tasks-processing-service/
+      dockerfile: Dockerfile
+    ports:
+      - "8700:8700"
+      - "4040:4040"
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+    depends_on:
+      - redis
+
+  spark-master:
+    image: apache/spark:v3.4.0
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.master.Master -h 0.0.0.0
+    ports:
+      - "7077:7077"
+      - "8082:8080"
+
+  spark-worker:
+    image: apache/spark:v3.4.0
+    command: /opt/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077
+    environment:
+      - "SPARK_WORKER_MEMORY=1g"
+      - "SPARK_WORKER_CORES=1"
+    volumes:
+      - ./spark-worker:/opt/spark/work
+    depends_on:
+      - spark-master
+
+  redis:
+    image: redis:7.0.11
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  redisinsight:
+    image: redislabs/redisinsight:latest
+    container_name: redisinsight
+    ports:
+      - "8011:8001"
+    volumes:
+      - redis_insight:/db
+
+  cassandra:
+    image: cassandra:4.1.1
+    container_name: cassandra
+    ports:
+      - "9042:9042"
+    environment:
+      - CASSANDRA_CLUSTER_NAME=MyCassandraCluster
+      - CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+      - CQLSH_INIT_FILE=/docker-entrypoint-initdb.d/init.cql
+    volumes:
+      - cassandra_data:/var/lib/cassandra
+      - ./worksheet-service:/docker-entrypoint-initdb.d/
+
+  cassandra-init:
+    image: cassandra:4.1.1
+    container_name: cassandra-init
+    depends_on:
+      - cassandra
+    volumes:
+      - cassandra_data:/var/lib/cassandra
+      - ./worksheet-service:/worksheet-service
+    command: >
+      /bin/bash -c '
+      for i in `seq 1 60`; do
+        cqlsh cassandra -e "describe cluster" && break || sleep 5;
+      done && 
+      cqlsh cassandra -f /worksheet-service/init.cql &&
+      touch /var/lib/cassandra/init_done_flag'
+    ## Worksheet-service should start up only after cassandra-init finished execution
+    ## Empty file 'init_done_flag' is utilised for this
+
+  anonymisation-execution-service:
+    build:
+      context: anonymisation-execution-service/
+      dockerfile: Dockerfile
+    ports:
+      - "8500:8500"
+    environment:
+      - PGPASSWORD=postgres
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+
+  anonymisation-orchestration-service:
+    build:
+      context: anonymisation-orchestration-service/
+      dockerfile: Dockerfile
+    ports:
+      - "9000:9000"
+    env_file:
+      - anonymisation-orchestration-service/.env
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+
+  blueprint-service:
+    build:
+      context: blueprint-service/
+      dockerfile: Dockerfile
+    ports:
+      - "8100:8100"
+
+  database-restoration-service:
+    build:
+      context: database-restoration-service/
+      dockerfile: Dockerfile
+    ports:
+      - "8200:8200"
+    environment:
+      - PGPASSWORD=postgres
+
+  metadata-extraction-service:
+    build:
+      context: metadata-extraction-service/
+      dockerfile: Dockerfile
+    ports:
+      - "8300:8300"
+
+  postgres:
+    image: postgres:13.13
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  mongodb:
+    image: mongo
+    container_name: mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - ./mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+
+  zookeeper:
+    image: 'bitnami/zookeeper:latest'
+    container_name: zookeeper
+    ports:
+      - '2181:2181'
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=YES
+
+  kafka:
+    image: 'bitnami/kafka:latest'
+    container_name: kafka
+    ports:
+      - '9093:9093'
+    environment:
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+      - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=CLIENT:PLAINTEXT,EXTERNAL:PLAINTEXT
+      - KAFKA_CFG_LISTENERS=CLIENT://:9092,EXTERNAL://:9093
+      - KAFKA_CFG_ADVERTISED_LISTENERS=CLIENT://kafka:9092,EXTERNAL://kafka:9093
+      - KAFKA_CFG_INTER_BROKER_LISTENER_NAME=CLIENT
+    depends_on:
+      - zookeeper
+
+  kafka-ui:
+    image: 'provectuslabs/kafka-ui:latest'
+    container_name: kafka-ui
+    ports:
+      - '8081:8080'
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAP_SERVERS=kafka:9092
+    depends_on:
+      - kafka
+
+  elasticsearch:
+    image: elasticsearch:8.11.3
+    platform: linux/arm64
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data
+
+  logstash:
+    image: logstash:8.11.3
+    platform: linux/arm64
+    container_name: logstash
+    ports:
+      - "5001:5001"
+    volumes:
+      - ./logstash.yml:/usr/share/logstash/config/logstash.yml
+      - ./logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+    depends_on:
+      - elasticsearch
+
+  kibana:
+    image: kibana:8.11.3
+    platform: linux/arm64
+    container_name: kibana
+    ports:
+      - "5601:5601"
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    depends_on:
+      - elasticsearch
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    ports:
+      - '9090:9090'
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml
+      - grafana-data:/var/lib/grafana
+
+volumes:
+  postgres_data:
+  redis_data:
+  redis_insight:
+  cassandra_data:
+  elasticsearch-data:
+  grafana-data:
+  postgres-data:
+  node-modules:
