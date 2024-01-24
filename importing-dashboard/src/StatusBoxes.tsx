@@ -12,11 +12,11 @@ const StatusBoxes: React.FC<StatusBoxesProps> = ({ status, type }) => {
     let boxes = [];
 
     if (type === 'stale') {
-        boxes.push(<div key="green" className="status-box green">Initialized</div>);
+        boxes.push(<div key="green" className="status-box green">Initialised</div>);
         boxes.push(<div key="red" className="status-box red">Stale</div>);
     } else if (type === 'success') {
-        const texts = ["Initialized", "Dump stored", "Database restored", "Metadata extracted"];
-        let activeCount = status === "INITIALIZED" ? 1 :
+        const texts = ["Initialised", "Dump stored", "Database restored", "Metadata extracted"];
+        let activeCount = status === "INITIALISED" ? 1 :
             status === "DUMP_STORE_SUCCESS" ? 2 :
                 status === "RESTORE_SUCCESS" ? 3 : 4;
         for (let i = 0; i < 4; i++) {
@@ -26,9 +26,9 @@ const StatusBoxes: React.FC<StatusBoxesProps> = ({ status, type }) => {
         }
     } else if (type === 'failure') {
         const texts: { [key in FailureStatus]: string[] } = {
-            "DUMP_STORE_FAILURE": ["Initialized", "Dump store failed", "", ""],
-            "RESTORE_FAILURE": ["Initialized", "Dump stored", "Database restore failed", ""],
-            "METADATA_EXTRACTION_FAILURE": ["Initialized", "Dump stored", "Database restored", "Metadata extraction failed"]
+            "DUMP_STORE_FAILURE": ["Initialised", "Dump store failed", "", ""],
+            "RESTORE_FAILURE": ["Initialised", "Dump stored", "Database restore failed", ""],
+            "METADATA_EXTRACTION_FAILURE": ["Initialised", "Dump stored", "Database restored", "Metadata extraction failed"]
         };
 
         let activeCount = status === "DUMP_STORE_FAILURE" ? 2 :

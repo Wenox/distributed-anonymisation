@@ -6,7 +6,7 @@ from config import MONGODB_CONNECTION_URI
 
 
 class OutcomeStatus(Enum):
-    INITIALIZED = "INITIALIZED"
+    INITIALISED = "INITIALISED"
     MIRROR_READY = "MIRROR_READY"
     FRAGMENTS_READY = "FRAGMENTS_READY"
     FRAGMENTS_MERGED = "FRAGMENTS_MERGED"
@@ -16,13 +16,24 @@ class OutcomeStatus(Enum):
     MIRROR_FAILED = "MIRROR_FAILED"
     FRAGMENTS_NOT_READY = "FRAGMENTS_NOT_READY"
     FRAGMENTS_MERGE_FAILED = "FRAGMENTS_MERGE_FAILED"
+    SCRIPT_EXECUTE_FAILED = "SCRIPT_EXECUTE_FAILED"
+    DUMP_GENERATION_FAILED = "DUMP_GENERATION_FAILED"
     FINISHED = "FINISHED"
     FAILED = "FAILED"
 
 
+class DumpMode(Enum):
+    SCRIPT = "SCRIPT"
+    ARCHIVE = "ARCHIVE"
+
+
 class Outcome:
-    def __init__(self, worksheet_id: str, status: OutcomeStatus = OutcomeStatus.INITIALIZED, mirror_id: str = None):
+    def __init__(self, worksheet_id: str,
+                 dump_mode: DumpMode,
+                 status: OutcomeStatus = OutcomeStatus.INITIALISED,
+                 mirror_id: str = None):
         self.outcome_id = uuid4()
+        self.dump_mode = dump_mode
         self.status = status
         self.worksheet_id = worksheet_id
         self.mirror_id = mirror_id
@@ -31,6 +42,7 @@ class Outcome:
         data = {
             "outcomeId": str(self.outcome_id),
             "status": self.status.value,
+            "dumpMode": self.dump_mode.value,
             "worksheetId": self.worksheet_id,
         }
         if self.mirror_id:

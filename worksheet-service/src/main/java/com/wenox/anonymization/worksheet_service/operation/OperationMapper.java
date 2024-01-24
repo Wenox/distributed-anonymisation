@@ -45,7 +45,7 @@ public class OperationMapper<T extends AddOperationRequest> {
                             .taskId(buildTaskId(request, worksheet.getWorksheetId()))
                             .worksheetId(worksheet.getWorksheetId())
                             .build())
-                    .status(TaskStatus.INITIALIZED)
+                    .status(TaskStatus.INITIALISED)
                     .table(request.getTable())
                     .column(request.getColumn())
                     .operationType(request.getOperationType())
@@ -78,7 +78,7 @@ public class OperationMapper<T extends AddOperationRequest> {
     public AddOperationResponse toResponse(Operation operation, Worksheet worksheet) {
         try {
             return AddOperationResponse.builder()
-                    .status(TaskStatus.INITIALIZED)
+                    .status(TaskStatus.INITIALISED)
                     .taskId(operation.getKey().getTaskId())
                     .worksheetId(operation.getKey().getWorksheetId())
                     .table(operation.getTable())

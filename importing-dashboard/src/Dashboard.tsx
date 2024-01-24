@@ -39,7 +39,7 @@ function determineType(status: string): 'stale' | 'success' | 'failure' {
     switch (status) {
         case "STALE":
             return 'stale';
-        case "INITIALIZED":
+        case "INITIALISED":
         case "DUMP_STORE_SUCCESS":
         case "RESTORE_SUCCESS":
         case "METADATA_EXTRACTION_SUCCESS":

@@ -37,12 +37,12 @@ public class AnonymizationExecutionService {
         }
     }
 
-    public ExecuteScriptResponse restoreScriptDump(String db, String file) throws IOException, TimeoutException, InterruptedException {
+    public Response restoreScriptDump(String db, String file) throws IOException, TimeoutException, InterruptedException {
         log.info("Executing script {} against database {}", file, db);
         try (InputStream inputStream = storageService.downloadFile(S3Constants.BUCKET_SCRIPTS, file)) {
             restoreDumpFromInputStream(inputStream, commandFactory.generateExecuteScriptCommand(db));
         }
-        return new ExecuteScriptResponse("Executed script successfully");
+        return new Response("Executed script successfully");
     }
 
     private void restoreDumpFromInputStream(InputStream inputStream, List<String> command) throws IOException, InterruptedException, TimeoutException {
@@ -65,17 +65,22 @@ public class AnonymizationExecutionService {
     public ResponseEntity<?> generateDump(@Valid @RequestBody DumpRequest dto) {
         log.info("=====> Received dto: {}", dto);
         try {
-            return ResponseEntity.ok(dumpAndSaveInS3(dto.getMirrorId(), dto.getDumpPath()));
+            return ResponseEntity.ok(dumpAndSaveInS3(dto));
         } catch (Exception ex) {
             log.error("Error occurred during processing of dto: {}", dto, ex);
             ex.printStackTrace();
-            return ResponseEntity.badRequest().body(ex);
+            return ResponseEntity.internalServerError().body(ex);
         }
     }
 
-    public GenerateDumpResponse dumpAndSaveInS3(String db, String file) throws IOException, TimeoutException, InterruptedException {
+    public Response dumpAndSaveInS3(DumpRequest dumpRequest) throws IOException, TimeoutException, InterruptedException {
         // todo
-        String command = String.format("pg_dump -h localhost -p 5432 -U postgres -Fp %s --verbose | aws s3 cp - s3://%s/%s", db, S3Constants.BUCKET_DUMPS, file);
+        String command;
+        if (dumpRequest.getRestoreMode() == RestoreMode.SCRIPT) {
+            command = String.format("pg_dump -h postgres -p 5432 -U postgres -Fp %s --verbose | aws s3 cp - s3://%s/%s", dumpRequest.getMirrorId(), S3Constants.BUCKET_DUMPS, dumpRequest.getDumpPath() + ".sql");
+        } else {
+            command = String.format("pg_dump -h postgres -p 5432 -U postgres -Fc %s --verbose | aws s3 cp - s3://%s/%s", dumpRequest.getMirrorId(), S3Constants.BUCKET_DUMPS, dumpRequest.getDumpPath() + ".dump");
+        }
         log.info("Executing command: {}", command);
 
         int exitCode = new ProcessExecutor()
@@ -90,7 +95,7 @@ public class AnonymizationExecutionService {
         }
 
         log.info("Successfully executed script using command {}", command);
-        return GenerateDumpResponse.builder().file(file).build();
+        return new Response("Generated dump successfully");
     }
 
 }

@@ -73,7 +73,7 @@ interface StatusUpdateStrategy {
 class ExtractedStatusUpdateStrategy implements StatusUpdateStrategy {
     @Override
     public boolean canUpdateStatus(Operation operation) {
-        return operation.getStatus() == TaskStatus.INITIALIZED;
+        return operation.getStatus() == TaskStatus.INITIALISED;
     }
 
     @Override

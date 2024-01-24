@@ -12,7 +12,8 @@ logger = setup_logger(__name__)
 
 
 @retry(
-    wait=wait_exponential(multiplier=1.5, min=2, max=10),
+    wait=wait_exponential(multiplier=1.5, min=1, max=1),
+    # wait=wait_exponential(multiplier=1.5, min=2, max=10),
     stop=stop_after_attempt(3),
     reraise=True,
 )
@@ -20,7 +21,7 @@ async def async_request_with_retries(*args, timeout=10, **kwargs):
     async with httpx.AsyncClient(timeout=timeout) as client:
         logger.info(f"==========> Request: {args} {kwargs}")
         response = await client.request(*args, **kwargs)
-        logger.info(f"<========== Response: Status {response.status_code}\n{json.dumps(response.json(), indent=4)}")
+        logger.info(f"<========== Response: Status {response.status_code}\n{json.dumps(response.json(), indent=4)[:100]}")
         response.raise_for_status()
         return response
 

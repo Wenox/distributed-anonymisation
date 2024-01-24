@@ -1,5 +1,5 @@
 # Stage 1: Build the application
-FROM maven:3.8.4-openjdk-17-slim as build
+FROM --platform=linux/arm64/v8 maven:3.8.4-openjdk-17-slim as build
 
 # Set the working directory in the Docker image
 WORKDIR /app
@@ -22,10 +22,17 @@ COPY src /app/src
 RUN mvn clean package -DskipTests
 
 # Stage 2: Create the runtime image
-FROM openjdk:17-jdk-slim
+FROM --platform=linux/arm64/v8 openjdk:17-jdk-slim
 
-# Instal PostgreSQL client dependencies
-RUN apt-get update && apt-get install -y postgresql-client && rm -rf /var/lib/apt/lists/*
+## Install PostgreSQL client
+RUN apt-get update && apt-get install -y postgresql-client \
+ && rm -rf /var/lib/apt/lists/*
+
+# Install AWS CLI dependencies
+RUN apt-get update && apt-get install -y curl unzip \
+ && curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip" \
+ && unzip awscliv2.zip \
+ && ./aws/install
 
 # Copy the built application from the build stage
 COPY --from=build /app/target/*.jar app.jar

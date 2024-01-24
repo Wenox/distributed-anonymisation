@@ -17,7 +17,7 @@ services:
     ports:
       - "8200:8200"
     environment:
-      - PGPASSWORD=postgres
+      - PGPASSWORD={POSTGRES_PASSWORD}
     networks:
       - platform_network
 

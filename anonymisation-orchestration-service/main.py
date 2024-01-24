@@ -1,18 +1,22 @@
 import json
+import tempfile
 
 import boto3
 from py_eureka_client import eureka_client
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from prefect import flow, task
 from pydantic import BaseModel
 from starlette.background import BackgroundTasks
 from retry import retry
+from starlette.responses import FileResponse
 
 from config import ANONYMISATION_FRAGMENTS_BUCKET, ANONYMISATION_SCRIPTS_BUCKET, FRAGMENTS_MERGER_LAMBDA
+from execute_anonymisation import execute_anonymisation
 from fragments_population import get_tasks_statuses
+from generate_dump import generate_dump
 from http_client import async_request_with_circuit_breaker_and_retries
 from mirror import create_mirror
-from outcome import Outcome, outcomes_collection, update_outcome_status, OutcomeStatus, update_to_mirror_ready
+from outcome import Outcome, outcomes_collection, update_outcome_status, OutcomeStatus, update_to_mirror_ready, DumpMode
 from logger_config import setup_logger
 
 app = FastAPI()
@@ -27,7 +31,6 @@ instance_host = "anonymisation-orchestration-service"
 @app.on_event("startup")
 async def startup_event():
     logger.info(f"Registering with Eureka... App Name: {app_name}")
-    # Initialize Eureka client (which may handle registration internally)
     await eureka_client.init_async(
         eureka_server=eureka_server,
         app_name=app_name,
@@ -35,21 +38,28 @@ async def startup_event():
         instance_host=instance_host
     )
 
+
 class TriggerRequest(BaseModel):
     worksheet_id: str
+    dump_mode: DumpMode
+
+    def dict(self, *args, **kwargs):
+        d = super().dict(*args, **kwargs)
+        d['dump_mode'] = self.dump_mode.value
+        return d
 
 
-def initialize_outcome(worksheet_id: str):
-    logger.info(f"-----> Step 1: Initializing new outcome for worksheet: {worksheet_id}...")
-    outcome = Outcome(worksheet_id)
+def initialise_outcome(worksheet_id: str, dump_mode: DumpMode):
+    logger.info(f"-----> Step 1: Initialising new outcome for worksheet: {worksheet_id}...")
+    outcome = Outcome(worksheet_id, dump_mode)
     outcomes_collection.insert_one(outcome.to_dict())
-    logger.info(f"<----- Step 1: Initialized new outcome:\n{json.dumps(outcome.to_dict(), indent=4)}")
+    logger.info(f"<----- Step 1: Initialised new outcome:\n{json.dumps(outcome.to_dict(), indent=4)}")
     return outcome
 
 
 @task(name="Create mirror")
 def start_create_mirror(outcome: Outcome):
-    logger.info(f"-----> Step 2: Creating mirror for worksheet: {outcome.worksheet_id}...")
+    logger.info(f"-----> Step 2: Creating mirror for worksheet: {outcome.outcome_id}...")
     response, success = create_mirror(outcome.worksheet_id)
 
     if success:
@@ -75,7 +85,7 @@ def check_fragments_readiness(outcome: Outcome):
 
 @retry(tries=5, delay=1.0, max_delay=1.0, backoff=1, jitter=(0, 0), logger=logger)
 def check_fragments_readiness_delegate(outcome: Outcome):
-    logger.info(f"-----> Step 3: Checking fragments readiness for worksheet: {outcome.worksheet_id}...")
+    logger.info(f"-----> Step 3: Checking fragments readiness for worksheet: {outcome.outcome_id}...")
     response, success = get_tasks_statuses(outcome.worksheet_id)
 
     if success:
@@ -107,7 +117,7 @@ def is_still_processing_tasks(tasks_by_status):
 
 @task(name="Merge anonymisation fragments")
 def merge_anonymisation_fragments(outcome: Outcome):
-    logger.info(f"-----> Step 4: Merging anonymisation fragments for worksheet: {outcome.worksheet_id}...")
+    logger.info(f"-----> Step 4: Merging anonymisation fragments for worksheet: {outcome.outcome_id}...")
     try:
         lambda_client = boto3.client('lambda', region_name='eu-west-2')
         payload = {
@@ -138,29 +148,43 @@ def merge_anonymisation_fragments(outcome: Outcome):
 
 
 @task(name="Execute anonymisation script")
-def execute_anonymisation_script(outcome):
+def start_execute_anonymisation_script(outcome):
     logger.info(f"-----> Step 5: Executing anonymisation script for worksheet: {outcome.worksheet_id}...")
-    try:
-        anonymization_execution_path = "http://anonymisation-execution-service:8500/api/v1/execute-anonymization"
-        response = async_request_with_circuit_breaker_and_retries("POST", anonymization_execution_path,
-                                                                  json={"mirrorId": outcome.mirror_id, "filePath": f"{outcome.worksheet_id}/{outcome.outcome_id}.sql"},
-                                                                  timeout=60)
-        return response.json()
-    except Exception as e:
-        print(f"Request failed: {e}")
+    response, success = execute_anonymisation(outcome)
 
-    update_outcome_status(outcome, OutcomeStatus.SCRIPT_EXECUTED)
-    logger.info(f"<----- Step 5: Executed anonymisation script: {OutcomeStatus.SCRIPT_EXECUTED}")
+    if success:
+        update_outcome_status(outcome, OutcomeStatus.SCRIPT_EXECUTED)
+        logger.info(f"<----- Step 5: Executed anonymisation script. Updated outcome to {OutcomeStatus.SCRIPT_EXECUTED}.")
+    else:
+        update_outcome_status(outcome, OutcomeStatus.SCRIPT_EXECUTE_FAILED)
+        logger.info(f"<----- Step 5: Failed to execute anonymisation script. Updated outcome to {OutcomeStatus.SCRIPT_EXECUTE_FAILED}.")
 
+    return response, success
+
+
+@task(name="Generate dump")
+def start_generate_dump(outcome):
+    logger.info(f"-----> Step 6: Generating anonymisation dump: {outcome.outcome_id}...")
+    response, success = generate_dump(outcome)
+
+    if success:
+        update_outcome_status(outcome, OutcomeStatus.DUMP_GENERATED)
+        logger.info(f"<----- Step 6: Generated dump. Updated outcome to {OutcomeStatus.DUMP_GENERATED}.")
+    else:
+        update_outcome_status(outcome, OutcomeStatus.DUMP_GENERATION_FAILED)
+        logger.info(f"<----- Step 6: Failed to generate dump. Updated outcome to {OutcomeStatus.DUMP_GENERATION_FAILED}.")
+
+    return response, success
 
 @task(name="Generate anonymisation dump")
 def generate_anonymisation_dump(outcome):
-    logger.info(f"-----> Step 6: Generating anonymisation dump: {outcome.worksheet_id}...")
+    logger.info(f"-----> Step 6: Generating anonymisation dump: {outcome.outcome_id}...")
     try:
         generate_dump_path = "http://anonymisation-execution-service:8500/api/v1/execute-anonymization/generate-dump"
         response = async_request_with_circuit_breaker_and_retries("POST", generate_dump_path,
                                                                   json={"mirrorId": outcome.mirror_id,
-                                                                        "dumpPath": f"{outcome.worksheet_id}/{outcome.outcome_id}.sql"},
+                                                                        "dumpPath": f"{outcome.outcome_id}.sql",
+                                                                        "restoreMode": outcome.restoreMode.value},
                                                                   timeout=60)
         return response.json()
     except Exception as e:
@@ -172,27 +196,63 @@ def generate_anonymisation_dump(outcome):
 
 @flow(name="Exporting Process Saga")
 def exporting_process_saga(outcome):
+    logger.info(f"Exporting saga ----- started ----- outcome : {outcome.outcome_id}")
     response, success = start_create_mirror(outcome)
     if not success:
-        logger.info("Finishing exporting saga: mirror creation failed")
+        logger.info(f"Exporting saga ----- PAUSED: mirror creation failed ----- outcome : {outcome.outcome_id}")
         return
 
     success = check_fragments_readiness(outcome)
     if not success:
-        logger.info("Finishing exporting saga: fragments readiness failed")
+        logger.info(f"Exporting saga ----- PAUSED: fragments not ready ----- outcome : {outcome.outcome_id}")
         return
 
     response, success = merge_anonymisation_fragments(outcome)
     if not success:
-        logger.info("Finishing exporting saga: merging anonymisation fragments failed")
+        logger.info(f"Exporting saga ----- PAUSED: merging anonymisation fragments failed ----- outcome : {outcome.outcome_id}")
 
-    execute_anonymisation_script(outcome)
-    generate_anonymisation_dump(outcome)
+    success = start_execute_anonymisation_script(outcome)
+    if not success:
+        logger.info(f"Exporting saga ----- PAUSED: anonymisation script execution failed ----- outcome : {outcome.outcome_id}")
+        return
 
+    success = start_generate_dump(outcome)
+    if not success:
+        logger.info(f"Exporting saga ----- PAUSED: dump generation failed ----- outcome : {outcome.outcome_id}")
+        return
+
+    logger.info(f"Exporting saga ----- FINISHED WITH SUCCESS ----- outcome : {outcome.outcome_id}")
 
 @app.post("/api/v1/exporting/start")
 async def start_exporting_process(body: TriggerRequest, background_tasks: BackgroundTasks):
     logger.info(f"-----> /api/v1/exporting/start: Started exporting process for worksheet : {json.dumps(body.dict(), indent=4)}")
-    outcome = initialize_outcome(body.worksheet_id)
+    outcome = initialise_outcome(body.worksheet_id, body.dump_mode)
     background_tasks.add_task(exporting_process_saga, outcome)
     return outcome.to_dict()
+
+
+s3_client = boto3.client('s3')
+
+
+@app.get("/api/v1/outcomes/download")
+async def download_outcome_file(outcome_id: str):
+    logger.info(f"-----> /api/v1/outcomes/download: Started downloading dump for outcome : {outcome_id}")
+    bucket_name = "anonymisation-dumps"
+    file_extensions = ['.sql', '.dump']
+
+    for ext in file_extensions:
+        file_path = f"{outcome_id}{ext}"
+        try:
+            logger.info(f"Trying file_path : {file_path}")
+            s3_client.head_object(Bucket=bucket_name, Key=file_path)
+        except s3_client.exceptions.ClientError:
+            logger.info(f"Not found file_path : {file_path}")
+            continue
+        else:
+            logger.info(f"Matched file_path : {file_path}")
+            with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+                s3_client.download_file(bucket_name, file_path, temp_file.name)
+                return FileResponse(path=temp_file.name, filename=file_path, media_type="application/octet-stream")
+
+    logger.error(f"Final result: Not found dump for outcome : {outcome_id}")
+    raise HTTPException(status_code=404, detail=f"File for outcome_id {outcome_id} not found in S3 bucket.")

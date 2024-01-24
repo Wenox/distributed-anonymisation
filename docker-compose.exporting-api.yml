@@ -7,6 +7,10 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8500:8500"
+    environment:
+      - PGPASSWORD=postgres
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
     networks:
       - platform_network
 
@@ -18,6 +22,9 @@ services:
       - "9000:9000"
     env_file:
       - anonymisation-orchestration-service/.env
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
     networks:
       - platform_network
 

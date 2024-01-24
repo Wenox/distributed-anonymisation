@@ -9,6 +9,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class ExecuteScriptResponse {
+public class Response {
     String message;
 }

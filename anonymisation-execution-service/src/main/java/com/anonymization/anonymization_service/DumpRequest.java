@@ -12,4 +12,5 @@ import lombok.ToString;
 public class DumpRequest {
     private String mirrorId;
     private String dumpPath;
+    private RestoreMode restoreMode;
 }
