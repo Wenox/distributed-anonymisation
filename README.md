@@ -17,12 +17,16 @@
 ### Installation
 
 Start everything at once:
-`docker compose -f docker-compose.platform-api.yml up -d`
+```
+docker compose -f docker-compose.platform-api.yml up -d
+```
 
 ---
 
-Alternatively, first start common components:
-`docker compose -f docker-compose.commons.yml up -d`
+Alternatively, first start common containers:
+```
+docker compose -f docker-compose.commons.yml up -d
+```
 
 Then, selectively run desired Importing, Configuration, or Exporting APIs:
 ```
