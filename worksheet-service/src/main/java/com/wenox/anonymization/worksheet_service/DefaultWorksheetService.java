@@ -20,6 +20,8 @@ public class DefaultWorksheetService implements WorksheetService {
     private final DependenciesService dependenciesService;
     private final KafkaTemplateWrapper<String, Object> kafkaTemplateWrapper;
 
+    private final boolean isStrictMode = false;
+
     public Either<FailureResponse, CreateWorksheetResponse> createWorksheet(CreateWorksheetRequest request) {
         Either<FailureResponse, CreateWorksheetResponse> eitherResponse = dependenciesService.retrieveDependencies(request);
 

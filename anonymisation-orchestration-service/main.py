@@ -2,10 +2,13 @@ import json
 import tempfile
 
 import boto3
+from bson import ObjectId
+from fastapi.params import Query
 from py_eureka_client import eureka_client
 from fastapi import FastAPI, HTTPException
 from prefect import flow, task
 from pydantic import BaseModel
+from pymongo.errors import PyMongoError
 from starlette.background import BackgroundTasks
 from retry import retry
 from starlette.responses import FileResponse
@@ -232,6 +235,27 @@ async def start_exporting_process(body: TriggerRequest, background_tasks: Backgr
 
 
 s3_client = boto3.client('s3')
+
+
+def find_outcome(outcome_id: str):
+    try:
+        outcome = outcomes_collection.find_one({"outcomeId": outcome_id})
+        if not outcome:
+            raise ValueError(f"Outcome with ID {outcome_id} not found.")
+
+        return {k: str(v) if isinstance(v, ObjectId) else v for k, v in outcome.items()}
+
+    except ValueError as ve:
+        logger.error(ve)
+        raise HTTPException(status_code=404, detail=str(ve))
+    except PyMongoError as pe:
+        logger.error(f"Database error occurred: {pe}")
+        raise HTTPException(status_code=500, detail="Database error")
+
+@app.get("/api/v1/outcomes")
+async def get_outcome(outcome_id: str = Query(..., description="The ID of the outcome to retrieve")):
+    logger.info(f"-----> /api/v1/outcomes: Retrieving outcome with ID: {outcome_id}")
+    return find_outcome(outcome_id)
 
 
 @app.get("/api/v1/outcomes/download")

@@ -4,6 +4,10 @@ spark-worker
 .DS_Store
 .env
 
+# Automated tests
+automated_tests/blueprint
+automated_tests/worksheet
+
 # Redis
 redisinsight
 
