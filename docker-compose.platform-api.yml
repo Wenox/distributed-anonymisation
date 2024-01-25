@@ -47,6 +47,7 @@ services:
     environment:
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
     depends_on:
       - redis
 
@@ -125,6 +126,7 @@ services:
       - PGPASSWORD=postgres
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
 
   anonymisation-orchestration-service:
     build:
@@ -142,6 +144,10 @@ services:
     build:
       context: blueprint-service/
       dockerfile: Dockerfile
+    environment:
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
     ports:
       - "8100:8100"
 
@@ -153,6 +159,9 @@ services:
       - "8200:8200"
     environment:
       - PGPASSWORD=postgres
+      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      - AWS_REGION=${AWS_REGION}
 
   metadata-extraction-service:
     build:

@@ -49,7 +49,7 @@ MAX_RETRIES=20
 SUCCESS=false
 
 while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-    RESPONSE=$(curl --silent --location --write-out "HTTPSTATUS:%{http_code}" 'http://localhost:8080/importing/blueprints/' \
+    RESPONSE=$(curl --silent --location --write-out "HTTPSTATUS:%{http_code}" 'http://localhost:8080/importing/start/' \
       --form 'dumpFile=@"/Users/macbookair/repos/distributed-anonymization/data/script/employeesdb_script.sql"' \
       --form 'databaseType="POSTGRESQL"' \
       --form 'restoreMode="SCRIPT"' \
@@ -162,3 +162,5 @@ if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
 fi
 
 log_green "OK: importing API test succeeded"
+
+echo $BLUEPRINT_ID

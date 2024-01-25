@@ -77,7 +77,7 @@ RETRY_COUNT=0
 MAX_RETRIES=10
 SUCCESS=false
 while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-    RESPONSE=$(curl --silent --location --request PUT "http://localhost:8400/api/v1/worksheets/$WORKSHEET_ID/suppression" \
+    RESPONSE=$(curl --silent --location --request PUT "http://localhost:8080/configuration/worksheet-operations/$WORKSHEET_ID/suppression" \
                      --header 'Content-Type: application/json' \
                      --data '{
                          "settings": {
@@ -112,7 +112,7 @@ RETRY_COUNT=0
 MAX_RETRIES=10
 SUCCESS=false
 while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
-    RESPONSE=$(curl --silent --location --request PUT "http://localhost:8400/api/v1/worksheets/$WORKSHEET_ID/suppression" \
+    RESPONSE=$(curl --silent --location --request PUT "http://localhost:8080/configuration/worksheet-operations/$WORKSHEET_ID/suppression" \
                      --header 'Content-Type: application/json' \
                      --data '{
                          "settings": {

@@ -11,23 +11,23 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/blueprints")
+@RequestMapping("/api/v1")
 @RequiredArgsConstructor
 class BlueprintApi {
 
     private final BlueprintFacade blueprintFacade;
 
-    @PostMapping
+    @PostMapping("/importing/start")
     ResponseEntity<String> importBlueprint(@Valid ImportBlueprintRequest dto) {
         return ResponseEntity.accepted().body(blueprintFacade.importBlueprint(dto));
     }
 
-    @GetMapping
+    @GetMapping("/blueprints")
     ResponseEntity<Blueprint> getBlueprint(@RequestParam("blueprint_id") String blueprintId) {
         return ResponseEntity.ok(blueprintFacade.getBlueprint(blueprintId));
     }
 
-    @GetMapping("/dashboard")
+    @GetMapping("/blueprints/dashboard")
     ResponseEntity<List<BlueprintForDashboard>> getBlueprintsForDashboard() {
         return ResponseEntity.ok(blueprintFacade.getBlueprintsForDashboard());
     }

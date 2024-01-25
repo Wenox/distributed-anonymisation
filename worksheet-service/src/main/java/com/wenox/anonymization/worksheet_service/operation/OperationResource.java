@@ -5,7 +5,6 @@ import com.wenox.anonymization.worksheet_service.exception.WorksheetNotFoundExce
 import com.wenox.anonymization.worksheet_service.operation.generalisation.AddGeneralisationRequest;
 import com.wenox.anonymization.worksheet_service.operation.shuffle.AddShuffleRequest;
 import com.wenox.anonymization.worksheet_service.operation.suppression.AddSuppressionRequest;
-import com.wenox.anonymization.worksheet_service.operation.suppression.SuppressionSettings;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,12 +13,12 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1/worksheets")
+@RequestMapping("/api/v1")
 public class OperationResource {
 
     private final OperationService operationService;
 
-    @PutMapping("/{id}/suppression")
+    @PutMapping("/worksheet-operations/{id}/suppression")
     public ResponseEntity<?> addSuppression(@PathVariable("id") String worksheetId, @Valid @RequestBody AddSuppressionRequest dto) {
         return operationService.addOperation(worksheetId, dto, OperationType.SUPPRESSION).fold(
                 failureResponse -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body(failureResponse),
@@ -27,7 +26,7 @@ public class OperationResource {
         );
     }
 
-    @PutMapping("/{id}/shuffle")
+    @PutMapping("/worksheet-operations/{id}/shuffle")
     public ResponseEntity<?> addShuffle(@PathVariable("id") String worksheetId, @Valid @RequestBody AddShuffleRequest dto) {
         return operationService.addOperation(worksheetId, dto, OperationType.SHUFFLE).fold(
                 failureResponse -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body(failureResponse),
@@ -35,7 +34,7 @@ public class OperationResource {
         );
     }
 
-    @PutMapping("/{id}/generalisation")
+    @PutMapping("/worksheet-operations/{id}/generalisation")
     public ResponseEntity<?> addGeneralisation(@PathVariable("id") String worksheetId, @Valid @RequestBody AddGeneralisationRequest dto) {
         return operationService.addOperation(worksheetId, dto, OperationType.GENERALISATION).fold(
                 failureResponse -> ResponseEntity.status(HttpStatus.BAD_REQUEST).body(failureResponse),
@@ -43,25 +42,9 @@ public class OperationResource {
         );
     }
 
-    @GetMapping("/{id}/tasks/status")
-    public ResponseEntity<?> getTasksStatuses(@PathVariable("id") String worksheetId) {
+    @GetMapping("/operations")
+    public ResponseEntity<?> getTasksStatuses(@RequestParam("worksheet_id") String worksheetId) {
         return ResponseEntity.ok(operationService.getTasksInWorksheetGroupedByStatus(worksheetId));
-    }
-
-    @PostMapping("/start-simulation")
-    public ResponseEntity<String> send(@RequestParam("worksheet_id") String worksheetId, @RequestParam("number_of_tasks") Integer numberOfTasks) {
-        AddSuppressionRequest dto = new AddSuppressionRequest();
-        dto.setTable("employees");
-        dto.setColumn("salary");
-        SuppressionSettings settings = new SuppressionSettings();
-        settings.setToken("*****");
-        dto.setSettings(settings);
-
-        for (int i = 0; i < numberOfTasks; i++) {
-            operationService.asyncAddOperation(worksheetId, dto, OperationType.SUPPRESSION);
-        }
-
-        return ResponseEntity.ok("Started simulation");
     }
 
     @ExceptionHandler(WorksheetNotFoundException.class)

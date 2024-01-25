@@ -26,8 +26,8 @@ public class WorksheetResource {
         );
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<WorksheetResponse> getWorksheet(@PathVariable("id") String worksheetId) {
+    @GetMapping
+    public ResponseEntity<WorksheetResponse> getWorksheet(@RequestParam("worksheet_id") String worksheetId) {
         return ResponseEntity.ok(defaultWorksheetService.getWorksheet(worksheetId));
     }
 
