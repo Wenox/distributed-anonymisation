@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.wenox.anonymization</groupId>
 	<artifactId>metadata-extraction-service</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>simulation-3</version>
 	<name>Metadata Extraction Service</name>
 	<description>Metadata Extraction Service</description>
 	<properties>
