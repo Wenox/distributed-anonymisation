@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.wenox.anonymization</groupId>
 	<artifactId>database-restoration-service</artifactId>
-	<version>simulation-2</version>
+	<version>simulation-1</version>
 	<name>Database Restoration Service</name>
 	<description>Database Restoration Service</description>
 	<properties>
