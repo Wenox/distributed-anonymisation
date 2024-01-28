@@ -5,7 +5,9 @@ import com.wenox.anonymization.database_restoration_service.domain.exception.Res
 import com.wenox.anonymization.database_restoration_service.domain.model.Restoration;
 import com.wenox.anonymization.shared_events_library.BlueprintCreatedEvent;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
+@Component
 @RequiredArgsConstructor
 public class DefaultRestorationService implements RestorationService {
 

@@ -3,7 +3,6 @@ package com.wenox.anonymization.database_restoration_service.domain.service.rest
 import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
-import com.wenox.anonymization.database_restoration_service.domain.exception.UnsupportedRestoreModeException;
 import com.wenox.anonymization.database_restoration_service.domain.ports.CreateDatabasePort;
 import com.wenox.anonymization.database_restoration_service.domain.ports.DropDatabasePort;
 import com.wenox.anonymization.database_restoration_service.domain.ports.RestoreDatabasePort;
