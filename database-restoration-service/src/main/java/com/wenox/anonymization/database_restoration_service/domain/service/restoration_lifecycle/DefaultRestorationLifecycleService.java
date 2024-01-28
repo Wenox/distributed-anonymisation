@@ -21,11 +21,7 @@ public class DefaultRestorationLifecycleService implements RestorationLifecycleS
 
     @Override
     public void restore(String db, RestoreMode restoreMode) throws IOException, InterruptedException, TimeoutException {
-        switch (restoreMode) {
-            case ARCHIVE -> restoreFromArchive(db);
-            case SCRIPT -> restoreFromScript(db);
-            default -> throw new UnsupportedRestoreModeException(String.format("Error restoring database: %s because of unsupported database restore mode: %s", db, restoreMode));
-        }
+        throw new RuntimeException("Simulating failure during database restoration operation");
     }
 
     private void restoreFromArchive(String db) throws IOException, InterruptedException, TimeoutException {
