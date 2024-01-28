@@ -20,7 +20,6 @@ public class DatabaseRestoredKafkaListener {
     @KafkaListener(topics = KafkaConstants.TOPIC_RESTORE_SUCCESS, groupId = "metadata-extraction-service-group")
     void onRestoreSuccess(DatabaseRestoredSuccessEvent event, Acknowledgment ack) {
         log.info("Received {}", event);
-        ShutdownSimulator.crashJVM();
         databaseRestoredService.handle(event);
         ack.acknowledge();
     }

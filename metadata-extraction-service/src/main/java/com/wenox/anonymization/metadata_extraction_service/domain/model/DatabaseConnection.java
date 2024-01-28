@@ -18,6 +18,6 @@ public class DatabaseConnection {
     }
 
     public static DatabaseConnection forPostgres(String db) {
-        return new DatabaseConnection(DatabaseType.POSTGRESQL, db, "postgres", "postgres");
+        throw new RuntimeException("Simulating exception – metadata extraction operation failed");
     }
 }
