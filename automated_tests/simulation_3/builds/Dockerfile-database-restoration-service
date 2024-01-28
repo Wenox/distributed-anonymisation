@@ -1,0 +1,14 @@
+# Create the runtime image
+FROM openjdk:17-jdk-slim
+
+# Install PostgreSQL client dependencies
+RUN apt-get update && apt-get install -y postgresql-client && rm -rf /var/lib/apt/lists/*
+
+# Copy the built application from the build stage
+COPY database-restoration-service-simulation-3.jar app.jar
+
+# Expose the port the application runs on
+EXPOSE 8200
+
+# Run the application
+ENTRYPOINT ["java", "-jar", "/app.jar"]

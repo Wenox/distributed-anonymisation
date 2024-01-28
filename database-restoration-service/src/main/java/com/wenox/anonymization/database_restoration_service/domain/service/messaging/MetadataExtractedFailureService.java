@@ -1,7 +1,6 @@
 package com.wenox.anonymization.database_restoration_service.domain.service.messaging;
 
 import com.wenox.anonymization.database_restoration_service.domain.ports.DropDatabasePort;
-import com.wenox.anonymization.database_restoration_service.domain.ports.ExistsDatabasePort;
 import com.wenox.anonymization.database_restoration_service.domain.ports.MessagePublisher;
 import com.wenox.anonymization.database_restoration_service.domain.service.restoration.RestorationService;
 import com.wenox.anonymization.shared_events_library.MetadataExtractedFailureEvent;

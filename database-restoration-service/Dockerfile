@@ -25,7 +25,7 @@ RUN mvn clean package -DskipTests
 # Stage 2: Create the runtime image
 FROM openjdk:17-jdk-slim
 
-# Instal PostgreSQL client dependencies
+# Install PostgreSQL client dependencies
 RUN apt-get update && apt-get install -y postgresql-client && rm -rf /var/lib/apt/lists/*
 
 # Copy the built application from the build stage
