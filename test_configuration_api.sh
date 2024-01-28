@@ -19,7 +19,7 @@ log_red() {
 }
 
 error_exit() {
-    echo -e "\033[31m$(date +%Y-%m-%dT%H:%M:%S)  ---------: ERROR: $1\033[0m"
+    echo -e "\033[31m$(date +%Y-%m-%dT%H:%M:%S) -------- ERROR: $1\033[0m"
     exit 1
 }
 
@@ -53,7 +53,7 @@ while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
         WORKSHEET_ID=$(echo $HTTP_BODY | jq -r '.worksheet.worksheetId')
         SUCCESS=true
         log_green "OK: Successfully initialised new worksheet with ID: $WORKSHEET_ID"
-        echo $WORKSHEET_ID > automated_tests/worksheet
+        echo $WORKSHEET_ID > automated_tests/worksheet_id
         break
     else
         log_red "Received HTTP status $HTTP_STATUS. Retrying in 10 seconds... (Attempt $((RETRY_COUNT+1))/$MAX_RETRIES)"

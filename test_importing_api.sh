@@ -17,7 +17,7 @@ log_red() {
 }
 
 error_exit() {
-    echo -e "\033[31m$(date +%Y-%m-%dT%H:%M:%S) --------- ERROR: $1\033[0m"
+    echo -e "\033[31m$(date +%Y-%m-%dT%H:%M:%S) -------- ERROR: $1\033[0m"
     exit 1
 }
 
@@ -61,7 +61,7 @@ while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
 
     if [ "$HTTP_STATUS" -eq 202 ]; then
         BLUEPRINT_ID=$(echo $HTTP_BODY | tr -d '\n')
-        echo $BLUEPRINT_ID > automated_tests/blueprint
+        echo $BLUEPRINT_ID > automated_tests/blueprint_id
         SUCCESS=true
         break
     else

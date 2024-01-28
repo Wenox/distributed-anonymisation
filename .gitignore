@@ -5,8 +5,8 @@ spark-worker
 .env
 
 # Automated tests
-automated_tests/blueprint
-automated_tests/worksheet
+automated_tests/blueprint_id
+automated_tests/worksheet_id
 
 # Redis
 redisinsight

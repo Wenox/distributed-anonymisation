@@ -1,0 +1,333 @@
+  distributed-anonymization git:(master) ✗ docker compose -f docker-compose.exporting-api.yml logs anonymisation-orchestration-service
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:12:52.795 | INFO    | main - Registering with Eureka... App Name: anonymisation-orchestration-service
+distributed-anonymization-anonymisation-orchestration-service-1  | [2024-01-25 14:12:52]-[MainThread]-[eureka_client:713] WARNING: Register error! Will try in next heartbeat.
+distributed-anonymization-anonymisation-orchestration-service-1  | Traceback (most recent call last):
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/urllib/request.py", line 1348, in do_open
+distributed-anonymization-anonymisation-orchestration-service-1  |     h.request(req.get_method(), req.selector, req.data, headers,
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/http/client.py", line 1294, in request
+distributed-anonymization-anonymisation-orchestration-service-1  |     self._send_request(method, url, body, headers, encode_chunked)
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/http/client.py", line 1340, in _send_request
+distributed-anonymization-anonymisation-orchestration-service-1  |     self.endheaders(body, encode_chunked=encode_chunked)
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/http/client.py", line 1289, in endheaders
+distributed-anonymization-anonymisation-orchestration-service-1  |     self._send_output(message_body, encode_chunked=encode_chunked)
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/http/client.py", line 1048, in _send_output
+distributed-anonymization-anonymisation-orchestration-service-1  |     self.send(msg)
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/http/client.py", line 986, in send
+distributed-anonymization-anonymisation-orchestration-service-1  |     self.connect()
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/http/client.py", line 952, in connect
+distributed-anonymization-anonymisation-orchestration-service-1  |     self.sock = self._create_connection(
+distributed-anonymization-anonymisation-orchestration-service-1  |                 ^^^^^^^^^^^^^^^^^^^^^^^^
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/socket.py", line 851, in create_connection
+distributed-anonymization-anonymisation-orchestration-service-1  |     raise exceptions[0]
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/socket.py", line 836, in create_connection
+distributed-anonymization-anonymisation-orchestration-service-1  |     sock.connect(sa)
+distributed-anonymization-anonymisation-orchestration-service-1  | ConnectionRefusedError: [Errno 111] Connection refused
+distributed-anonymization-anonymisation-orchestration-service-1  |
+distributed-anonymization-anonymisation-orchestration-service-1  | During handling of the above exception, another exception occurred:
+distributed-anonymization-anonymisation-orchestration-service-1  |
+distributed-anonymization-anonymisation-orchestration-service-1  | Traceback (most recent call last):
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/site-packages/py_eureka_client/eureka_client.py", line 710, in register
+distributed-anonymization-anonymisation-orchestration-service-1  |     await self.__connect_to_eureka_server(do_register)
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/site-packages/py_eureka_client/eureka_client.py", line 653, in __connect_to_eureka_server
+distributed-anonymization-anonymisation-orchestration-service-1  |     await self.__try_all_eureka_servers(fun)
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/site-packages/py_eureka_client/eureka_client.py", line 616, in __try_all_eureka_servers
+distributed-anonymization-anonymisation-orchestration-service-1  |     await self.__try_eureka_server_in_zone(fun)
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/site-packages/py_eureka_client/eureka_client.py", line 586, in __try_eureka_server_in_zone
+distributed-anonymization-anonymisation-orchestration-service-1  |     await self.__try_eureka_servers_in_list(
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/site-packages/py_eureka_client/eureka_client.py", line 631, in __try_eureka_servers_in_list
+distributed-anonymization-anonymisation-orchestration-service-1  |     await fun(url)
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/site-packages/py_eureka_client/eureka_client.py", line 709, in do_register
+distributed-anonymization-anonymisation-orchestration-service-1  |     await _register(url, self.__instance)
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/site-packages/py_eureka_client/eureka_basic.py", line 304, in _register
+distributed-anonymization-anonymisation-orchestration-service-1  |     await http_client.http_client.urlopen(req, json.dumps({"instance": instance_dic}).encode(
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/site-packages/py_eureka_client/http_client.py", line 151, in urlopen
+distributed-anonymization-anonymisation-orchestration-service-1  |     res = urllib.request.urlopen(req, data=data, timeout=timeout)
+distributed-anonymization-anonymisation-orchestration-service-1  |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/urllib/request.py", line 216, in urlopen
+distributed-anonymization-anonymisation-orchestration-service-1  |     return opener.open(url, data, timeout)
+distributed-anonymization-anonymisation-orchestration-service-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/urllib/request.py", line 519, in open
+distributed-anonymization-anonymisation-orchestration-service-1  |     response = self._open(req, data)
+distributed-anonymization-anonymisation-orchestration-service-1  |                ^^^^^^^^^^^^^^^^^^^^^
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/urllib/request.py", line 536, in _open
+distributed-anonymization-anonymisation-orchestration-service-1  |     result = self._call_chain(self.handle_open, protocol, protocol +
+distributed-anonymization-anonymisation-orchestration-service-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/urllib/request.py", line 496, in _call_chain
+distributed-anonymization-anonymisation-orchestration-service-1  |     result = func(*args)
+distributed-anonymization-anonymisation-orchestration-service-1  |              ^^^^^^^^^^^
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/urllib/request.py", line 1377, in http_open
+distributed-anonymization-anonymisation-orchestration-service-1  |     return self.do_open(http.client.HTTPConnection, req)
+distributed-anonymization-anonymisation-orchestration-service-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/urllib/request.py", line 1351, in do_open
+distributed-anonymization-anonymisation-orchestration-service-1  |     raise URLError(err)
+distributed-anonymization-anonymisation-orchestration-service-1  | urllib.error.URLError: <urlopen error [Errno 111] Connection refused>
+distributed-anonymization-anonymisation-orchestration-service-1  | [2024-01-25 14:12:52]-[MainThread]-[eureka_client:802] WARNING: pull full registry from eureka server error!
+distributed-anonymization-anonymisation-orchestration-service-1  | Traceback (most recent call last):
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/urllib/request.py", line 1348, in do_open
+distributed-anonymization-anonymisation-orchestration-service-1  |     h.request(req.get_method(), req.selector, req.data, headers,
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/http/client.py", line 1294, in request
+distributed-anonymization-anonymisation-orchestration-service-1  |     self._send_request(method, url, body, headers, encode_chunked)
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/http/client.py", line 1340, in _send_request
+distributed-anonymization-anonymisation-orchestration-service-1  |     self.endheaders(body, encode_chunked=encode_chunked)
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/http/client.py", line 1289, in endheaders
+distributed-anonymization-anonymisation-orchestration-service-1  |     self._send_output(message_body, encode_chunked=encode_chunked)
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/http/client.py", line 1048, in _send_output
+distributed-anonymization-anonymisation-orchestration-service-1  |     self.send(msg)
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/http/client.py", line 986, in send
+distributed-anonymization-anonymisation-orchestration-service-1  |     self.connect()
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/http/client.py", line 952, in connect
+distributed-anonymization-anonymisation-orchestration-service-1  |     self.sock = self._create_connection(
+distributed-anonymization-anonymisation-orchestration-service-1  |                 ^^^^^^^^^^^^^^^^^^^^^^^^
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/socket.py", line 851, in create_connection
+distributed-anonymization-anonymisation-orchestration-service-1  |     raise exceptions[0]
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/socket.py", line 836, in create_connection
+distributed-anonymization-anonymisation-orchestration-service-1  |     sock.connect(sa)
+distributed-anonymization-anonymisation-orchestration-service-1  | ConnectionRefusedError: [Errno 111] Connection refused
+distributed-anonymization-anonymisation-orchestration-service-1  |
+distributed-anonymization-anonymisation-orchestration-service-1  | During handling of the above exception, another exception occurred:
+distributed-anonymization-anonymisation-orchestration-service-1  |
+distributed-anonymization-anonymisation-orchestration-service-1  | Traceback (most recent call last):
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/site-packages/py_eureka_client/eureka_client.py", line 800, in __pull_full_registry
+distributed-anonymization-anonymisation-orchestration-service-1  |     await self.__connect_to_eureka_server(do_pull)
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/site-packages/py_eureka_client/eureka_client.py", line 653, in __connect_to_eureka_server
+distributed-anonymization-anonymisation-orchestration-service-1  |     await self.__try_all_eureka_servers(fun)
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/site-packages/py_eureka_client/eureka_client.py", line 616, in __try_all_eureka_servers
+distributed-anonymization-anonymisation-orchestration-service-1  |     await self.__try_eureka_server_in_zone(fun)
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/site-packages/py_eureka_client/eureka_client.py", line 586, in __try_eureka_server_in_zone
+distributed-anonymization-anonymisation-orchestration-service-1  |     await self.__try_eureka_servers_in_list(
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/site-packages/py_eureka_client/eureka_client.py", line 631, in __try_eureka_servers_in_list
+distributed-anonymization-anonymisation-orchestration-service-1  |     await fun(url)
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/site-packages/py_eureka_client/eureka_client.py", line 797, in do_pull
+distributed-anonymization-anonymisation-orchestration-service-1  |     self.__applications = await get_applications(url, self.__remote_regions)
+distributed-anonymization-anonymisation-orchestration-service-1  |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/site-packages/py_eureka_client/eureka_basic.py", line 353, in get_applications
+distributed-anonymization-anonymisation-orchestration-service-1  |     res = await _get_applications_(f"{_format_url(eureka_server)}apps/", regions)
+distributed-anonymization-anonymisation-orchestration-service-1  |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/site-packages/py_eureka_client/eureka_basic.py", line 370, in _get_applications_
+distributed-anonymization-anonymisation-orchestration-service-1  |     res = await http_client.http_client.urlopen(
+distributed-anonymization-anonymisation-orchestration-service-1  |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/site-packages/py_eureka_client/http_client.py", line 151, in urlopen
+distributed-anonymization-anonymisation-orchestration-service-1  |     res = urllib.request.urlopen(req, data=data, timeout=timeout)
+distributed-anonymization-anonymisation-orchestration-service-1  |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/urllib/request.py", line 216, in urlopen
+distributed-anonymization-anonymisation-orchestration-service-1  |     return opener.open(url, data, timeout)
+distributed-anonymization-anonymisation-orchestration-service-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/urllib/request.py", line 519, in open
+distributed-anonymization-anonymisation-orchestration-service-1  |     response = self._open(req, data)
+distributed-anonymization-anonymisation-orchestration-service-1  |                ^^^^^^^^^^^^^^^^^^^^^
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/urllib/request.py", line 536, in _open
+distributed-anonymization-anonymisation-orchestration-service-1  |     result = self._call_chain(self.handle_open, protocol, protocol +
+distributed-anonymization-anonymisation-orchestration-service-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/urllib/request.py", line 496, in _call_chain
+distributed-anonymization-anonymisation-orchestration-service-1  |     result = func(*args)
+distributed-anonymization-anonymisation-orchestration-service-1  |              ^^^^^^^^^^^
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/urllib/request.py", line 1377, in http_open
+distributed-anonymization-anonymisation-orchestration-service-1  |     return self.do_open(http.client.HTTPConnection, req)
+distributed-anonymization-anonymisation-orchestration-service-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/urllib/request.py", line 1351, in do_open
+distributed-anonymization-anonymisation-orchestration-service-1  |     raise URLError(err)
+distributed-anonymization-anonymisation-orchestration-service-1  | urllib.error.URLError: <urlopen error [Errno 111] Connection refused>
+distributed-anonymization-anonymisation-orchestration-service-1  | [2024-01-25 14:13:22]-[HeartbeatThread]-[eureka_client:713] WARNING: Register error! Will try in next heartbeat.
+distributed-anonymization-anonymisation-orchestration-service-1  | Traceback (most recent call last):
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/urllib/request.py", line 1348, in do_open
+distributed-anonymization-anonymisation-orchestration-service-1  |     h.request(req.get_method(), req.selector, req.data, headers,
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/http/client.py", line 1294, in request
+distributed-anonymization-anonymisation-orchestration-service-1  |     self._send_request(method, url, body, headers, encode_chunked)
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/http/client.py", line 1340, in _send_request
+distributed-anonymization-anonymisation-orchestration-service-1  |     self.endheaders(body, encode_chunked=encode_chunked)
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/http/client.py", line 1289, in endheaders
+distributed-anonymization-anonymisation-orchestration-service-1  |     self._send_output(message_body, encode_chunked=encode_chunked)
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/http/client.py", line 1048, in _send_output
+distributed-anonymization-anonymisation-orchestration-service-1  |     self.send(msg)
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/http/client.py", line 986, in send
+distributed-anonymization-anonymisation-orchestration-service-1  |     self.connect()
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/http/client.py", line 952, in connect
+distributed-anonymization-anonymisation-orchestration-service-1  |     self.sock = self._create_connection(
+distributed-anonymization-anonymisation-orchestration-service-1  |                 ^^^^^^^^^^^^^^^^^^^^^^^^
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/socket.py", line 851, in create_connection
+distributed-anonymization-anonymisation-orchestration-service-1  |     raise exceptions[0]
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/socket.py", line 836, in create_connection
+distributed-anonymization-anonymisation-orchestration-service-1  |     sock.connect(sa)
+distributed-anonymization-anonymisation-orchestration-service-1  | ConnectionRefusedError: [Errno 111] Connection refused
+distributed-anonymization-anonymisation-orchestration-service-1  |
+distributed-anonymization-anonymisation-orchestration-service-1  | During handling of the above exception, another exception occurred:
+distributed-anonymization-anonymisation-orchestration-service-1  |
+distributed-anonymization-anonymisation-orchestration-service-1  | Traceback (most recent call last):
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/site-packages/py_eureka_client/eureka_client.py", line 710, in register
+distributed-anonymization-anonymisation-orchestration-service-1  |     await self.__connect_to_eureka_server(do_register)
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/site-packages/py_eureka_client/eureka_client.py", line 653, in __connect_to_eureka_server
+distributed-anonymization-anonymisation-orchestration-service-1  |     await self.__try_all_eureka_servers(fun)
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/site-packages/py_eureka_client/eureka_client.py", line 616, in __try_all_eureka_servers
+distributed-anonymization-anonymisation-orchestration-service-1  |     await self.__try_eureka_server_in_zone(fun)
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/site-packages/py_eureka_client/eureka_client.py", line 586, in __try_eureka_server_in_zone
+distributed-anonymization-anonymisation-orchestration-service-1  |     await self.__try_eureka_servers_in_list(
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/site-packages/py_eureka_client/eureka_client.py", line 631, in __try_eureka_servers_in_list
+distributed-anonymization-anonymisation-orchestration-service-1  |     await fun(url)
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/site-packages/py_eureka_client/eureka_client.py", line 709, in do_register
+distributed-anonymization-anonymisation-orchestration-service-1  |     await _register(url, self.__instance)
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/site-packages/py_eureka_client/eureka_basic.py", line 304, in _register
+distributed-anonymization-anonymisation-orchestration-service-1  |     await http_client.http_client.urlopen(req, json.dumps({"instance": instance_dic}).encode(
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/site-packages/py_eureka_client/http_client.py", line 151, in urlopen
+distributed-anonymization-anonymisation-orchestration-service-1  |     res = urllib.request.urlopen(req, data=data, timeout=timeout)
+distributed-anonymization-anonymisation-orchestration-service-1  |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/urllib/request.py", line 216, in urlopen
+distributed-anonymization-anonymisation-orchestration-service-1  |     return opener.open(url, data, timeout)
+distributed-anonymization-anonymisation-orchestration-service-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/urllib/request.py", line 519, in open
+distributed-anonymization-anonymisation-orchestration-service-1  |     response = self._open(req, data)
+distributed-anonymization-anonymisation-orchestration-service-1  |                ^^^^^^^^^^^^^^^^^^^^^
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/urllib/request.py", line 536, in _open
+distributed-anonymization-anonymisation-orchestration-service-1  |     result = self._call_chain(self.handle_open, protocol, protocol +
+distributed-anonymization-anonymisation-orchestration-service-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/urllib/request.py", line 496, in _call_chain
+distributed-anonymization-anonymisation-orchestration-service-1  |     result = func(*args)
+distributed-anonymization-anonymisation-orchestration-service-1  |              ^^^^^^^^^^^
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/urllib/request.py", line 1377, in http_open
+distributed-anonymization-anonymisation-orchestration-service-1  |     return self.do_open(http.client.HTTPConnection, req)
+distributed-anonymization-anonymisation-orchestration-service-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/urllib/request.py", line 1351, in do_open
+distributed-anonymization-anonymisation-orchestration-service-1  |     raise URLError(err)
+distributed-anonymization-anonymisation-orchestration-service-1  | urllib.error.URLError: <urlopen error [Errno 111] Connection refused>
+distributed-anonymization-anonymisation-orchestration-service-1  | [2024-01-25 14:13:22]-[HeartbeatThread]-[eureka_client:802] WARNING: pull full registry from eureka server error!
+distributed-anonymization-anonymisation-orchestration-service-1  | Traceback (most recent call last):
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/urllib/request.py", line 1348, in do_open
+distributed-anonymization-anonymisation-orchestration-service-1  |     h.request(req.get_method(), req.selector, req.data, headers,
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/http/client.py", line 1294, in request
+distributed-anonymization-anonymisation-orchestration-service-1  |     self._send_request(method, url, body, headers, encode_chunked)
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/http/client.py", line 1340, in _send_request
+distributed-anonymization-anonymisation-orchestration-service-1  |     self.endheaders(body, encode_chunked=encode_chunked)
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/http/client.py", line 1289, in endheaders
+distributed-anonymization-anonymisation-orchestration-service-1  |     self._send_output(message_body, encode_chunked=encode_chunked)
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/http/client.py", line 1048, in _send_output
+distributed-anonymization-anonymisation-orchestration-service-1  |     self.send(msg)
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/http/client.py", line 986, in send
+distributed-anonymization-anonymisation-orchestration-service-1  |     self.connect()
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/http/client.py", line 952, in connect
+distributed-anonymization-anonymisation-orchestration-service-1  |     self.sock = self._create_connection(
+distributed-anonymization-anonymisation-orchestration-service-1  |                 ^^^^^^^^^^^^^^^^^^^^^^^^
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/socket.py", line 851, in create_connection
+distributed-anonymization-anonymisation-orchestration-service-1  |     raise exceptions[0]
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/socket.py", line 836, in create_connection
+distributed-anonymization-anonymisation-orchestration-service-1  |     sock.connect(sa)
+distributed-anonymization-anonymisation-orchestration-service-1  | ConnectionRefusedError: [Errno 111] Connection refused
+distributed-anonymization-anonymisation-orchestration-service-1  |
+distributed-anonymization-anonymisation-orchestration-service-1  | During handling of the above exception, another exception occurred:
+distributed-anonymization-anonymisation-orchestration-service-1  |
+distributed-anonymization-anonymisation-orchestration-service-1  | Traceback (most recent call last):
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/site-packages/py_eureka_client/eureka_client.py", line 800, in __pull_full_registry
+distributed-anonymization-anonymisation-orchestration-service-1  |     await self.__connect_to_eureka_server(do_pull)
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/site-packages/py_eureka_client/eureka_client.py", line 653, in __connect_to_eureka_server
+distributed-anonymization-anonymisation-orchestration-service-1  |     await self.__try_all_eureka_servers(fun)
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/site-packages/py_eureka_client/eureka_client.py", line 616, in __try_all_eureka_servers
+distributed-anonymization-anonymisation-orchestration-service-1  |     await self.__try_eureka_server_in_zone(fun)
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/site-packages/py_eureka_client/eureka_client.py", line 586, in __try_eureka_server_in_zone
+distributed-anonymization-anonymisation-orchestration-service-1  |     await self.__try_eureka_servers_in_list(
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/site-packages/py_eureka_client/eureka_client.py", line 631, in __try_eureka_servers_in_list
+distributed-anonymization-anonymisation-orchestration-service-1  |     await fun(url)
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/site-packages/py_eureka_client/eureka_client.py", line 797, in do_pull
+distributed-anonymization-anonymisation-orchestration-service-1  |     self.__applications = await get_applications(url, self.__remote_regions)
+distributed-anonymization-anonymisation-orchestration-service-1  |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/site-packages/py_eureka_client/eureka_basic.py", line 353, in get_applications
+distributed-anonymization-anonymisation-orchestration-service-1  |     res = await _get_applications_(f"{_format_url(eureka_server)}apps/", regions)
+distributed-anonymization-anonymisation-orchestration-service-1  |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/site-packages/py_eureka_client/eureka_basic.py", line 370, in _get_applications_
+distributed-anonymization-anonymisation-orchestration-service-1  |     res = await http_client.http_client.urlopen(
+distributed-anonymization-anonymisation-orchestration-service-1  |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/site-packages/py_eureka_client/http_client.py", line 151, in urlopen
+distributed-anonymization-anonymisation-orchestration-service-1  |     res = urllib.request.urlopen(req, data=data, timeout=timeout)
+distributed-anonymization-anonymisation-orchestration-service-1  |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/urllib/request.py", line 216, in urlopen
+distributed-anonymization-anonymisation-orchestration-service-1  |     return opener.open(url, data, timeout)
+distributed-anonymization-anonymisation-orchestration-service-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/urllib/request.py", line 519, in open
+distributed-anonymization-anonymisation-orchestration-service-1  |     response = self._open(req, data)
+distributed-anonymization-anonymisation-orchestration-service-1  |                ^^^^^^^^^^^^^^^^^^^^^
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/urllib/request.py", line 536, in _open
+distributed-anonymization-anonymisation-orchestration-service-1  |     result = self._call_chain(self.handle_open, protocol, protocol +
+distributed-anonymization-anonymisation-orchestration-service-1  |              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/urllib/request.py", line 496, in _call_chain
+distributed-anonymization-anonymisation-orchestration-service-1  |     result = func(*args)
+distributed-anonymization-anonymisation-orchestration-service-1  |              ^^^^^^^^^^^
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/urllib/request.py", line 1377, in http_open
+distributed-anonymization-anonymisation-orchestration-service-1  |     return self.do_open(http.client.HTTPConnection, req)
+distributed-anonymization-anonymisation-orchestration-service-1  |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+distributed-anonymization-anonymisation-orchestration-service-1  |   File "/usr/local/lib/python3.11/urllib/request.py", line 1351, in do_open
+distributed-anonymization-anonymisation-orchestration-service-1  |     raise URLError(err)
+distributed-anonymization-anonymisation-orchestration-service-1  | urllib.error.URLError: <urlopen error [Errno 111] Connection refused>
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:20:36.280 | INFO    | main - -----> /api/v1/exporting/start: Started exporting process for worksheet : {
+distributed-anonymization-anonymisation-orchestration-service-1  |     "worksheet_id": "65b26d55b47b8a3e47844e22",
+distributed-anonymization-anonymisation-orchestration-service-1  |     "dump_mode": "SCRIPT"
+distributed-anonymization-anonymisation-orchestration-service-1  | }
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:20:36.301 | INFO    | main - -----> Step 1: Initialising new outcome for worksheet: 65b26d55b47b8a3e47844e22...
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:20:36.417 | INFO    | main - <----- Step 1: Initialised new outcome:
+distributed-anonymization-anonymisation-orchestration-service-1  | {
+distributed-anonymization-anonymisation-orchestration-service-1  |     "outcomeId": "d7c885c6-78d9-4351-a44f-05761f9dd8e2",
+distributed-anonymization-anonymisation-orchestration-service-1  |     "status": "INITIALISED",
+distributed-anonymization-anonymisation-orchestration-service-1  |     "dumpMode": "SCRIPT",
+distributed-anonymization-anonymisation-orchestration-service-1  |     "worksheetId": "65b26d55b47b8a3e47844e22"
+distributed-anonymization-anonymisation-orchestration-service-1  | }
+distributed-anonymization-anonymisation-orchestration-service-1  | /usr/local/lib/python3.11/contextlib.py:144: SAWarning: Skipped unsupported reflection of expression-based index ix_flow_run__coalesce_start_time_expected_start_time_desc
+distributed-anonymization-anonymisation-orchestration-service-1  |   next(self.gen)
+distributed-anonymization-anonymisation-orchestration-service-1  | /usr/local/lib/python3.11/contextlib.py:144: SAWarning: Skipped unsupported reflection of expression-based index ix_flow_run__coalesce_start_time_expected_start_time_asc
+distributed-anonymization-anonymisation-orchestration-service-1  |   next(self.gen)
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:20:41.833 | INFO    | prefect.engine - Created flow run 'cuddly-alligator' for flow 'Exporting Process Saga'
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:20:41.872 | INFO    | main - Exporting saga ----- started ----- outcome : d7c885c6-78d9-4351-a44f-05761f9dd8e2
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:20:41.890 | INFO    | Flow run 'cuddly-alligator' - Created task run 'Create mirror-0' for task 'Create mirror'
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:20:41.890 | INFO    | Flow run 'cuddly-alligator' - Executing 'Create mirror-0' immediately...
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:20:41.936 | INFO    | main - -----> Step 2: Creating mirror for worksheet: d7c885c6-78d9-4351-a44f-05761f9dd8e2...
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:20:42.002 | INFO    | http_client - ==========> Request: ('POST', 'http://database-restoration-service:8200/api/v1/mirrors') {'json': {'worksheet_id': '65b26d55b47b8a3e47844e22'}}
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:20:57.138 | INFO    | http_client - <========== Response: Status 200
+distributed-anonymization-anonymisation-orchestration-service-1  | {
+distributed-anonymization-anonymisation-orchestration-service-1  |     "mirrorId": "mirror-894295e4-f281-4f64-b231-1be6def1ee4b"
+distributed-anonymization-anonymisation-orchestration-service-1  | }
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:20:57.178 | INFO    | main - <----- Step 2: Created mirror. Updated outcome to OutcomeStatus.MIRROR_READY.
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:20:57.254 | INFO    | Task run 'Create mirror-0' - Finished in state Completed()
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:20:57.270 | INFO    | Flow run 'cuddly-alligator' - Created task run 'Check fragments readiness-0' for task 'Check fragments readiness'
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:20:57.271 | INFO    | Flow run 'cuddly-alligator' - Executing 'Check fragments readiness-0' immediately...
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:20:57.299 | INFO    | main - -----> Step 3: Checking fragments readiness for worksheet: d7c885c6-78d9-4351-a44f-05761f9dd8e2...
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:20:57.321 | INFO    | http_client - ==========> Request: ('GET', 'http://api-gateway:8080/configuration/operations?worksheet_id=65b26d55b47b8a3e47844e22') {}
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:20:57.544 | INFO    | http_client - <========== Response: Status 200
+distributed-anonymization-anonymisation-orchestration-service-1  | {
+distributed-anonymization-anonymisation-orchestration-service-1  |     "allSuccessful": true,
+distributed-anonymization-anonymisation-orchestration-service-1  |     "numberOfTasks": 10,
+distributed-anonymization-anonymisation-orchestration-service-1  |     "tasksByStatus": {
+distributed-anonymization-anonymisation-orchestration-service-1  |         "INITIALISED":
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:20:57.547 | INFO    | main - All anonymisation tasks are completed! Fragments are ready.
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:20:57.551 | INFO    | main - <----- Step 3: Fragments are ready. Updated outcome to OutcomeStatus.FRAGMENTS_READY
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:20:57.579 | INFO    | Task run 'Check fragments readiness-0' - Finished in state Completed()
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:20:57.589 | INFO    | Flow run 'cuddly-alligator' - Created task run 'Merge anonymisation fragments-0' for task 'Merge anonymisation fragments'
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:20:57.590 | INFO    | Flow run 'cuddly-alligator' - Executing 'Merge anonymisation fragments-0' immediately...
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:20:57.617 | INFO    | main - -----> Step 4: Merging anonymisation fragments for worksheet: d7c885c6-78d9-4351-a44f-05761f9dd8e2...
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:20:57.631 | INFO    | main - ==========> AWS Lambda Request:
+distributed-anonymization-anonymisation-orchestration-service-1  | {
+distributed-anonymization-anonymisation-orchestration-service-1  |     "inputBucket": "anonymisation-fragments",
+distributed-anonymization-anonymisation-orchestration-service-1  |     "inputDirectory": "65b26d55b47b8a3e47844e22",
+distributed-anonymization-anonymisation-orchestration-service-1  |     "outputBucket": "anonymisation-scripts",
+distributed-anonymization-anonymisation-orchestration-service-1  |     "outputScript": "d7c885c6-78d9-4351-a44f-05761f9dd8e2.sql"
+distributed-anonymization-anonymisation-orchestration-service-1  | }
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:21:02.154 | INFO    | main - <========== AWS Lambda Response:
+distributed-anonymization-anonymisation-orchestration-service-1  | "Merged 10 anonymization files, and written the output to bucket anonymisation-scripts, location: 65b26d55b47b8a3e47844e22/d7c885c6-78d9-4351-a44f-05761f9dd8e2.sql"
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:21:02.161 | INFO    | main - <----- Step 4: Merged anonymisation fragments. Updated outcome to OutcomeStatus.FRAGMENTS_MERGED
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:21:02.202 | INFO    | Task run 'Merge anonymisation fragments-0' - Finished in state Completed()
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:21:02.218 | INFO    | Flow run 'cuddly-alligator' - Created task run 'Execute anonymisation script-0' for task 'Execute anonymisation script'
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:21:02.219 | INFO    | Flow run 'cuddly-alligator' - Executing 'Execute anonymisation script-0' immediately...
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:21:02.245 | INFO    | main - -----> Step 5: Executing anonymisation script for worksheet: 65b26d55b47b8a3e47844e22...
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:21:02.264 | INFO    | http_client - ==========> Request: ('POST', 'http://anonymisation-execution-service:8500/api/v1/execute-anonymization') {'json': {'mirrorId': 'mirror-894295e4-f281-4f64-b231-1be6def1ee4b', 'filePath': '65b26d55b47b8a3e47844e22/d7c885c6-78d9-4351-a44f-05761f9dd8e2.sql'}}
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:23:47.004 | INFO    | http_client - <========== Response: Status 200
+distributed-anonymization-anonymisation-orchestration-service-1  | {
+distributed-anonymization-anonymisation-orchestration-service-1  |     "message": "Executed script successfully"
+distributed-anonymization-anonymisation-orchestration-service-1  | }
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:23:47.017 | INFO    | main - <----- Step 5: Executed anonymisation script. Updated outcome to OutcomeStatus.SCRIPT_EXECUTED.
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:23:47.101 | INFO    | Task run 'Execute anonymisation script-0' - Finished in state Completed()
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:23:47.126 | INFO    | Flow run 'cuddly-alligator' - Created task run 'Generate dump-0' for task 'Generate dump'
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:23:47.127 | INFO    | Flow run 'cuddly-alligator' - Executing 'Generate dump-0' immediately...
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:23:47.153 | INFO    | main - -----> Step 6: Generating anonymisation dump: d7c885c6-78d9-4351-a44f-05761f9dd8e2...
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:23:47.177 | INFO    | http_client - ==========> Request: ('POST', 'http://anonymisation-execution-service:8500/api/v1/execute-anonymization/generate-dump') {'json': {'mirrorId': 'mirror-894295e4-f281-4f64-b231-1be6def1ee4b', 'dumpPath': 'd7c885c6-78d9-4351-a44f-05761f9dd8e2.sql', 'restoreMode': 'SCRIPT'}}
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:23:51.084 | INFO    | http_client - <========== Response: Status 200
+distributed-anonymization-anonymisation-orchestration-service-1  | {
+distributed-anonymization-anonymisation-orchestration-service-1  |     "message": "Generated dump successfully"
+distributed-anonymization-anonymisation-orchestration-service-1  | }
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:23:51.095 | INFO    | main - <----- Step 6: Generated dump. Updated outcome to OutcomeStatus.DUMP_GENERATED.
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:23:51.125 | INFO    | Task run 'Generate dump-0' - Finished in state Completed()
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:23:51.126 | INFO    | main - Exporting saga ----- FINISHED WITH SUCCESS IN 189 seconds ----- outcome : d7c885c6-78d9-4351-a44f-05761f9dd8e2
+distributed-anonymization-anonymisation-orchestration-service-1  | 14:23:51.146 | INFO    | Flow run 'cuddly-alligator' - Finished in state Completed('All states completed.')

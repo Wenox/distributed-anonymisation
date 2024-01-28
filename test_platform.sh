@@ -4,9 +4,9 @@
 sh test_importing_api.sh
 
 # Step 2: Test Configuration API
-BLUEPRINT=$(cat automated_tests/blueprint)
-sh test_configuration_api.sh $BLUEPRINT
+BLUEPRINT_ID=$(cat automated_tests/blueprint_id)
+sh test_configuration_api.sh $BLUEPRINT_ID
 
 # Step 3: Test Exporting API
-WORKSHEET=$(cat automated_tests/worksheet)
-sh test_exporting_api.sh $WORKSHEET
+WORKSHEET_ID=$(cat automated_tests/worksheet_id)
+sh test_exporting_api.sh $WORKSHEET_ID
