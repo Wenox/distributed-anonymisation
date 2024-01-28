@@ -2,24 +2,24 @@
 
 source ../commons.sh
 
-log_yellow "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-log_yellow "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-log_yellow "Simulation 1"
-log_yellow "Testing: Saga Pattern: Backward Recovery – Compensating Transaction"
-log_yellow "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-log_yellow "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+log_yellow "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+log_yellow "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+log_yellow "Simulation 2"
+log_yellow "Testing: Saga Pattern: Backward Recovery – Sequence of Compensating Transactions"
+log_yellow "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+log_yellow "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 
 ./../prune.sh || error_exit "prune.sh failed"
 
 log_yellow "Deploying mandatory infrastructure components..."
-docker compose -f docker-compose.simulation-1.yml up --build -d || error_exit "docker-compose.simulation-1.yml failed to start"
+docker compose -f docker-compose.simulation-2.yml up --build -d || error_exit "docker-compose.simulation-2.yml failed to start"
 
 log_yellow "Waiting 60 seconds..."
 sleep 60
 
 log_green "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 log_green "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-log_green "Infrastructure ready – executing simulation 2"
+log_green "Infrastructure ready – executing simulation 1"
 log_green "Testing: Saga Pattern – Backward Recovery – Importing process"
 log_green "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 log_green "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
@@ -59,7 +59,7 @@ fi
 
 log_green "OK: Importing process started successfully --- blueprint ID: $BLUEPRINT_ID"
 
-log_yellow "Verifying importing process ----- it should fail during database restoration operation..."
+log_yellow "Verifying importing process ----- it should fail during metadata extraction..."
 RETRY_COUNT=0
 MAX_RETRIES=100
 SUCCESS=false
@@ -71,8 +71,8 @@ while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
 
     if [ "$HTTP_STATUS" -eq 200 ]; then
         BLUEPRINT_SAGA_STATUS=$(echo $HTTP_BODY | jq -r '.blueprintSagaStatus')
-        if [ "$BLUEPRINT_SAGA_STATUS" == "RESTORE_FAILURE" ]; then
-            log_green "OK: Importing process failed during database restoration operation. Importing process status: $BLUEPRINT_SAGA_STATUS"
+        if [ "$BLUEPRINT_SAGA_STATUS" == "METADATA_EXTRACTION_FAILURE" ]; then
+            log_green "OK: Importing process failed during metadata extraction. Importing process status: $BLUEPRINT_SAGA_STATUS"
             SUCCESS=true
             break
         else
@@ -92,6 +92,41 @@ fi
 
 log_yellow "Waiting 10 seconds: letting backward recovery complete..."
 sleep 10
+
+log_yellow "Verifying restoration database was dropped..."
+RETRY_COUNT=0
+MAX_RETRIES=10
+SUCCESS=false
+while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+    RESPONSE=$(curl --silent --location --write-out "HTTPSTATUS:%{http_code}" "http://localhost:8080/importing/restorations?blueprint_id=$BLUEPRINT_ID")
+
+    HTTP_BODY=$(echo $RESPONSE | sed -e 's/HTTPSTATUS\:.*//g')
+    HTTP_STATUS=$(echo $RESPONSE | tr -d '\n' | sed -e 's/.*HTTPSTATUS://')
+
+    if [ "$HTTP_STATUS" -eq 200 ]; then
+        DATABASE_STATUS=$(echo $HTTP_BODY | jq -r '.active')
+        if [ "$DATABASE_STATUS" = "false" ]; then
+            log_green "OK: Database (read-only restoration) was dropped successfully."
+            SUCCESS=true
+            break
+        else
+            log_red "Restoration snapshot status: $DATABASE_STATUS, but expected the database to be dropped. Retrying in 5 seconds... (Attempt $((RETRY_COUNT+1))/$MAX_RETRIES)"
+        fi
+    else
+        log_yellow "Received HTTP status $HTTP_STATUS. Retrying in 5 seconds... (Attempt $((RETRY_COUNT+1))/$MAX_RETRIES)"
+    fi
+
+    sleep 5
+    ((RETRY_COUNT++))
+done
+
+if [ $RETRY_COUNT -eq $MAX_RETRIES ]; then
+    error_exit "Database was still not dropped after $MAX_RETRIES attempts"
+fi
+
+log_green "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+log_green "OK: First compensating transaction succeeded"
+log_green "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 
 log_yellow "Verifying that the database dump was removed from Amazon S3 bucket..."
 
@@ -116,9 +151,10 @@ if [ "$FILE_NOT_FOUND" = false ]; then
     error_exit "Database dump '$BLUEPRINT_ID' was still found in the bucket after $MAX_RETRIES attempts"
 fi
 
-log_green "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
-log_green "OK: Compensating transaction succeeded"
-log_green "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+log_green "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+log_green "OK: Second compensating transaction succeeded"
+log_green "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
 
-log_green "OK: Simulation 1 finished successfully"
-log_green "Tested: the Saga pattern, backward recovery – compensating transaction"
+
+log_green "OK: Simulation 2 finished successfully"
+log_green "Tested: the Saga pattern, backward recovery – sequence of compensating transactions"

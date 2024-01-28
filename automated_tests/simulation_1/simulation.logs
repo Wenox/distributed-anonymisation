@@ -1,0 +1,167 @@
+-e 2024-01-28T20:56:29 -------- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+-e 2024-01-28T20:56:29 -------- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+-e 2024-01-28T20:56:29 -------- Simulation 1
+-e 2024-01-28T20:56:29 -------- Testing: Saga Pattern: Backward Recovery – Compensating Transaction
+-e 2024-01-28T20:56:29 -------- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+-e 2024-01-28T20:56:29 -------- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Cleaning up previous platform infrastructure components...
+Deleting network
+WARNING! This will remove all custom networks not used by at least one container.
+Are you sure you want to continue? [y/N] Deleting containers
+Deleting container: 79594e45224b
+79594e45224b
+Deleting container: c466412ee74d
+c466412ee74d
+Deleting container: 31913c7a1f9e
+31913c7a1f9e
+Deleting container: 8f564a0fe11c
+8f564a0fe11c
+Deleting container: f110d9256001
+f110d9256001
+Deleting container: ea148893d58f
+ea148893d58f
+Deleting container: e3a006974343
+e3a006974343
+Deleting container: 85349419926f
+85349419926f
+Deleting container: a20882eb551d
+a20882eb551d
+Deleting container: 4e367f9153f6
+4e367f9153f6
+Deleting container: 83da54790625
+83da54790625
+Deleting container: 9a1f2d9fcbac
+9a1f2d9fcbac
+Deleting container: 22797dcb8c01
+22797dcb8c01
+Deleting container: 89be324b03e2
+89be324b03e2
+Deleting container: 320a820bacef
+320a820bacef
+Deleting volumes
+Deleting volume: 004f700aebca8bae88db3f96bb8850d168de99335b6455e4d5a6137706311397
+004f700aebca8bae88db3f96bb8850d168de99335b6455e4d5a6137706311397
+Deleting volume: 277d9eafa7f7747a29f41d8de42a59d998e7bd10453540fa3fd379228f0cf445
+277d9eafa7f7747a29f41d8de42a59d998e7bd10453540fa3fd379228f0cf445
+Deleting volume: bd9917027e20c3ef016a36a66cfe2df6668c5733c48aa4297db966153c6d9723
+bd9917027e20c3ef016a36a66cfe2df6668c5733c48aa4297db966153c6d9723
+Keeping volume: distributed-anonymization_elasticsearch-data
+Keeping volume: distributed-anonymization_grafana-data
+Deleting volume: simulation_1_elasticsearch-data
+simulation_1_elasticsearch-data
+Deleting volume: simulation_1_grafana-data
+simulation_1_grafana-data
+Deleting volume: simulation_1_node-modules
+simulation_1_node-modules
+Deleting volume: simulation_1_postgres-data
+simulation_1_postgres-data
+Deleting Spark checkpoint
+OK: Finished clean up
+-e 2024-01-28T20:56:36 -------- Deploying mandatory infrastructure components...
+[+] Building 2.9s (45/45) FINISHED
+ => [simulation_1-eureka-server internal] load build definition from Dockerfile                                                                                                                            0.0s
+ => => transferring dockerfile: 32B                                                                                                                                                                        0.0s
+ => [simulation_1-importing-dashboard internal] load build definition from Dockerfile                                                                                                                      0.0s
+ => => transferring dockerfile: 32B                                                                                                                                                                        0.0s
+ => [simulation_1-blueprint-service internal] load build definition from Dockerfile                                                                                                                        0.0s
+ => => transferring dockerfile: 32B                                                                                                                                                                        0.0s
+ => [simulation_1-api-gateway internal] load build definition from Dockerfile                                                                                                                              0.0s
+ => => transferring dockerfile: 32B                                                                                                                                                                        0.0s
+ => [simulation_1-eureka-server internal] load .dockerignore                                                                                                                                               0.0s
+ => => transferring context: 2B                                                                                                                                                                            0.0s
+ => [simulation_1-importing-dashboard internal] load .dockerignore                                                                                                                                         0.0s
+ => => transferring context: 2B                                                                                                                                                                            0.0s
+ => [simulation_1-blueprint-service internal] load .dockerignore                                                                                                                                           0.0s
+ => => transferring context: 2B                                                                                                                                                                            0.0s
+ => [simulation_1-api-gateway internal] load .dockerignore                                                                                                                                                 0.0s
+ => => transferring context: 2B                                                                                                                                                                            0.0s
+ => [simulation_1-blueprint-service internal] load metadata for docker.io/library/maven:3.8.4-openjdk-17-slim                                                                                              1.5s
+ => [simulation_1-api-gateway internal] load metadata for docker.io/library/openjdk:17-jdk-slim                                                                                                            0.0s
+ => [simulation_1-importing-dashboard internal] load metadata for docker.io/library/nginx:alpine                                                                                                           1.5s
+ => [simulation_1-importing-dashboard internal] load metadata for docker.io/library/node:latest                                                                                                            1.5s
+ => [simulation_1-blueprint-service stage-1 1/2] FROM docker.io/library/openjdk:17-jdk-slim                                                                                                                0.0s
+ => [simulation_1-eureka-server internal] load build context                                                                                                                                               0.0s
+ => => transferring context: 891B                                                                                                                                                                          0.0s
+ => [simulation_1-api-gateway build 1/6] FROM docker.io/library/maven:3.8.4-openjdk-17-slim@sha256:150deb7b386bad685dcf0c781b9b9023a25896087b637c069a50c8019cab86f8                                        0.0s
+ => [simulation_1-api-gateway internal] load build context                                                                                                                                                 0.0s
+ => => transferring context: 878B                                                                                                                                                                          0.0s
+ => [simulation_1-blueprint-service internal] load build context                                                                                                                                           0.0s
+ => => transferring context: 6.81kB                                                                                                                                                                        0.0s
+ => CACHED [simulation_1-api-gateway build 2/6] WORKDIR /app                                                                                                                                               0.0s
+ => CACHED [simulation_1-blueprint-service build 3/8] COPY shared_libraries/*.jar /usr/share/maven/ref/                                                                                                    0.0s
+ => CACHED [simulation_1-blueprint-service build 4/8] RUN mvn install:install-file -Dfile=/usr/share/maven/ref/shared-logging-library-1.0-SNAPSHOT.jar -DgroupId=com.wenox.anonymization -DartifactId=sha  0.0s
+ => CACHED [simulation_1-blueprint-service build 5/8] COPY pom.xml .                                                                                                                                       0.0s
+ => CACHED [simulation_1-blueprint-service build 6/8] RUN mvn dependency:go-offline                                                                                                                        0.0s
+ => CACHED [simulation_1-blueprint-service build 7/8] COPY src /app/src                                                                                                                                    0.0s
+ => CACHED [simulation_1-blueprint-service build 8/8] RUN mvn clean package -DskipTests                                                                                                                    0.0s
+ => CACHED [simulation_1-blueprint-service stage-1 2/2] COPY --from=build /app/target/*.jar app.jar                                                                                                        0.0s
+ => [simulation_1-importing-dashboard build 1/6] FROM docker.io/library/node:latest@sha256:0ded28778059262bd3c066b609186e5b6c89550a9362dce4309ad67c95af0d77                                                0.0s
+ => [simulation_1-importing-dashboard stage-1 1/2] FROM docker.io/library/nginx:alpine@sha256:bb193a04d4f2026c6342fc142741d8036a27ea89674830a0fd0569d58bb2ca77                                             0.0s
+ => CACHED [simulation_1-eureka-server build 3/6] COPY pom.xml .                                                                                                                                           0.0s
+ => CACHED [simulation_1-eureka-server build 4/6] RUN mvn dependency:go-offline                                                                                                                            0.0s
+ => CACHED [simulation_1-eureka-server build 5/6] COPY src /app/src                                                                                                                                        0.0s
+ => CACHED [simulation_1-eureka-server build 6/6] RUN mvn clean package -DskipTests -X                                                                                                                     0.0s
+ => CACHED [simulation_1-eureka-server stage-1 2/2] COPY --from=build /app/target/*.jar app.jar                                                                                                            0.0s
+ => [simulation_1-importing-dashboard] exporting to image                                                                                                                                                  0.0s
+ => => exporting layers                                                                                                                                                                                    0.0s
+ => => writing image sha256:4c985a53bc10f25466defb32a235a59bf82899dd54a36547610e7483ccc651d3                                                                                                               0.0s
+ => => naming to docker.io/library/simulation_1-blueprint-service                                                                                                                                          0.0s
+ => => writing image sha256:050521c52188563815c564224ddf6df4f710fea4911c8cda1b59515ae63397b2                                                                                                               0.0s
+ => => naming to docker.io/library/simulation_1-eureka-server                                                                                                                                              0.0s
+ => => writing image sha256:538276e40717da0bf03127e21651ec755d029bb770bc6489d4b1b5f4a8c9ea33                                                                                                               0.0s
+ => => naming to docker.io/library/simulation_1-api-gateway                                                                                                                                                0.0s
+ => => writing image sha256:0791a9f6e63917791fa9e0c4f4d46a9491dcfce7f98be5f3a4ca7ea69b1976c8                                                                                                               0.0s
+ => => naming to docker.io/library/simulation_1-importing-dashboard                                                                                                                                        0.0s
+ => CACHED [simulation_1-api-gateway build 3/6] COPY pom.xml .                                                                                                                                             0.0s
+ => CACHED [simulation_1-api-gateway build 4/6] RUN mvn dependency:go-offline                                                                                                                              0.0s
+ => CACHED [simulation_1-api-gateway build 5/6] COPY src /app/src                                                                                                                                          0.0s
+ => CACHED [simulation_1-api-gateway build 6/6] RUN mvn clean package -DskipTests -X                                                                                                                       0.0s
+ => CACHED [simulation_1-api-gateway stage-1 2/2] COPY --from=build /app/target/*.jar app.jar                                                                                                              0.0s
+ => [simulation_1-importing-dashboard internal] load build context                                                                                                                                         1.0s
+ => => transferring context: 3.84MB                                                                                                                                                                        1.0s
+ => CACHED [simulation_1-importing-dashboard build 2/6] WORKDIR /app                                                                                                                                       0.0s
+ => CACHED [simulation_1-importing-dashboard build 3/6] COPY package.json package-lock.json ./                                                                                                             0.0s
+ => CACHED [simulation_1-importing-dashboard build 4/6] RUN npm install                                                                                                                                    0.0s
+ => CACHED [simulation_1-importing-dashboard build 5/6] COPY . .                                                                                                                                           0.0s
+ => CACHED [simulation_1-importing-dashboard build 6/6] RUN npm run build                                                                                                                                  0.0s
+ => CACHED [simulation_1-importing-dashboard stage-1 2/2] COPY --from=build /app/build /usr/share/nginx/html                                                                                               0.0s
+[+] Running 19/19
+ ⠿ Volume "simulation_1_postgres-data"                    Created                                                                                                                                          0.0s
+ ⠿ Volume "simulation_1_grafana-data"                     Created                                                                                                                                          0.0s
+ ⠿ Volume "simulation_1_elasticsearch-data"               Created                                                                                                                                          0.0s
+ ⠿ Volume "simulation_1_node-modules"                     Created                                                                                                                                          0.0s
+ ⠿ Container mongodb                                      Started                                                                                                                                          1.8s
+ ⠿ Container simulation_1-importing-dashboard-1           Started                                                                                                                                          1.4s
+ ⠿ Container zookeeper                                    Started                                                                                                                                          1.0s
+ ⠿ Container simulation_1-eureka-server-1                 Started                                                                                                                                          0.6s
+ ⠿ Container prometheus                                   Started                                                                                                                                          1.7s
+ ⠿ Container simulation_1-blueprint-service-1             Started                                                                                                                                          0.7s
+ ⠿ Container simulation_1-postgres-1                      Started                                                                                                                                          1.5s
+ ⠿ Container grafana                                      Started                                                                                                                                          1.2s
+ ⠿ Container simulation_1-api-gateway-1                   Started                                                                                                                                          1.4s
+ ⠿ Container elasticsearch                                Started                                                                                                                                          1.8s
+ ⠿ Container simulation_1-database-restoration-service-1  Started                                                                                                                                          1.5s
+ ⠿ Container kafka                                        Started                                                                                                                                          1.8s
+ ⠿ Container kibana                                       Started                                                                                                                                          2.1s
+ ⠿ Container logstash                                     Started                                                                                                                                          2.3s
+ ⠿ Container kafka-ui                                     Started                                                                                                                                          2.3s
+-e 2024-01-28T20:56:42 -------- Waiting 60 seconds...
+-e 2024-01-28T20:57:42 -------- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+-e 2024-01-28T20:57:42 -------- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+-e 2024-01-28T20:57:42 -------- Infrastructure ready – executing simulation 2
+-e 2024-01-28T20:57:42 -------- Testing: Saga Pattern – Backward Recovery – Importing process
+-e 2024-01-28T20:57:42 -------- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+-e 2024-01-28T20:57:42 -------- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+-e 2024-01-28T20:57:42 -------- Starting importing process...
+-e 2024-01-28T20:57:43 -------- OK: Importing process started successfully --- blueprint ID: 81c8d4ab-1b2d-4409-a079-da02b538e038
+-e 2024-01-28T20:57:43 -------- Verifying importing process ----- it should fail during database restoration operation...
+-e 2024-01-28T20:57:43 -------- Importing process status: INITIALISED. Retrying in 1 second... (Attempt 1/100)
+-e 2024-01-28T20:57:44 -------- OK: Importing process failed during database restoration operation. Importing process status: RESTORE_FAILURE
+-e 2024-01-28T20:57:44 -------- Waiting 10 seconds: letting backward recovery complete...
+-e 2024-01-28T20:57:54 -------- Verifying that the database dump was removed from Amazon S3 bucket...
+-e 2024-01-28T20:57:55 -------- OK: Database dump '81c8d4ab-1b2d-4409-a079-da02b538e038' was successfully removed from Amazon S3 bucket
+-e 2024-01-28T20:57:55 -------- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+-e 2024-01-28T20:57:55 -------- OK: Compensating transaction succeeded
+-e 2024-01-28T20:57:55 -------- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+-e 2024-01-28T20:57:55 -------- OK: Simulation 1 finished successfully
+-e 2024-01-28T20:57:55 -------- Tested: the Saga pattern, backward recovery – compensating transaction
