@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @RequiredArgsConstructor
 @Slf4j
@@ -38,7 +39,7 @@ public class DefaultBlueprintService implements BlueprintService {
             return blueprint.getBlueprintId();
         }
 
-        messagePublisher.sendBlueprintInstantiated(new BlueprintInstantiatedEvent(blueprint, content));
+        CompletableFuture.runAsync(() -> messagePublisher.sendBlueprintInstantiated(new BlueprintInstantiatedEvent(blueprint, content)));
         return blueprint.getBlueprintId();
     }
 
