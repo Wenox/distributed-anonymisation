@@ -9,6 +9,7 @@ import com.wenox.anonymization.shared_events_library.BlueprintCreatedEvent;
 import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
@@ -22,8 +23,20 @@ public class BlueprintInstantiatedKafkaListener {
     private final DumpRepository dumpRepository;
     private final MessagePublisher messagePublisher;
 
+    @Value("${ENABLE_PROCESS_MESSAGES:false}")
+    private boolean isProcessMessagesEnabled;
+
     @KafkaListener(topics = KafkaConstants.TOPIC_CREATED_BLUEPRINT_LISTEN_TO_YOURSELF, groupId = "blueprint-service-group")
     void onBlueprintInstantiated(BlueprintInstantiatedEvent event, Acknowledgment ack) {
+        if (!isProcessMessagesEnabled) {
+            try {
+                Thread.sleep(5000L);
+            } catch (Exception ex) {
+                log.error("Exception during simulation", ex);
+            }
+            log.warn("Ignoring message ––– processing messages is temporarily disabled for simulation purposes");
+            return;
+        }
         log.info("Received {}", event);
         try {
             handleUploadAndStatus(event.getDump(), event.getBlueprint());
