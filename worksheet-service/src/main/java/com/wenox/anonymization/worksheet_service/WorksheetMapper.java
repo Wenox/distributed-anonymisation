@@ -1,18 +1,22 @@
 package com.wenox.anonymization.worksheet_service;
 
-import com.wenox.anonymization.shared_events_library.WorksheetCreatedEvent;
+import com.wenox.anonymization.shared_events_library.api.RestoreMode;
 import com.wenox.anonymization.worksheet_service.domain.CreateWorksheetResponse;
 import com.wenox.anonymization.worksheet_service.domain.Worksheet;
+import com.wenox.anonymization.worksheet_service.domain.WorksheetCreatedEvent;
 import com.wenox.anonymization.worksheet_service.domain.WorksheetStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+
+import java.time.LocalDateTime;
 
 @Component
 @Slf4j
 public class WorksheetMapper {
 
-    public Worksheet toWorksheet(CreateWorksheetRequest request, CreateWorksheetResponse response) {
+    public Worksheet toWorksheet(String worksheetId, CreateWorksheetRequest request, CreateWorksheetResponse response) {
         Worksheet worksheet = new Worksheet();
+        worksheet.setWorksheetId(worksheetId);
         worksheet.setWorksheetStatus(WorksheetStatus.OPENED);
         worksheet.setMetadata(response.getMetadata());
         worksheet.setBlueprintId(request.blueprintId());
@@ -22,13 +26,13 @@ public class WorksheetMapper {
         return worksheet;
     }
 
-    public WorksheetCreatedEvent toWorksheetCreatedEvent(CreateWorksheetResponse response) {
-        return WorksheetCreatedEvent
-                .builder()
-                .worksheetId(response.getWorksheet().getWorksheetId())
-                .blueprintId(response.getWorksheet().getBlueprintId())
-                .restoreMode(response.getWorksheet().getRestoreMode())
-                .build();
+    public WorksheetCreatedEvent toWorksheetCreatedEvent(String worksheetId, String blueprintId, RestoreMode restoreMode) {
+        WorksheetCreatedEvent event = new WorksheetCreatedEvent();
+        event.setWorksheetId(worksheetId);
+        event.setBlueprintId(blueprintId);
+        event.setRestoreMode(restoreMode);
+        event.setCreatedAt(LocalDateTime.now());
+        return event;
     }
 
     public WorksheetResponse toResponse(Worksheet worksheet) {

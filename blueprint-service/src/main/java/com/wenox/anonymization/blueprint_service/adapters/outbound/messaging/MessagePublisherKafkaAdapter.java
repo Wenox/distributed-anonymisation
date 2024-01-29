@@ -2,7 +2,6 @@ package com.wenox.anonymization.blueprint_service.adapters.outbound.messaging;
 
 import com.wenox.anonymization.blueprint_service.domain.model.BlueprintInstantiatedEvent;
 import com.wenox.anonymization.blueprint_service.domain.ports.MessagePublisher;
-import com.wenox.anonymization.shared_chaos_library.api.ShutdownSimulator;
 import com.wenox.anonymization.shared_events_library.BlueprintCreatedEvent;
 import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
 import com.wenox.anonymization.shared_events_library.api.KafkaTemplateWrapper;
@@ -22,6 +21,6 @@ class MessagePublisherKafkaAdapter implements MessagePublisher {
 
     @Override
     public void sendBlueprintInstantiated(BlueprintInstantiatedEvent event) {
-        ShutdownSimulator.crashJVM("Simulating service crash before the event is produced");
+        loggingKafkaTemplate.send(KafkaConstants.TOPIC_CREATED_BLUEPRINT_LISTEN_TO_YOURSELF, event);
     }
 }

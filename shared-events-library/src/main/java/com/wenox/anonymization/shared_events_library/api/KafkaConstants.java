@@ -10,7 +10,6 @@ public final class KafkaConstants {
 
     public static final String TOPIC_CREATED_BLUEPRINT = "created-blueprint";
     public static final String TOPIC_CREATED_BLUEPRINT_LISTEN_TO_YOURSELF = "created-blueprint-listen-to-yourself";
-    public static final String TOPIC_CREATED_WORKSHEET = "created-worksheet";
 
     public static final String TOPIC_ANONYMIZATION_EXECUTION = "anonymization-execution";
     public static final String TOPIC_ANONYMIZATION_EXECUTION_SUCCESS = "anonymization-execution-success";

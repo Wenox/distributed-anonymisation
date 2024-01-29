@@ -14,20 +14,6 @@ services:
     networks:
       - platform_network
 
-#  other-blueprint-service:
-#    build:
-#      context: blueprint-service/
-#      dockerfile: Dockerfile
-#    environment:
-#      - server_port=8101
-#      - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
-#      - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
-#      - AWS_REGION=${AWS_REGION}
-#    ports:
-#      - "8101:8101"
-#    networks:
-#      - platform_network
-
   database-restoration-service:
     build:
       context: database-restoration-service/

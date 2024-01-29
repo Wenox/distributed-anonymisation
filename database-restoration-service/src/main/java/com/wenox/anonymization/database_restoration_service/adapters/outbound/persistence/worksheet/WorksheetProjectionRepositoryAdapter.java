@@ -5,6 +5,7 @@ import com.wenox.anonymization.database_restoration_service.domain.ports.Workshe
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Optional;
 
 @Component
@@ -22,5 +23,14 @@ class WorksheetProjectionRepositoryAdapter implements WorksheetProjectionReposit
     public void save(WorksheetProjection projection) {
         WorksheetProjectionEntity entity = WorksheetProjectionEntity.fromDomain(projection);
         worksheetProjectionEntityRepository.save(entity);
+    }
+
+    @Override
+    public void saveAll(List<WorksheetProjection> projections) {
+        worksheetProjectionEntityRepository.saveAll(
+                projections.stream()
+                        .map(WorksheetProjectionEntity::fromDomain)
+                        .toList()
+        );
     }
 }

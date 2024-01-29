@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.wenox.anonymization</groupId>
 	<artifactId>blueprint-service</artifactId>
-	<version>simulation-6</version>
+	<version>1-0-SNAPSHOT</version>
 	<name>Blueprint Service</name>
 	<description>Blueprint Service</description>
 	<properties>
@@ -55,11 +55,6 @@
 		<dependency>
 			<groupId>com.wenox.anonymization</groupId>
 			<artifactId>shared-events-library</artifactId>
-			<version>1.0-SNAPSHOT</version>
-		</dependency>
-		<dependency>
-			<groupId>com.wenox.anonymization</groupId>
-			<artifactId>shared-chaos-library</artifactId>
 			<version>1.0-SNAPSHOT</version>
 		</dependency>
 		<dependency>

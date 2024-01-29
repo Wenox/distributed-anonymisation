@@ -10,15 +10,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class DefaultWorksheetService implements WorksheetService {
 
     private final WorksheetRepository worksheetRepository;
+    private final WorksheetCreatedEventRepository worksheetCreatedEventRepository;
     private final WorksheetMapper worksheetMapper;
     private final DependenciesService dependenciesService;
-    private final KafkaTemplateWrapper<String, Object> kafkaTemplateWrapper;
 
     public Either<FailureResponse, CreateWorksheetResponse> createWorksheet(CreateWorksheetRequest request) {
         Either<FailureResponse, CreateWorksheetResponse> eitherResponse = dependenciesService.retrieveDependencies(request);
@@ -29,9 +31,14 @@ public class DefaultWorksheetService implements WorksheetService {
                 throw new InactiveRestorationException("Inactive restoration " + response.getRestoration());
             }
 
-            Worksheet worksheet = worksheetRepository.save(worksheetMapper.toWorksheet(request, response));
+            String worksheetId = UUID.randomUUID().toString();
+            Worksheet worksheet = worksheetMapper.toWorksheet(worksheetId, request, response);
+            WorksheetCreatedEvent worksheetCreatedEvent = worksheetMapper.toWorksheetCreatedEvent(worksheetId, request.blueprintId(), worksheet.getRestoreMode());
+
+            worksheetRepository.save(worksheet);
+            worksheetCreatedEventRepository.save(worksheetCreatedEvent);
+
             response.setWorksheet(worksheet);
-            kafkaTemplateWrapper.send(KafkaConstants.TOPIC_CREATED_WORKSHEET, worksheetMapper.toWorksheetCreatedEvent(response));
             return Either.right(response);
         });
     }

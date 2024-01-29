@@ -91,11 +91,6 @@ public class KafkaTopicConfig {
         return createNewTopic(KafkaConstants.TOPIC_TRANSFORMATION_SCRIPT_FAILURE);
     }
 
-    @Bean
-    public NewTopic topicCreatedWorksheet() {
-        return createNewTopic(KafkaConstants.TOPIC_CREATED_WORKSHEET);
-    }
-
     private NewTopic createNewTopic(String topicName) {
         log.warn("Creating topic: {}", topicName);
         return TopicBuilder.name(topicName).build();

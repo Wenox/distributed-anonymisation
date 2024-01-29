@@ -10,12 +10,12 @@ services:
     networks:
       - platform
 
-  importing-dashboard:
-    build: importing-dashboard/
-    ports:
-      - "80:80"
-    volumes:
-      - node-modules:/app/node_modules
+#  importing-dashboard:
+#    build: importing-dashboard/
+#    ports:
+#      - "80:80"
+#    volumes:
+#      - node-modules:/app/node_modules
 
   eureka-server:
     build:

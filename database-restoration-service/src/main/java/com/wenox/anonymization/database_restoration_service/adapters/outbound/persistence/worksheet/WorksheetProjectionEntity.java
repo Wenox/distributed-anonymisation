@@ -14,7 +14,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @NoArgsConstructor
 @ToString
 @Document
-class WorksheetProjectionEntity {
+public class WorksheetProjectionEntity {
 
     @Id
     private String worksheetId;
