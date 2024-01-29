@@ -2,23 +2,20 @@ package com.wenox.anonymization.blueprint_service.domain.service;
 
 import com.wenox.anonymization.blueprint_service.domain.exception.BlueprintNotFoundException;
 import com.wenox.anonymization.blueprint_service.domain.model.Blueprint;
+import com.wenox.anonymization.blueprint_service.domain.model.BlueprintInstantiatedEvent;
 import com.wenox.anonymization.blueprint_service.domain.ports.MessagePublisher;
 import com.wenox.anonymization.blueprint_service.domain.ports.BlueprintRepository;
-import com.wenox.anonymization.blueprint_service.domain.ports.DumpRepository;
-import com.wenox.anonymization.shared_events_library.BlueprintCreatedEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 @RequiredArgsConstructor
 @Slf4j
 public class DefaultBlueprintService implements BlueprintService {
 
     private final BlueprintRepository blueprintRepository;
-    private final DumpRepository dumpRepository;
     private final BlueprintSagaStatusUpdater blueprintSagaStatusUpdater;
     private final MessagePublisher messagePublisher;
 
@@ -41,23 +38,8 @@ public class DefaultBlueprintService implements BlueprintService {
             return blueprint.getBlueprintId();
         }
 
-        CompletableFuture.runAsync(() -> handleUploadAndStatus(content, blueprint))
-                .exceptionally(ex -> {
-                    log.error("Error for blueprint {} while updating blueprint after S3 upload.", blueprint, ex);
-                    blueprintSagaStatusUpdater.updateSagaStatusOnDumpStoreFailure(blueprint);
-                    return null;
-                });
-
+        messagePublisher.sendBlueprintInstantiated(new BlueprintInstantiatedEvent(blueprint, content));
         return blueprint.getBlueprintId();
-    }
-
-    private void handleUploadAndStatus(byte[] content, Blueprint blueprint) {
-        if (dumpRepository.uploadDump(content, blueprint)) {
-            blueprintSagaStatusUpdater.updateSagaStatusOnDumpStoreSuccess(blueprint);
-            messagePublisher.sendBlueprintCreated(new BlueprintCreatedEvent(blueprint.getBlueprintId(), blueprint.getRestoreMode()));
-        } else {
-            blueprintSagaStatusUpdater.updateSagaStatusOnDumpStoreFailure(blueprint);
-        }
     }
 
     @Override

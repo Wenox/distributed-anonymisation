@@ -21,12 +21,10 @@ public class SpringConfig {
 
     @Bean
     BlueprintService blueprintService(BlueprintRepository blueprintRepository,
-                                      DumpRepository dumpRepository,
                                       BlueprintSagaStatusUpdater blueprintStatusUpdater,
                                       MessagePublisher messagePublisher) {
         return new DefaultBlueprintService(
                 blueprintRepository,
-                dumpRepository,
                 blueprintStatusUpdater,
                 messagePublisher
         );

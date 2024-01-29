@@ -12,13 +12,13 @@ public class BlueprintSagaStatusUpdater {
 
     private final BlueprintRepository blueprintRepository;
 
-    void updateSagaStatusOnDumpStoreSuccess(Blueprint blueprint) {
+    public void updateSagaStatusOnDumpStoreSuccess(Blueprint blueprint) {
         blueprint.setBlueprintSagaStatus(BlueprintSagaStatus.DUMP_STORE_SUCCESS);
         blueprint.setDumpStoreSuccess(true);
         blueprintRepository.save(blueprint);
     }
 
-    void updateSagaStatusOnDumpStoreFailure(Blueprint blueprint) {
+    public void updateSagaStatusOnDumpStoreFailure(Blueprint blueprint) {
         blueprint.setBlueprintSagaStatus(BlueprintSagaStatus.DUMP_STORE_FAILURE);
         blueprint.setDumpStoreSuccess(false);
         blueprintRepository.save(blueprint);
