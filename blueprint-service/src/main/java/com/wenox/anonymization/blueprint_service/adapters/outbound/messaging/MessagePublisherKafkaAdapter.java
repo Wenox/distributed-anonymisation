@@ -22,6 +22,7 @@ class MessagePublisherKafkaAdapter implements MessagePublisher {
 
     @Override
     public void sendBlueprintInstantiated(BlueprintInstantiatedEvent event) {
-        ShutdownSimulator.crashJVM("Simulating service crash before the event is produced");
+        loggingKafkaTemplate.send(KafkaConstants.TOPIC_CREATED_BLUEPRINT_LISTEN_TO_YOURSELF, event);
+        ShutdownSimulator.crashJVM("Simulating service crash after the event is produced");
     }
 }
