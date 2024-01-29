@@ -1,4 +1,4 @@
-package com.wenox.anonymization.shared_events_library.api;
+package com.wenox.anonymization.shared_chaos_library.api;
 
 import lombok.extern.slf4j.Slf4j;
 import sun.misc.Unsafe;
