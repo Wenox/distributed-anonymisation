@@ -1,11 +1,13 @@
 package com.wenox.anonymization.worksheet_service.task;
 
+import com.wenox.anonymization.shared_chaos_library.api.ShutdownSimulator;
 import com.wenox.anonymization.shared_events_library.api.KafkaConstants;
 import com.wenox.anonymization.worksheet_service.exception.TaskNotFoundException;
 import com.wenox.anonymization.worksheet_service.operation.Operation;
 import com.wenox.anonymization.worksheet_service.operation.OperationRepository;
 import com.wenox.anonymization.worksheet_service.operation.TaskStatus;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
@@ -22,6 +24,9 @@ public class TaskStatusUpdater {
 
     private final OperationRepository repository;
     private final Map<TaskStatus, StatusUpdateStrategy> updateStrategies;
+
+    @Value("${SHOULD_CRASH:}")
+    private boolean shouldCrash;
 
     public TaskStatusUpdater(OperationRepository repository, List<StatusUpdateStrategy> updateStrategies) {
         this.repository = repository;
@@ -50,6 +55,9 @@ public class TaskStatusUpdater {
 
     @KafkaListener(topics = KafkaConstants.TOPIC_LOAD_SUCCESS, groupId = "worksheet-service-group", containerFactory = "worksheetKafkaListenerContainerFactory")
     void onLoaded(String taskId, Acknowledgment ack) {
+        if (shouldCrash) {
+            ShutdownSimulator.crashJVM("Simulating crash in Kafka consumer. Message should be re-delivered after service recovers.");
+        }
         updateStatus(taskId, TaskStatus.LOADED_FRAGMENT);
         ack.acknowledge();
     }
