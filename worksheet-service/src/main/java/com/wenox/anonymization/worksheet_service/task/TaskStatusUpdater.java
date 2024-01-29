@@ -7,6 +7,7 @@ import com.wenox.anonymization.worksheet_service.operation.OperationRepository;
 import com.wenox.anonymization.worksheet_service.operation.TaskStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.annotation.KafkaListener;
+import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -30,23 +31,27 @@ public class TaskStatusUpdater {
     }
 
     @KafkaListener(topics = KafkaConstants.TOPIC_EXTRACTION_SUCCESS, groupId = "worksheet-service-group", containerFactory = "worksheetKafkaListenerContainerFactory")
-    void onExtracted(String taskId) {
+    void onExtracted(String taskId, Acknowledgment ack) {
         updateStatus(taskId, TaskStatus.EXTRACTED_COLUMN_TUPLE);
+        ack.acknowledge();
     }
 
     @KafkaListener(topics = KafkaConstants.TOPIC_TRANSFORMATION_ANONYMIZE_SUCCESS, groupId = "worksheet-service-group", containerFactory = "worksheetKafkaListenerContainerFactory")
-    void onTransformedAnonymization(String taskId) {
+    void onTransformedAnonymization(String taskId, Acknowledgment ack) {
         updateStatus(taskId, TaskStatus.APPLIED_ANONYMISATION);
+        ack.acknowledge();
     }
 
     @KafkaListener(topics = KafkaConstants.TOPIC_TRANSFORMATION_SCRIPT_SUCCESS, groupId = "worksheet-service-group", containerFactory = "worksheetKafkaListenerContainerFactory")
-    void onTransformedSqlScript(String taskId) {
+    void onTransformedSqlScript(String taskId, Acknowledgment ack) {
         updateStatus(taskId, TaskStatus.CREATED_FRAGMENT);
+        ack.acknowledge();
     }
 
     @KafkaListener(topics = KafkaConstants.TOPIC_LOAD_SUCCESS, groupId = "worksheet-service-group", containerFactory = "worksheetKafkaListenerContainerFactory")
-    void onLoaded(String taskId) {
+    void onLoaded(String taskId, Acknowledgment ack) {
         updateStatus(taskId, TaskStatus.LOADED_FRAGMENT);
+        ack.acknowledge();
     }
 
     private void updateStatus(String taskId, TaskStatus newStatus) {
