@@ -56,6 +56,10 @@ public class TaskStatusUpdater {
     @KafkaListener(topics = KafkaConstants.TOPIC_LOAD_SUCCESS, groupId = "worksheet-service-group", containerFactory = "worksheetKafkaListenerContainerFactory")
     void onLoaded(String taskId, Acknowledgment ack) {
         if (shouldCrash) {
+            try {
+                log.info("Crashing in 5 seconds...");
+                Thread.sleep(5000L);
+            } catch (Exception ex) {}
             ShutdownSimulator.crashJVM("Simulating crash in Kafka consumer. Message should be re-delivered after service recovers.");
         }
         updateStatus(taskId, TaskStatus.LOADED_FRAGMENT);
