@@ -1,0 +1,501 @@
+sh run_simulation.sh
+-e 2024-01-30T13:11:42 -------- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+-e 2024-01-30T13:11:42 -------- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+-e 2024-01-30T13:11:42 -------- Simulation 8
+-e 2024-01-30T13:11:42 -------- Testing: Messages received out of order do not compromise data consistency
+-e 2024-01-30T13:11:42 -------- All anonymisation operations should converge to 'LOADED' state anyway
+-e 2024-01-30T13:11:42 -------- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+-e 2024-01-30T13:11:42 -------- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Cleaning up previous platform infrastructure components...
+Deleting network
+WARNING! This will remove all custom networks not used by at least one container.
+Are you sure you want to continue? [y/N] Deleting containers
+Deleting container: a3536b44415b
+a3536b44415b
+Deleting container: c184e0a05ea8
+c184e0a05ea8
+Deleting container: d4c258161edf
+d4c258161edf
+Deleting container: 7d464ded6807
+7d464ded6807
+Deleting container: 329fb22f7a8c
+329fb22f7a8c
+Deleting container: 47ee5056d83e
+47ee5056d83e
+Deleting container: db08a10c6063
+db08a10c6063
+Deleting container: 18e95d598454
+18e95d598454
+Deleting container: e9b3ad28835e
+e9b3ad28835e
+Deleting container: 1c386f92375c
+1c386f92375c
+Deleting container: 605f2ea03a4f
+605f2ea03a4f
+Deleting container: 63be8683d351
+63be8683d351
+Deleting container: 5eb166afb6bf
+5eb166afb6bf
+Deleting container: 273f679f2d49
+273f679f2d49
+Deleting container: ed4c10fba851
+ed4c10fba851
+Deleting container: f65aa7951656
+f65aa7951656
+Deleting container: c5ba1fccdafe
+c5ba1fccdafe
+Deleting container: 166e8d616a0a
+166e8d616a0a
+Deleting container: a28f5f31bb83
+a28f5f31bb83
+Deleting container: 5435458d7761
+5435458d7761
+Deleting container: 5b0c5f378c38
+5b0c5f378c38
+Deleting container: 566d3f148cb2
+566d3f148cb2
+Deleting container: 24f2adc68f35
+24f2adc68f35
+Deleting container: 97e2e58c4e6b
+97e2e58c4e6b
+Deleting volumes
+Deleting volume: 1503be5f93c0847448ca278a243dab0a64b4144e109d56508fe129d53897ca61
+1503be5f93c0847448ca278a243dab0a64b4144e109d56508fe129d53897ca61
+Deleting volume: 98492b4d21633d9b27dbdba15074c521e0563b7b51eae63f42192673a532cb0b
+98492b4d21633d9b27dbdba15074c521e0563b7b51eae63f42192673a532cb0b
+Keeping volume: distributed-anonymization_elasticsearch-data
+Keeping volume: distributed-anonymization_grafana-data
+Deleting volume: fed43f96726254bb4d562a0eecf3278dff2870fc0a59203c26d321809d050ba8
+fed43f96726254bb4d562a0eecf3278dff2870fc0a59203c26d321809d050ba8
+Deleting volume: simulation_8_cassandra_data
+simulation_8_cassandra_data
+Deleting volume: simulation_8_elasticsearch-data
+simulation_8_elasticsearch-data
+Deleting volume: simulation_8_grafana-data
+simulation_8_grafana-data
+Deleting volume: simulation_8_node-modules
+simulation_8_node-modules
+Deleting volume: simulation_8_postgres-data
+simulation_8_postgres-data
+Deleting volume: simulation_8_redis_data
+simulation_8_redis_data
+Deleting volume: simulation_8_redis_insight
+simulation_8_redis_insight
+Deleting Spark checkpoint
+OK: Finished clean up
+-e 2024-01-30T13:11:52 -------- Deploying mandatory infrastructure components...
+[+] Building 3.3s (73/73) FINISHED
+ => [simulation_8-metadata-extraction-service internal] load build definition from Dockerfile                                                                                                              0.0s
+ => => transferring dockerfile: 32B                                                                                                                                                                        0.0s
+ => [simulation_8-importing-dashboard internal] load build definition from Dockerfile                                                                                                                      0.0s
+ => => transferring dockerfile: 32B                                                                                                                                                                        0.0s
+ => [simulation_8-tasks-processing-service internal] load build definition from Dockerfile                                                                                                                 0.0s
+ => => transferring dockerfile: 32B                                                                                                                                                                        0.0s
+ => [simulation_8-eureka-server internal] load build definition from Dockerfile                                                                                                                            0.0s
+ => => transferring dockerfile: 32B                                                                                                                                                                        0.0s
+ => [simulation_8-blueprint-service internal] load build definition from Dockerfile                                                                                                                        0.0s
+ => => transferring dockerfile: 32B                                                                                                                                                                        0.0s
+ => [simulation_8-database-restoration-service internal] load build definition from Dockerfile                                                                                                             0.0s
+ => => transferring dockerfile: 32B                                                                                                                                                                        0.0s
+ => [simulation_8-api-gateway internal] load build definition from Dockerfile                                                                                                                              0.0s
+ => => transferring dockerfile: 32B                                                                                                                                                                        0.0s
+ => [simulation_8-metadata-extraction-service internal] load .dockerignore                                                                                                                                 0.0s
+ => => transferring context: 2B                                                                                                                                                                            0.0s
+ => [simulation_8-importing-dashboard internal] load .dockerignore                                                                                                                                         0.0s
+ => => transferring context: 2B                                                                                                                                                                            0.0s
+ => [simulation_8-tasks-processing-service internal] load .dockerignore                                                                                                                                    0.0s
+ => => transferring context: 2B                                                                                                                                                                            0.0s
+ => [simulation_8-eureka-server internal] load .dockerignore                                                                                                                                               0.0s
+ => => transferring context: 2B                                                                                                                                                                            0.0s
+ => [simulation_8-blueprint-service internal] load .dockerignore                                                                                                                                           0.0s
+ => => transferring context: 2B                                                                                                                                                                            0.0s
+ => [simulation_8-database-restoration-service internal] load .dockerignore                                                                                                                                0.0s
+ => => transferring context: 2B                                                                                                                                                                            0.0s
+ => [simulation_8-api-gateway internal] load .dockerignore                                                                                                                                                 0.0s
+ => => transferring context: 2B                                                                                                                                                                            0.0s
+ => [simulation_8-api-gateway internal] load metadata for docker.io/library/openjdk:17-jdk-slim                                                                                                            0.0s
+ => [simulation_8-api-gateway internal] load metadata for docker.io/library/maven:3.8.4-openjdk-17-slim                                                                                                    1.4s
+ => [simulation_8-importing-dashboard internal] load metadata for docker.io/library/nginx:alpine                                                                                                           1.6s
+ => [simulation_8-importing-dashboard internal] load metadata for docker.io/library/node:latest                                                                                                            1.4s
+ => [simulation_8-tasks-processing-service internal] load metadata for docker.io/library/sapmachine:17.0.10                                                                                                1.3s
+ => [simulation_8-api-gateway stage-1 1/2] FROM docker.io/library/openjdk:17-jdk-slim                                                                                                                      0.0s
+ => [simulation_8-metadata-extraction-service build 1/8] FROM docker.io/library/maven:3.8.4-openjdk-17-slim@sha256:150deb7b386bad685dcf0c781b9b9023a25896087b637c069a50c8019cab86f8                        0.0s
+ => [simulation_8-database-restoration-service internal] load build context                                                                                                                                0.0s
+ => => transferring context: 15.97kB                                                                                                                                                                       0.0s
+ => [simulation_8-blueprint-service internal] load build context                                                                                                                                           0.0s
+ => => transferring context: 7.04kB                                                                                                                                                                        0.0s
+ => [simulation_8-metadata-extraction-service internal] load build context                                                                                                                                 0.0s
+ => => transferring context: 7.57kB                                                                                                                                                                        0.0s
+ => [simulation_8-api-gateway internal] load build context                                                                                                                                                 0.0s
+ => => transferring context: 878B                                                                                                                                                                          0.0s
+ => [simulation_8-eureka-server internal] load build context                                                                                                                                               0.0s
+ => => transferring context: 891B                                                                                                                                                                          0.0s
+ => [simulation_8-tasks-processing-service 1/3] FROM docker.io/library/sapmachine:17.0.10@sha256:f7a0d31d8a94c4342bee70cd0e658b0acac258fd8e8fa79483bf2adfaf9fdad1                                          0.0s
+ => [simulation_8-tasks-processing-service internal] load build context                                                                                                                                    0.0s
+ => => transferring context: 9.28kB                                                                                                                                                                        0.0s
+ => CACHED [simulation_8-tasks-processing-service 2/3] WORKDIR /app                                                                                                                                        0.0s
+ => CACHED [simulation_8-tasks-processing-service 3/3] COPY target /app                                                                                                                                    0.0s
+ => CACHED [simulation_8-blueprint-service build 2/8] WORKDIR /app                                                                                                                                         0.0s
+ => CACHED [simulation_8-eureka-server build 3/6] COPY pom.xml .                                                                                                                                           0.0s
+ => CACHED [simulation_8-eureka-server build 4/6] RUN mvn dependency:go-offline                                                                                                                            0.0s
+ => CACHED [simulation_8-eureka-server build 5/6] COPY src /app/src                                                                                                                                        0.0s
+ => CACHED [simulation_8-eureka-server build 6/6] RUN mvn clean package -DskipTests -X                                                                                                                     0.0s
+ => CACHED [simulation_8-eureka-server stage-1 2/2] COPY --from=build /app/target/*.jar app.jar                                                                                                            0.0s
+ => [simulation_8-importing-dashboard] exporting to image                                                                                                                                                  0.0s
+ => => exporting layers                                                                                                                                                                                    0.0s
+ => => writing image sha256:9bdf95d59620b11c910f6ae3bc3a02c338efbe1d0d736c1caf1afc506f79d8f6                                                                                                               0.0s
+ => => naming to docker.io/library/simulation_8-tasks-processing-service                                                                                                                                   0.0s
+ => => writing image sha256:f8586621a2fa16a649990688513656eed81f72506a921d727b041e6ade386efc                                                                                                               0.0s
+ => => naming to docker.io/library/simulation_8-eureka-server                                                                                                                                              0.0s
+ => => writing image sha256:acfc304625c72dc4a02f53030610f5c04a3c76aface348b3ad142a174dd000bf                                                                                                               0.0s
+ => => writing image sha256:0dee5db4f5964094ded70d488cd79eabebb2b113d85d70e8f9c0842744766aa4                                                                                                               0.0s
+ => => naming to docker.io/library/simulation_8-api-gateway                                                                                                                                                0.0s
+ => => naming to docker.io/library/simulation_8-database-restoration-service                                                                                                                               0.0s
+ => => writing image sha256:9d92d44aa79d70558a8e389bc1be59538593f66b63173a33c7997d2a0e6efcae                                                                                                               0.0s
+ => => naming to docker.io/library/simulation_8-blueprint-service                                                                                                                                          0.0s
+ => => writing image sha256:8742f74148b312acc894796c3ef73c1319cc73cbacff2e2ed5b37f700b5e57d6                                                                                                               0.0s
+ => => naming to docker.io/library/simulation_8-metadata-extraction-service                                                                                                                                0.0s
+ => => writing image sha256:872242610b58c5a9be41feafad379fcc0bc543f408c100e52ebc1fd53af5d4ba                                                                                                               0.0s
+ => => naming to docker.io/library/simulation_8-importing-dashboard                                                                                                                                        0.0s
+ => CACHED [simulation_8-api-gateway build 3/6] COPY pom.xml .                                                                                                                                             0.0s
+ => CACHED [simulation_8-api-gateway build 4/6] RUN mvn dependency:go-offline                                                                                                                              0.0s
+ => CACHED [simulation_8-api-gateway build 5/6] COPY src /app/src                                                                                                                                          0.0s
+ => CACHED [simulation_8-api-gateway build 6/6] RUN mvn clean package -DskipTests -X                                                                                                                       0.0s
+ => CACHED [simulation_8-api-gateway stage-1 2/2] COPY --from=build /app/target/*.jar app.jar                                                                                                              0.0s
+ => CACHED [simulation_8-database-restoration-service stage-1 2/3] RUN apt-get update && apt-get install -y postgresql-client && rm -rf /var/lib/apt/lists/*                                               0.0s
+ => CACHED [simulation_8-database-restoration-service build 3/8] COPY shared_libraries/*.jar /usr/share/maven/ref/                                                                                         0.0s
+ => CACHED [simulation_8-database-restoration-service build 4/8] RUN mvn install:install-file -Dfile=/usr/share/maven/ref/shared-logging-library-1.0-SNAPSHOT.jar -DgroupId=com.wenox.anonymization -Dart  0.0s
+ => CACHED [simulation_8-database-restoration-service build 5/8] COPY pom.xml .                                                                                                                            0.0s
+ => CACHED [simulation_8-database-restoration-service build 6/8] RUN mvn dependency:go-offline                                                                                                             0.0s
+ => CACHED [simulation_8-database-restoration-service build 7/8] COPY src /app/src                                                                                                                         0.0s
+ => CACHED [simulation_8-database-restoration-service build 8/8] RUN mvn clean package -DskipTests                                                                                                         0.0s
+ => CACHED [simulation_8-database-restoration-service stage-1 3/3] COPY --from=build /app/target/*.jar app.jar                                                                                             0.0s
+ => CACHED [simulation_8-metadata-extraction-service build 3/8] COPY shared_libraries/*.jar /usr/share/maven/ref/                                                                                          0.0s
+ => CACHED [simulation_8-metadata-extraction-service build 4/8] RUN mvn install:install-file -Dfile=/usr/share/maven/ref/shared-logging-library-1.0-SNAPSHOT.jar -DgroupId=com.wenox.anonymization -Darti  0.0s
+ => CACHED [simulation_8-metadata-extraction-service build 5/8] COPY pom.xml .                                                                                                                             0.0s
+ => CACHED [simulation_8-metadata-extraction-service build 6/8] RUN mvn dependency:go-offline                                                                                                              0.0s
+ => CACHED [simulation_8-metadata-extraction-service build 7/8] COPY src /app/src                                                                                                                          0.0s
+ => CACHED [simulation_8-metadata-extraction-service build 8/8] RUN mvn clean package -DskipTests                                                                                                          0.0s
+ => CACHED [simulation_8-metadata-extraction-service stage-1 2/2] COPY --from=build /app/target/*.jar app.jar                                                                                              0.0s
+ => CACHED [simulation_8-blueprint-service build 3/8] COPY shared_libraries/*.jar /usr/share/maven/ref/                                                                                                    0.0s
+ => CACHED [simulation_8-blueprint-service build 4/8] RUN mvn install:install-file -Dfile=/usr/share/maven/ref/shared-logging-library-1.0-SNAPSHOT.jar -DgroupId=com.wenox.anonymization -DartifactId=sha  0.0s
+ => CACHED [simulation_8-blueprint-service build 5/8] COPY pom.xml .                                                                                                                                       0.0s
+ => CACHED [simulation_8-blueprint-service build 6/8] RUN mvn dependency:go-offline                                                                                                                        0.0s
+ => CACHED [simulation_8-blueprint-service build 7/8] COPY src /app/src                                                                                                                                    0.0s
+ => CACHED [simulation_8-blueprint-service build 8/8] RUN mvn clean package -DskipTests                                                                                                                    0.0s
+ => CACHED [simulation_8-blueprint-service stage-1 2/2] COPY --from=build /app/target/*.jar app.jar                                                                                                        0.0s
+ => [simulation_8-importing-dashboard internal] load build context                                                                                                                                         1.2s
+ => => transferring context: 3.84MB                                                                                                                                                                        1.1s
+ => [simulation_8-importing-dashboard build 1/6] FROM docker.io/library/node:latest@sha256:0ded28778059262bd3c066b609186e5b6c89550a9362dce4309ad67c95af0d77                                                0.0s
+ => [simulation_8-importing-dashboard stage-1 1/2] FROM docker.io/library/nginx:alpine@sha256:5b7ff23e6861b908f034b82d2cf77a295488e0d13271e5438ac211fcf9ed9b25                                             0.0s
+ => => resolve docker.io/library/nginx:alpine@sha256:5b7ff23e6861b908f034b82d2cf77a295488e0d13271e5438ac211fcf9ed9b25                                                                                      0.0s
+ => CACHED [simulation_8-importing-dashboard build 2/6] WORKDIR /app                                                                                                                                       0.0s
+ => CACHED [simulation_8-importing-dashboard build 3/6] COPY package.json package-lock.json ./                                                                                                             0.0s
+ => CACHED [simulation_8-importing-dashboard build 4/6] RUN npm install                                                                                                                                    0.0s
+ => CACHED [simulation_8-importing-dashboard build 5/6] COPY . .                                                                                                                                           0.0s
+ => CACHED [simulation_8-importing-dashboard build 6/6] RUN npm run build                                                                                                                                  0.0s
+ => CACHED [simulation_8-importing-dashboard stage-1 2/2] COPY --from=build /app/build /usr/share/nginx/html                                                                                               0.0s
+[+] Running 31/31
+ ⠿ Volume "simulation_8_postgres-data"                    Created                                                                                                                                          0.0s
+ ⠿ Volume "simulation_8_grafana-data"                     Created                                                                                                                                          0.0s
+ ⠿ Volume "simulation_8_redis_insight"                    Created                                                                                                                                          0.0s
+ ⠿ Volume "simulation_8_node-modules"                     Created                                                                                                                                          0.0s
+ ⠿ Volume "simulation_8_elasticsearch-data"               Created                                                                                                                                          0.0s
+ ⠿ Volume "simulation_8_cassandra_data"                   Created                                                                                                                                          0.0s
+ ⠿ Volume "simulation_8_redis_data"                       Created                                                                                                                                          0.0s
+ ⠿ Container simulation_8-blueprint-service-1             Started                                                                                                                                          2.3s
+ ⠿ Container prometheus                                   Started                                                                                                                                          1.9s
+ ⠿ Container simulation_8-database-restoration-service-1  Started                                                                                                                                          1.3s
+ ⠿ Container cassandra                                    Started                                                                                                                                          2.5s
+ ⠿ Container simulation_8-eureka-server-1                 Started                                                                                                                                          2.5s
+ ⠿ Container grafana                                      Started                                                                                                                                          2.5s
+ ⠿ Container simulation_8-postgres-1                      Started                                                                                                                                          1.3s
+ ⠿ Container elasticsearch                                Started                                                                                                                                          0.8s
+ ⠿ Container simulation_8-importing-dashboard-1           Started                                                                                                                                          1.0s
+ ⠿ Container mongodb                                      Started                                                                                                                                          2.7s
+ ⠿ Container zookeeper                                    Started                                                                                                                                          2.7s
+ ⠿ Container simulation_8-metadata-extraction-service-1   Started                                                                                                                                          1.8s
+ ⠿ Container redisinsight                                 Started                                                                                                                                          2.3s
+ ⠿ Container redis                                        Started                                                                                                                                          2.4s
+ ⠿ Container simulation_8-spark-master-1                  Started                                                                                                                                          2.0s
+ ⠿ Container simulation_8-api-gateway-1                   Started                                                                                                                                          1.1s
+ ⠿ Container kafka                                        Started                                                                                                                                          3.1s
+ ⠿ Container logstash                                     Started                                                                                                                                          2.7s
+ ⠿ Container kibana                                       Started                                                                                                                                          2.7s
+ ⠿ Container simulation_8-tasks-processing-service-1      Started                                                                                                                                          2.9s
+ ⠿ Container simulation_8-spark-worker-1                  Started                                                                                                                                          2.7s
+ ⠿ Container cassandra-init                               Started                                                                                                                                          2.9s
+ ⠿ Container kafka-ui                                     Started                                                                                                                                          3.4s
+ ⠿ Container simulation_8-worksheet-service-1             Started                                                                                                                                          3.3s
+-e 2024-01-30T13:12:01 -------- Waiting 120 seconds for infrastructure to settle...
+-e 2024-01-30T13:14:01 -------- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+-e 2024-01-30T13:14:01 -------- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+-e 2024-01-30T13:14:01 -------- Testing: Messages received out of order do not compromise data consistency
+-e 2024-01-30T13:14:01 -------- All anonymisation operations should converge to 'LOADED' state anyway
+-e 2024-01-30T13:14:01 -------- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+-e 2024-01-30T13:14:01 -------- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+-e 2024-01-30T13:14:01 -------- Starting importing process...
+-e 2024-01-30T13:14:02 -------- OK: Importing process started successfully --- blueprint ID: c194b9f7-5f5c-4eb4-aeab-514eb59b116f
+-e 2024-01-30T13:14:02 -------- Waiting 15 seconds: letting the importing process complete
+-e 2024-01-30T13:14:17 -------- Verifying importing process is successful...
+-e 2024-01-30T13:14:17 -------- OK: Importing process completed successfully with status: METADATA_EXTRACTION_SUCCESS
+-e 2024-01-30T13:14:17 -------- Initialising a new worksheet for blueprint_id: c194b9f7-5f5c-4eb4-aeab-514eb59b116f
+-e 2024-01-30T13:14:18 -------- OK: Successfully initialised new worksheet with ID: 574357af-3ff1-453b-8ee2-9d5d00bcd754
+-e 2024-01-30T13:14:18 -------- Adding 20 suppression operations to the worksheet...
+-e 2024-01-30T13:14:19 -------- OK: Successfully added suppression operation 1 to a worksheet
+-e 2024-01-30T13:14:19 -------- OK: Successfully added suppression operation 2 to a worksheet
+-e 2024-01-30T13:14:19 -------- OK: Successfully added suppression operation 3 to a worksheet
+-e 2024-01-30T13:14:19 -------- OK: Successfully added suppression operation 4 to a worksheet
+-e 2024-01-30T13:14:19 -------- OK: Successfully added suppression operation 5 to a worksheet
+-e 2024-01-30T13:14:19 -------- OK: Successfully added suppression operation 6 to a worksheet
+-e 2024-01-30T13:14:19 -------- OK: Successfully added suppression operation 7 to a worksheet
+-e 2024-01-30T13:14:19 -------- OK: Successfully added suppression operation 8 to a worksheet
+-e 2024-01-30T13:14:19 -------- OK: Successfully added suppression operation 9 to a worksheet
+-e 2024-01-30T13:14:19 -------- OK: Successfully added suppression operation 10 to a worksheet
+-e 2024-01-30T13:14:19 -------- OK: Successfully added suppression operation 11 to a worksheet
+-e 2024-01-30T13:14:19 -------- OK: Successfully added suppression operation 12 to a worksheet
+-e 2024-01-30T13:14:19 -------- OK: Successfully added suppression operation 13 to a worksheet
+-e 2024-01-30T13:14:19 -------- OK: Successfully added suppression operation 14 to a worksheet
+-e 2024-01-30T13:14:19 -------- OK: Successfully added suppression operation 15 to a worksheet
+-e 2024-01-30T13:14:19 -------- OK: Successfully added suppression operation 16 to a worksheet
+-e 2024-01-30T13:14:19 -------- OK: Successfully added suppression operation 17 to a worksheet
+-e 2024-01-30T13:14:20 -------- OK: Successfully added suppression operation 18 to a worksheet
+-e 2024-01-30T13:14:20 -------- OK: Successfully added suppression operation 19 to a worksheet
+-e 2024-01-30T13:14:20 -------- OK: Successfully added suppression operation 20 to a worksheet
+-e 2024-01-30T13:14:20 -------- OK: added all suppression operations
+-e 2024-01-30T13:14:20 -------- Waiting 30 seconds – letting the tasks processing finish...
+-e 2024-01-30T13:14:50 -------- Verifying that all anonymisation operations converged to the expected 'LOADED' state even if messages for status update were processed out of order due to the random delays induced inside Kafka consumers simulating asynchronous non-local host behaviour
+-e 2024-01-30T13:14:50 -------- Some anonymisation operations still not completed successfully. Retrying in 5 second... (Attempt 1/60)
+-e 2024-01-30T13:14:50 -------- Response: {
+  "allSuccessful": false,
+  "numberOfTasks": 1,
+  "tasksByStatus": {
+    "INITIALISED": [
+      "SUPPRESSION:employees:column_10:574357af-3ff1-453b-8ee2-9d5d00bcd754"
+    ],
+    "EXTRACTED_COLUMN_TUPLE": [],
+    "APPLIED_ANONYMISATION": [],
+    "CREATED_FRAGMENT": [],
+    "LOADED_FRAGMENT": []
+  }
+}
+-e 2024-01-30T13:14:55 -------- Some anonymisation operations still not completed successfully. Retrying in 5 second... (Attempt 2/60)
+-e 2024-01-30T13:14:55 -------- Response: {
+  "allSuccessful": false,
+  "numberOfTasks": 1,
+  "tasksByStatus": {
+    "INITIALISED": [
+      "SUPPRESSION:employees:column_10:574357af-3ff1-453b-8ee2-9d5d00bcd754"
+    ],
+    "EXTRACTED_COLUMN_TUPLE": [],
+    "APPLIED_ANONYMISATION": [],
+    "CREATED_FRAGMENT": [],
+    "LOADED_FRAGMENT": []
+  }
+}
+-e 2024-01-30T13:15:00 -------- Some anonymisation operations still not completed successfully. Retrying in 5 second... (Attempt 3/60)
+-e 2024-01-30T13:15:00 -------- Response: {
+  "allSuccessful": false,
+  "numberOfTasks": 1,
+  "tasksByStatus": {
+    "INITIALISED": [
+      "SUPPRESSION:employees:column_10:574357af-3ff1-453b-8ee2-9d5d00bcd754"
+    ],
+    "EXTRACTED_COLUMN_TUPLE": [],
+    "APPLIED_ANONYMISATION": [],
+    "CREATED_FRAGMENT": [],
+    "LOADED_FRAGMENT": []
+  }
+}
+-e 2024-01-30T13:15:05 -------- Some anonymisation operations still not completed successfully. Retrying in 5 second... (Attempt 4/60)
+-e 2024-01-30T13:15:05 -------- Response: {
+  "allSuccessful": false,
+  "numberOfTasks": 1,
+  "tasksByStatus": {
+    "INITIALISED": [
+      "SUPPRESSION:employees:column_10:574357af-3ff1-453b-8ee2-9d5d00bcd754"
+    ],
+    "EXTRACTED_COLUMN_TUPLE": [],
+    "APPLIED_ANONYMISATION": [],
+    "CREATED_FRAGMENT": [],
+    "LOADED_FRAGMENT": []
+  }
+}
+-e 2024-01-30T13:15:10 -------- Some anonymisation operations still not completed successfully. Retrying in 5 second... (Attempt 5/60)
+-e 2024-01-30T13:15:10 -------- Response: {
+  "allSuccessful": false,
+  "numberOfTasks": 1,
+  "tasksByStatus": {
+    "INITIALISED": [
+      "SUPPRESSION:employees:column_10:574357af-3ff1-453b-8ee2-9d5d00bcd754"
+    ],
+    "EXTRACTED_COLUMN_TUPLE": [],
+    "APPLIED_ANONYMISATION": [],
+    "CREATED_FRAGMENT": [],
+    "LOADED_FRAGMENT": []
+  }
+}
+-e 2024-01-30T13:15:15 -------- Some anonymisation operations still not completed successfully. Retrying in 5 second... (Attempt 6/60)
+-e 2024-01-30T13:15:15 -------- Response: {
+  "allSuccessful": false,
+  "numberOfTasks": 1,
+  "tasksByStatus": {
+    "INITIALISED": [
+      "SUPPRESSION:employees:column_10:574357af-3ff1-453b-8ee2-9d5d00bcd754"
+    ],
+    "EXTRACTED_COLUMN_TUPLE": [],
+    "APPLIED_ANONYMISATION": [],
+    "CREATED_FRAGMENT": [],
+    "LOADED_FRAGMENT": []
+  }
+}
+-e 2024-01-30T13:15:20 -------- Some anonymisation operations still not completed successfully. Retrying in 5 second... (Attempt 7/60)
+-e 2024-01-30T13:15:20 -------- Response: {
+  "allSuccessful": false,
+  "numberOfTasks": 1,
+  "tasksByStatus": {
+    "INITIALISED": [],
+    "EXTRACTED_COLUMN_TUPLE": [],
+    "APPLIED_ANONYMISATION": [],
+    "CREATED_FRAGMENT": [
+      "SUPPRESSION:employees:column_10:574357af-3ff1-453b-8ee2-9d5d00bcd754"
+    ],
+    "LOADED_FRAGMENT": []
+  }
+}
+-e 2024-01-30T13:15:25 -------- Some anonymisation operations still not completed successfully. Retrying in 5 second... (Attempt 8/60)
+-e 2024-01-30T13:15:25 -------- Response: {
+  "allSuccessful": false,
+  "numberOfTasks": 1,
+  "tasksByStatus": {
+    "INITIALISED": [],
+    "EXTRACTED_COLUMN_TUPLE": [],
+    "APPLIED_ANONYMISATION": [],
+    "CREATED_FRAGMENT": [
+      "SUPPRESSION:employees:column_10:574357af-3ff1-453b-8ee2-9d5d00bcd754"
+    ],
+    "LOADED_FRAGMENT": []
+  }
+}
+-e 2024-01-30T13:15:31 -------- Some anonymisation operations still not completed successfully. Retrying in 5 second... (Attempt 9/60)
+-e 2024-01-30T13:15:31 -------- Response: {
+  "allSuccessful": false,
+  "numberOfTasks": 1,
+  "tasksByStatus": {
+    "INITIALISED": [],
+    "EXTRACTED_COLUMN_TUPLE": [],
+    "APPLIED_ANONYMISATION": [],
+    "CREATED_FRAGMENT": [
+      "SUPPRESSION:employees:column_10:574357af-3ff1-453b-8ee2-9d5d00bcd754"
+    ],
+    "LOADED_FRAGMENT": []
+  }
+}
+-e 2024-01-30T13:15:36 -------- Some anonymisation operations still not completed successfully. Retrying in 5 second... (Attempt 10/60)
+-e 2024-01-30T13:15:36 -------- Response: {
+  "allSuccessful": false,
+  "numberOfTasks": 1,
+  "tasksByStatus": {
+    "INITIALISED": [],
+    "EXTRACTED_COLUMN_TUPLE": [],
+    "APPLIED_ANONYMISATION": [],
+    "CREATED_FRAGMENT": [
+      "SUPPRESSION:employees:column_10:574357af-3ff1-453b-8ee2-9d5d00bcd754"
+    ],
+    "LOADED_FRAGMENT": []
+  }
+}
+-e 2024-01-30T13:15:41 -------- Some anonymisation operations still not completed successfully. Retrying in 5 second... (Attempt 11/60)
+-e 2024-01-30T13:15:41 -------- Response: {
+  "allSuccessful": false,
+  "numberOfTasks": 1,
+  "tasksByStatus": {
+    "INITIALISED": [],
+    "EXTRACTED_COLUMN_TUPLE": [],
+    "APPLIED_ANONYMISATION": [],
+    "CREATED_FRAGMENT": [
+      "SUPPRESSION:employees:column_10:574357af-3ff1-453b-8ee2-9d5d00bcd754"
+    ],
+    "LOADED_FRAGMENT": []
+  }
+}
+-e 2024-01-30T13:15:46 -------- Some anonymisation operations still not completed successfully. Retrying in 5 second... (Attempt 12/60)
+-e 2024-01-30T13:15:46 -------- Response: {
+  "allSuccessful": false,
+  "numberOfTasks": 1,
+  "tasksByStatus": {
+    "INITIALISED": [],
+    "EXTRACTED_COLUMN_TUPLE": [],
+    "APPLIED_ANONYMISATION": [],
+    "CREATED_FRAGMENT": [
+      "SUPPRESSION:employees:column_10:574357af-3ff1-453b-8ee2-9d5d00bcd754"
+    ],
+    "LOADED_FRAGMENT": []
+  }
+}
+-e 2024-01-30T13:15:51 -------- Some anonymisation operations still not completed successfully. Retrying in 5 second... (Attempt 13/60)
+-e 2024-01-30T13:15:51 -------- Response: {
+  "allSuccessful": false,
+  "numberOfTasks": 1,
+  "tasksByStatus": {
+    "INITIALISED": [],
+    "EXTRACTED_COLUMN_TUPLE": [],
+    "APPLIED_ANONYMISATION": [],
+    "CREATED_FRAGMENT": [
+      "SUPPRESSION:employees:column_10:574357af-3ff1-453b-8ee2-9d5d00bcd754"
+    ],
+    "LOADED_FRAGMENT": []
+  }
+}
+-e 2024-01-30T13:15:56 -------- Some anonymisation operations still not completed successfully. Retrying in 5 second... (Attempt 14/60)
+-e 2024-01-30T13:15:56 -------- Response: {
+  "allSuccessful": false,
+  "numberOfTasks": 1,
+  "tasksByStatus": {
+    "INITIALISED": [],
+    "EXTRACTED_COLUMN_TUPLE": [],
+    "APPLIED_ANONYMISATION": [],
+    "CREATED_FRAGMENT": [
+      "SUPPRESSION:employees:column_10:574357af-3ff1-453b-8ee2-9d5d00bcd754"
+    ],
+    "LOADED_FRAGMENT": []
+  }
+}
+-e 2024-01-30T13:16:02 -------- Some anonymisation operations still not completed successfully. Retrying in 5 second... (Attempt 15/60)
+-e 2024-01-30T13:16:02 -------- Response: {
+  "allSuccessful": false,
+  "numberOfTasks": 20,
+  "tasksByStatus": {
+    "INITIALISED": [],
+    "EXTRACTED_COLUMN_TUPLE": [
+      "SUPPRESSION:employees:column_9:574357af-3ff1-453b-8ee2-9d5d00bcd754"
+    ],
+    "APPLIED_ANONYMISATION": [],
+    "CREATED_FRAGMENT": [],
+    "LOADED_FRAGMENT": [
+      "SUPPRESSION:employees:column_10:574357af-3ff1-453b-8ee2-9d5d00bcd754",
+      "SUPPRESSION:employees:column_11:574357af-3ff1-453b-8ee2-9d5d00bcd754",
+      "SUPPRESSION:employees:column_12:574357af-3ff1-453b-8ee2-9d5d00bcd754",
+      "SUPPRESSION:employees:column_13:574357af-3ff1-453b-8ee2-9d5d00bcd754",
+      "SUPPRESSION:employees:column_14:574357af-3ff1-453b-8ee2-9d5d00bcd754",
+      "SUPPRESSION:employees:column_15:574357af-3ff1-453b-8ee2-9d5d00bcd754",
+      "SUPPRESSION:employees:column_16:574357af-3ff1-453b-8ee2-9d5d00bcd754",
+      "SUPPRESSION:employees:column_17:574357af-3ff1-453b-8ee2-9d5d00bcd754",
+      "SUPPRESSION:employees:column_18:574357af-3ff1-453b-8ee2-9d5d00bcd754",
+      "SUPPRESSION:employees:column_19:574357af-3ff1-453b-8ee2-9d5d00bcd754",
+      "SUPPRESSION:employees:column_1:574357af-3ff1-453b-8ee2-9d5d00bcd754",
+      "SUPPRESSION:employees:column_20:574357af-3ff1-453b-8ee2-9d5d00bcd754",
+      "SUPPRESSION:employees:column_2:574357af-3ff1-453b-8ee2-9d5d00bcd754",
+      "SUPPRESSION:employees:column_3:574357af-3ff1-453b-8ee2-9d5d00bcd754",
+      "SUPPRESSION:employees:column_4:574357af-3ff1-453b-8ee2-9d5d00bcd754",
+      "SUPPRESSION:employees:column_5:574357af-3ff1-453b-8ee2-9d5d00bcd754",
+      "SUPPRESSION:employees:column_6:574357af-3ff1-453b-8ee2-9d5d00bcd754",
+      "SUPPRESSION:employees:column_7:574357af-3ff1-453b-8ee2-9d5d00bcd754",
+      "SUPPRESSION:employees:column_8:574357af-3ff1-453b-8ee2-9d5d00bcd754"
+    ]
+  }
+}
+-e 2024-01-30T13:16:07 -------- OK: All anonymisation operations converged to the LOADED state
+-e 2024-01-30T13:16:07 -------- OK: Simulation 8 finished successfully
+-e 2024-01-30T13:16:07 -------- Tested: Messages received out of order do not compromise data consistency
+-e 2024-01-30T13:16:07 -------- All anonymisation operations converged to 'LOADED' state anyway
