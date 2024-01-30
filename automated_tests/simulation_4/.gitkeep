@@ -1,0 +1,4 @@
+Test 4:
+When: depleted retrying of compensating transaction
+Then: should send message to DLQ and trigger alert in Grafana
+What tested: DLQ, alerting

@@ -1,0 +1,4 @@
+Test 9:
+When: exporting process crashes during different stages
+Then: should resume execution and complete process successfully
+What tested: saga pattern, forward recovery, idempotent consumer pattern
