@@ -10,7 +10,7 @@
     </parent>
     <groupId>com.wenox.anonymization</groupId>
     <artifactId>worksheet-service</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>simulation-8</version>
     <name>Worksheet Service</name>
     <description>Worksheet Service</description>
     <properties>

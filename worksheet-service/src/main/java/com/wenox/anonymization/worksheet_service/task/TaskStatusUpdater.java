@@ -6,12 +6,14 @@ import com.wenox.anonymization.worksheet_service.operation.Operation;
 import com.wenox.anonymization.worksheet_service.operation.OperationRepository;
 import com.wenox.anonymization.worksheet_service.operation.TaskStatus;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.support.Acknowledgment;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -22,6 +24,29 @@ public class TaskStatusUpdater {
 
     private final OperationRepository repository;
     private final Map<TaskStatus, StatusUpdateStrategy> updateStrategies;
+
+    @Value("${min.delay.ms:}")
+    private Integer minDelayMs;
+
+    @Value("${max.delay.ms}")
+    private Integer maxDelayMs;
+
+    private void induceRandomDelay() {
+        try {
+            int delay = getRandomDelay(minDelayMs, maxDelayMs);
+            log.info("Delaying execution for {} ms...", delay);
+            Thread.sleep(delay);
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    private int getRandomDelay(int minDelay, int maxDelay) {
+        if (minDelay >= maxDelay) {
+            throw new IllegalArgumentException("Max delay must be greater than min delay");
+        }
+        return new Random().nextInt(maxDelay - minDelay + 1) + minDelay;
+    }
 
     public TaskStatusUpdater(OperationRepository repository, List<StatusUpdateStrategy> updateStrategies) {
         this.repository = repository;
@@ -55,6 +80,7 @@ public class TaskStatusUpdater {
     }
 
     private void updateStatus(String taskId, TaskStatus newStatus) {
+        induceRandomDelay();
         Operation operation = repository.findByTaskId(taskId)
                 .orElseThrow(() -> new TaskNotFoundException("Task not found with taskId: " + taskId));
 
