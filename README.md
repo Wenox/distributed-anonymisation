@@ -2,7 +2,7 @@
 
 | System              | URL                        |
 |---------------------|----------------------------|
-| Importing Dashboard | http://localhost:80/       |
+| Importing Dashboard | http://localhost:3001/     |
 | Kafka UI            | http://localhost:8081/     |
 | Spark UI            | http://localhost:8082/     |
 | Redis UI            | http://localhost:8011/     |

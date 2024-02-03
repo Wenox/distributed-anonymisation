@@ -77,7 +77,7 @@ public class AnonymizationExecutionService {
         // todo
         String command;
         if (dumpRequest.getRestoreMode() == RestoreMode.SCRIPT) {
-            command = String.format("pg_dump -h postgres -p 5432 -U postgres -Fp %s --verbose | aws s3 cp - s3://%s/%s", dumpRequest.getMirrorId(), S3Constants.BUCKET_DUMPS, dumpRequest.getDumpPath() + ".sql");
+            command = String.format("pg_dump -h postgres -p 5432 -U postgres -Fp %s --verbose | aws s3 cp - s3://%s/%s", dumpRequest.getMirrorId(), S3Constants.BUCKET_DUMPS, dumpRequest.getDumpPath());
         } else {
             command = String.format("pg_dump -h postgres -p 5432 -U postgres -Fc %s --verbose | aws s3 cp - s3://%s/%s", dumpRequest.getMirrorId(), S3Constants.BUCKET_DUMPS, dumpRequest.getDumpPath() + ".dump");
         }

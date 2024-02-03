@@ -23,6 +23,3 @@ class BlueprintCreatedKafkaListener {
         ack.acknowledge();
     }
 }
-// todo uniform logging for events, rest
-// todo uniform topics names, events names
-// todo uniform dto naming

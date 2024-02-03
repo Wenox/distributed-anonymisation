@@ -21,7 +21,7 @@ class BlueprintRepositoryMongoAdapter implements BlueprintRepository {
 
     private final BlueprintEntityRepository blueprintEntityRepository;
 
-    @Value("${importing.dashboard.display-count:5}")
+    @Value("${importing.dashboard.display-count:10}")
     private int dashboardDisplayCount;
 
     @Override
@@ -61,6 +61,7 @@ class BlueprintRepositoryMongoAdapter implements BlueprintRepository {
     public List<Blueprint> getBlueprintsForDashboard() {
         return blueprintEntityRepository.findTopByOrderByCreatedDateDesc(PageRequest.of(0, 5))
                 .stream()
+                .limit(dashboardDisplayCount)
                 .map(BlueprintEntity::toDomain)
                 .toList();
     }
