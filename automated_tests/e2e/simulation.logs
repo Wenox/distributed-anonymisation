@@ -1,0 +1,289 @@
+sh test_platform.sh
+-e 2024-02-04T14:39:45 -------- Starting Importing API test...
+-e 2024-02-04T14:39:45 -------- Cleaning up old platform components
+Deleting networks
+WARNING! This will remove all custom networks not used by at least one container.
+Are you sure you want to continue? [y/N] Deleted Networks:
+platform_network
+
+Container IDs to keep:
+No containers to keep. All containers will be deleted.
+Volumes to keep:
+distributed-anonymization_elasticsearch-data
+distributed-anonymization_grafana-data
+Keeping volume: distributed-anonymization_elasticsearch-data
+Keeping volume: distributed-anonymization_grafana-data
+Deleting spark_checkpoint
+Done pruning
+-e 2024-02-04T14:39:45 -------- OK: finished clean up
+-e 2024-02-04T14:39:45 -------- Starting docker-compose.commons.yml
+[+] Building 1.7s (22/22) FINISHED
+ => [distributed-anonymization-api-gateway internal] load build definition from Dockerfile                                                                                                                 0.0s
+ => => transferring dockerfile: 32B                                                                                                                                                                        0.0s
+ => [distributed-anonymization-eureka-server internal] load build definition from Dockerfile                                                                                                               0.0s
+ => => transferring dockerfile: 32B                                                                                                                                                                        0.0s
+ => [distributed-anonymization-api-gateway internal] load .dockerignore                                                                                                                                    0.0s
+ => => transferring context: 2B                                                                                                                                                                            0.0s
+ => [distributed-anonymization-eureka-server internal] load .dockerignore                                                                                                                                  0.0s
+ => => transferring context: 2B                                                                                                                                                                            0.0s
+ => [distributed-anonymization-eureka-server internal] load metadata for docker.io/library/openjdk:17-jdk-slim                                                                                             0.0s
+ => [distributed-anonymization-api-gateway internal] load metadata for docker.io/library/maven:3.8.4-openjdk-17-slim                                                                                       1.5s
+ => [distributed-anonymization-api-gateway build 1/6] FROM docker.io/library/maven:3.8.4-openjdk-17-slim@sha256:150deb7b386bad685dcf0c781b9b9023a25896087b637c069a50c8019cab86f8                           0.0s
+ => [distributed-anonymization-api-gateway stage-1 1/2] FROM docker.io/library/openjdk:17-jdk-slim                                                                                                         0.0s
+ => [distributed-anonymization-api-gateway internal] load build context                                                                                                                                    0.0s
+ => => transferring context: 5.63kB                                                                                                                                                                        0.0s
+ => [distributed-anonymization-eureka-server internal] load build context                                                                                                                                  0.0s
+ => => transferring context: 891B                                                                                                                                                                          0.0s
+ => CACHED [distributed-anonymization-api-gateway build 2/6] WORKDIR /app                                                                                                                                  0.0s
+ => CACHED [distributed-anonymization-eureka-server build 3/6] COPY pom.xml .                                                                                                                              0.0s
+ => CACHED [distributed-anonymization-eureka-server build 4/6] RUN mvn dependency:go-offline                                                                                                               0.0s
+ => CACHED [distributed-anonymization-eureka-server build 5/6] COPY src /app/src                                                                                                                           0.0s
+ => CACHED [distributed-anonymization-eureka-server build 6/6] RUN mvn clean package -DskipTests -X                                                                                                        0.0s
+ => CACHED [distributed-anonymization-eureka-server stage-1 2/2] COPY --from=build /app/target/*.jar app.jar                                                                                               0.0s
+ => [distributed-anonymization-api-gateway] exporting to image                                                                                                                                             0.0s
+ => => exporting layers                                                                                                                                                                                    0.0s
+ => => writing image sha256:1cb4950260dff1851b169e640386476d43d666e5c57d3378bb919b27b764bb21                                                                                                               0.0s
+ => => naming to docker.io/library/distributed-anonymization-eureka-server                                                                                                                                 0.0s
+ => => writing image sha256:bb9b33a22e1ea63e77d441ef1ba11b6c7b27c013e5bf08735c55e7930baeb5cb                                                                                                               0.0s
+ => => naming to docker.io/library/distributed-anonymization-api-gateway                                                                                                                                   0.0s
+ => CACHED [distributed-anonymization-api-gateway build 3/6] COPY pom.xml .                                                                                                                                0.0s
+ => CACHED [distributed-anonymization-api-gateway build 4/6] RUN mvn dependency:go-offline                                                                                                                 0.0s
+ => CACHED [distributed-anonymization-api-gateway build 5/6] COPY src /app/src                                                                                                                             0.0s
+ => CACHED [distributed-anonymization-api-gateway build 6/6] RUN mvn clean package -DskipTests -X                                                                                                          0.0s
+ => CACHED [distributed-anonymization-api-gateway stage-1 2/2] COPY --from=build /app/target/*.jar app.jar                                                                                                 0.0s
+[+] Running 14/14
+ ⠿ Network platform_network                             Created                                                                                                                                            0.0s
+ ⠿ Volume "distributed-anonymization_postgres-data"     Created                                                                                                                                            0.0s
+ ⠿ Container mongodb                                    Started                                                                                                                                            1.6s
+ ⠿ Container elasticsearch                              Started                                                                                                                                            1.1s
+ ⠿ Container grafana                                    Started                                                                                                                                            1.5s
+ ⠿ Container distributed-anonymization-eureka-server-1  Started                                                                                                                                            1.2s
+ ⠿ Container zookeeper                                  Started                                                                                                                                            0.9s
+ ⠿ Container distributed-anonymization-api-gateway-1    Started                                                                                                                                            1.0s
+ ⠿ Container distributed-anonymization-postgres-1       Started                                                                                                                                            0.5s
+ ⠿ Container prometheus                                 Started                                                                                                                                            1.6s
+ ⠿ Container kafka                                      Started                                                                                                                                            1.6s
+ ⠿ Container logstash                                   Started                                                                                                                                            1.7s
+ ⠿ Container kibana                                     Started                                                                                                                                            1.7s
+ ⠿ Container kafka-ui                                   Started                                                                                                                                            2.0s
+-e 2024-02-04T14:39:49 -------- Waiting 45 seconds...
+-e 2024-02-04T14:40:34 -------- Starting docker-compose.importing-api.yml
+[+] Building 1.1s (37/37) FINISHED
+ => [distributed-anonymization-blueprint-service internal] load build definition from Dockerfile                                                                                                           0.0s
+ => => transferring dockerfile: 32B                                                                                                                                                                        0.0s
+ => [distributed-anonymization-metadata-extraction-service internal] load build definition from Dockerfile                                                                                                 0.0s
+ => => transferring dockerfile: 32B                                                                                                                                                                        0.0s
+ => [distributed-anonymization-database-restoration-service internal] load build definition from Dockerfile                                                                                                0.0s
+ => => transferring dockerfile: 32B                                                                                                                                                                        0.0s
+ => [distributed-anonymization-blueprint-service internal] load .dockerignore                                                                                                                              0.0s
+ => => transferring context: 2B                                                                                                                                                                            0.0s
+ => [distributed-anonymization-metadata-extraction-service internal] load .dockerignore                                                                                                                    0.0s
+ => => transferring context: 2B                                                                                                                                                                            0.0s
+ => [distributed-anonymization-database-restoration-service internal] load .dockerignore                                                                                                                   0.0s
+ => => transferring context: 2B                                                                                                                                                                            0.0s
+ => [distributed-anonymization-metadata-extraction-service internal] load metadata for docker.io/library/openjdk:17-jdk-slim                                                                               0.0s
+ => [distributed-anonymization-blueprint-service internal] load metadata for docker.io/library/maven:3.8.4-openjdk-17-slim                                                                                 0.9s
+ => [distributed-anonymization-metadata-extraction-service build 1/8] FROM docker.io/library/maven:3.8.4-openjdk-17-slim@sha256:150deb7b386bad685dcf0c781b9b9023a25896087b637c069a50c8019cab86f8           0.0s
+ => [distributed-anonymization-metadata-extraction-service stage-1 1/3] FROM docker.io/library/openjdk:17-jdk-slim                                                                                         0.0s
+ => [distributed-anonymization-database-restoration-service internal] load build context                                                                                                                   0.0s
+ => => transferring context: 32.57kB                                                                                                                                                                       0.0s
+ => [distributed-anonymization-metadata-extraction-service internal] load build context                                                                                                                    0.0s
+ => => transferring context: 7.57kB                                                                                                                                                                        0.0s
+ => [distributed-anonymization-blueprint-service internal] load build context                                                                                                                              0.0s
+ => => transferring context: 17.37kB                                                                                                                                                                       0.0s
+ => CACHED [distributed-anonymization-database-restoration-service build 2/8] WORKDIR /app                                                                                                                 0.0s
+ => CACHED [distributed-anonymization-metadata-extraction-service build 3/8] COPY shared_libraries/*.jar /usr/share/maven/ref/                                                                             0.0s
+ => CACHED [distributed-anonymization-metadata-extraction-service build 4/8] RUN mvn install:install-file -Dfile=/usr/share/maven/ref/shared-logging-library-1.0-SNAPSHOT.jar -DgroupId=com.wenox.anonymi  0.0s
+ => CACHED [distributed-anonymization-metadata-extraction-service build 5/8] COPY pom.xml .                                                                                                                0.0s
+ => CACHED [distributed-anonymization-metadata-extraction-service build 6/8] RUN mvn dependency:go-offline                                                                                                 0.0s
+ => CACHED [distributed-anonymization-metadata-extraction-service build 7/8] COPY src /app/src                                                                                                             0.0s
+ => CACHED [distributed-anonymization-metadata-extraction-service build 8/8] RUN mvn clean package -DskipTests                                                                                             0.0s
+ => CACHED [distributed-anonymization-metadata-extraction-service stage-1 2/2] COPY --from=build /app/target/*.jar app.jar                                                                                 0.0s
+ => [distributed-anonymization-database-restoration-service] exporting to image                                                                                                                            0.0s
+ => => exporting layers                                                                                                                                                                                    0.0s
+ => => writing image sha256:e158bac7a07e1b7a42d3075678d2305b460cb725368853f744926002608c410e                                                                                                               0.0s
+ => => writing image sha256:8526148162fd3fc730978850d4fce9500c6cc1e62748c3985fd14c1db4526234                                                                                                               0.0s
+ => => naming to docker.io/library/distributed-anonymization-metadata-extraction-service                                                                                                                   0.0s
+ => => naming to docker.io/library/distributed-anonymization-blueprint-service                                                                                                                             0.0s
+ => => writing image sha256:1f9f752947887b96cd5a29c40890d62b8e2c1a2ad961af2b01e4d0c9101260e8                                                                                                               0.0s
+ => => naming to docker.io/library/distributed-anonymization-database-restoration-service                                                                                                                  0.0s
+ => CACHED [distributed-anonymization-blueprint-service build 3/8] COPY shared_libraries/*.jar /usr/share/maven/ref/                                                                                       0.0s
+ => CACHED [distributed-anonymization-blueprint-service build 4/8] RUN mvn install:install-file -Dfile=/usr/share/maven/ref/shared-logging-library-1.0-SNAPSHOT.jar -DgroupId=com.wenox.anonymization -Da  0.0s
+ => CACHED [distributed-anonymization-blueprint-service build 5/8] COPY pom.xml .                                                                                                                          0.0s
+ => CACHED [distributed-anonymization-blueprint-service build 6/8] RUN mvn dependency:go-offline                                                                                                           0.0s
+ => CACHED [distributed-anonymization-blueprint-service build 7/8] COPY src /app/src                                                                                                                       0.0s
+ => CACHED [distributed-anonymization-blueprint-service build 8/8] RUN mvn clean package -DskipTests                                                                                                       0.0s
+ => CACHED [distributed-anonymization-blueprint-service stage-1 2/2] COPY --from=build /app/target/*.jar app.jar                                                                                           0.0s
+ => CACHED [distributed-anonymization-database-restoration-service stage-1 2/3] RUN apt-get update && apt-get install -y postgresql-client && rm -rf /var/lib/apt/lists/*                                  0.0s
+ => CACHED [distributed-anonymization-database-restoration-service build 3/8] COPY shared_libraries/*.jar /usr/share/maven/ref/                                                                            0.0s
+ => CACHED [distributed-anonymization-database-restoration-service build 4/8] RUN mvn install:install-file -Dfile=/usr/share/maven/ref/shared-logging-library-1.0-SNAPSHOT.jar -DgroupId=com.wenox.anonym  0.0s
+ => CACHED [distributed-anonymization-database-restoration-service build 5/8] COPY pom.xml .                                                                                                               0.0s
+ => CACHED [distributed-anonymization-database-restoration-service build 6/8] RUN mvn dependency:go-offline                                                                                                0.0s
+ => CACHED [distributed-anonymization-database-restoration-service build 7/8] COPY src /app/src                                                                                                            0.0s
+ => CACHED [distributed-anonymization-database-restoration-service build 8/8] RUN mvn clean package -DskipTests                                                                                            0.0s
+ => CACHED [distributed-anonymization-database-restoration-service stage-1 3/3] COPY --from=build /app/target/*.jar app.jar                                                                                0.0s
+WARN[0001] Found orphan containers ([kafka-ui logstash kibana kafka grafana prometheus mongodb distributed-anonymization-eureka-server-1 zookeeper distributed-anonymization-api-gateway-1 distributed-anonymization-postgres-1 elasticsearch]) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up.
+[+] Running 3/3
+ ⠿ Container distributed-anonymization-blueprint-service-1             Started                                                                                                                             0.6s
+ ⠿ Container distributed-anonymization-database-restoration-service-1  Started                                                                                                                             0.5s
+ ⠿ Container distributed-anonymization-metadata-extraction-service-1   Started                                                                                                                             0.6s
+-e 2024-02-04T14:40:37 -------- Waiting 30 seconds...
+-e 2024-02-04T14:41:07 -------- Starting importing process...
+-e 2024-02-04T14:41:08 -------- OK: Importing process started successfully --- blueprint ID: 070a0d03-5a08-4249-ada8-13b542ab9511
+-e 2024-02-04T14:41:08 -------- Verifying importing process...
+-e 2024-02-04T14:41:08 -------- Importing process status: INITIALISED. Retrying in 1 second... (Attempt 1/100)
+-e 2024-02-04T14:41:09 -------- Importing process status: DUMP_STORE_SUCCESS. Retrying in 1 second... (Attempt 2/100)
+-e 2024-02-04T14:41:10 -------- OK: Importing process completed successfully with status: METADATA_EXTRACTION_SUCCESS
+-e 2024-02-04T14:41:10 -------- Verifying metadata resource exists...
+-e 2024-02-04T14:41:10 -------- OK: Metadata verified
+-e 2024-02-04T14:41:10 -------- Verifying restoration snapshot resource exists...
+-e 2024-02-04T14:41:10 -------- OK: Restoration snapshot verified
+-e 2024-02-04T14:41:10 -------- OK: importing API test succeeded
+070a0d03-5a08-4249-ada8-13b542ab9511
+-e 2024-02-04T14:41:10 -------- Starting Configuration API test...
+-e 2024-02-04T14:41:10 -------- Starting docker-compose.configuration-api.yml
+[+] Building 1.9s (25/25) FINISHED
+ => [distributed-anonymization-worksheet-service internal] load build definition from Dockerfile                                                                                                           0.0s
+ => => transferring dockerfile: 32B                                                                                                                                                                        0.0s
+ => [distributed-anonymization-tasks-processing-service internal] load build definition from Dockerfile                                                                                                    0.0s
+ => => transferring dockerfile: 32B                                                                                                                                                                        0.0s
+ => [distributed-anonymization-worksheet-service internal] load .dockerignore                                                                                                                              0.0s
+ => => transferring context: 2B                                                                                                                                                                            0.0s
+ => [distributed-anonymization-tasks-processing-service internal] load .dockerignore                                                                                                                       0.0s
+ => => transferring context: 2B                                                                                                                                                                            0.0s
+ => [distributed-anonymization-worksheet-service internal] load metadata for docker.io/library/maven:3.8.4-openjdk-17-slim                                                                                 0.7s
+ => [distributed-anonymization-worksheet-service internal] load metadata for docker.io/library/openjdk:17-jdk-slim                                                                                         0.0s
+ => [distributed-anonymization-tasks-processing-service internal] load metadata for docker.io/library/sapmachine:17.0.10                                                                                   1.7s
+ => [distributed-anonymization-worksheet-service internal] load build context                                                                                                                              0.0s
+ => => transferring context: 22.24kB                                                                                                                                                                       0.0s
+ => [distributed-anonymization-worksheet-service stage-1 1/4] FROM docker.io/library/openjdk:17-jdk-slim                                                                                                   0.0s
+ => [distributed-anonymization-worksheet-service build 1/8] FROM docker.io/library/maven:3.8.4-openjdk-17-slim@sha256:150deb7b386bad685dcf0c781b9b9023a25896087b637c069a50c8019cab86f8                     0.0s
+ => CACHED [distributed-anonymization-worksheet-service build 2/8] WORKDIR /app                                                                                                                            0.0s
+ => CACHED [distributed-anonymization-worksheet-service build 3/8] COPY shared_libraries/*.jar /usr/share/maven/ref/                                                                                       0.0s
+ => CACHED [distributed-anonymization-worksheet-service build 4/8] RUN mvn install:install-file -Dfile=/usr/share/maven/ref/shared-logging-library-1.0-SNAPSHOT.jar -DgroupId=com.wenox.anonymization -Da  0.0s
+ => CACHED [distributed-anonymization-worksheet-service build 5/8] COPY pom.xml .                                                                                                                          0.0s
+ => CACHED [distributed-anonymization-worksheet-service build 6/8] RUN mvn dependency:go-offline                                                                                                           0.0s
+ => CACHED [distributed-anonymization-worksheet-service build 7/8] COPY src /app/src                                                                                                                       0.0s
+ => CACHED [distributed-anonymization-worksheet-service build 8/8] RUN mvn clean package -DskipTests                                                                                                       0.0s
+ => CACHED [distributed-anonymization-worksheet-service stage-1 2/4] COPY --from=build /app/target/*.jar app.jar                                                                                           0.0s
+ => CACHED [distributed-anonymization-worksheet-service stage-1 3/4] COPY entrypoint.sh /entrypoint.sh                                                                                                     0.0s
+ => CACHED [distributed-anonymization-worksheet-service stage-1 4/4] RUN chmod +x /entrypoint.sh                                                                                                           0.0s
+ => [distributed-anonymization-tasks-processing-service] exporting to image                                                                                                                                0.0s
+ => => exporting layers                                                                                                                                                                                    0.0s
+ => => writing image sha256:ba5e8d6ca1594efcb72a754300927f32c3def78f0fbaa50d3d04d0e5e2530b08                                                                                                               0.0s
+ => => naming to docker.io/library/distributed-anonymization-worksheet-service                                                                                                                             0.0s
+ => => writing image sha256:c536319240dbf4939a288507b43b6d2099c62bff022d19d042860ac6c974c7bd                                                                                                               0.0s
+ => => naming to docker.io/library/distributed-anonymization-tasks-processing-service                                                                                                                      0.0s
+ => [distributed-anonymization-tasks-processing-service 1/3] FROM docker.io/library/sapmachine:17.0.10@sha256:3d44dbdf9fb37c54ff2eaa63f2872b4fda54655eb401064ecbadfedd6096860c                             0.0s
+ => [distributed-anonymization-tasks-processing-service internal] load build context                                                                                                                       0.0s
+ => => transferring context: 9.28kB                                                                                                                                                                        0.0s
+ => CACHED [distributed-anonymization-tasks-processing-service 2/3] WORKDIR /app                                                                                                                           0.0s
+ => CACHED [distributed-anonymization-tasks-processing-service 3/3] COPY target /app                                                                                                                       0.0s
+WARN[0002] Found orphan containers ([distributed-anonymization-database-restoration-service-1 distributed-anonymization-metadata-extraction-service-1 distributed-anonymization-blueprint-service-1 kafka-ui logstash kibana kafka grafana prometheus mongodb distributed-anonymization-eureka-server-1 zookeeper distributed-anonymization-api-gateway-1 distributed-anonymization-postgres-1 elasticsearch]) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up.
+[+] Running 11/11
+ ⠿ Volume "distributed-anonymization_redis_insight"                Created                                                                                                                                 0.0s
+ ⠿ Volume "distributed-anonymization_cassandra_data"               Created                                                                                                                                 0.0s
+ ⠿ Volume "distributed-anonymization_redis_data"                   Created                                                                                                                                 0.0s
+ ⠿ Container cassandra                                             Started                                                                                                                                 1.1s
+ ⠿ Container redis                                                 Started                                                                                                                                 1.0s
+ ⠿ Container redisinsight                                          Started                                                                                                                                 1.1s
+ ⠿ Container distributed-anonymization-spark-master-1              Started                                                                                                                                 1.0s
+ ⠿ Container distributed-anonymization-tasks-processing-service-1  Started                                                                                                                                 1.5s
+ ⠿ Container cassandra-init                                        Started                                                                                                                                 1.6s
+ ⠿ Container distributed-anonymization-spark-worker-1              Started                                                                                                                                 1.4s
+ ⠿ Container distributed-anonymization-worksheet-service-1         Started                                                                                                                                 2.0s
+-e 2024-02-04T14:41:15 -------- Waiting 120 seconds...
+-e 2024-02-04T14:43:15 -------- Initialising a new worksheet for blueprint_id: 070a0d03-5a08-4249-ada8-13b542ab9511
+-e 2024-02-04T14:43:16 -------- OK: Successfully initialised new worksheet with ID: 906a184f-a48b-4789-8aae-ed0a2adbcc05
+-e 2024-02-04T14:43:16 -------- Adding suppression operation #1 to worksheet...
+-e 2024-02-04T14:43:16 -------- OK: Successfully added suppression operation #1 to a worksheet
+-e 2024-02-04T14:43:16 -------- Adding suppression operation #2 to worksheet...
+-e 2024-02-04T14:43:16 -------- OK: Successfully added suppression operation #2 to a worksheet
+-e 2024-02-04T14:43:16 -------- OK: configuration API test succeeded
+906a184f-a48b-4789-8aae-ed0a2adbcc05
+-e 2024-02-04T14:43:16 -------- Starting Exporting API test...
+-e 2024-02-04T14:43:16 -------- Starting docker-compose.exporting-api.yml
+[+] Building 1.8s (27/27) FINISHED
+ => [distributed-anonymization-anonymisation-execution-service internal] load build definition from Dockerfile                                                                                             0.0s
+ => => transferring dockerfile: 32B                                                                                                                                                                        0.0s
+ => [distributed-anonymization-anonymisation-orchestration-service internal] load build definition from Dockerfile                                                                                         0.0s
+ => => transferring dockerfile: 32B                                                                                                                                                                        0.0s
+ => [distributed-anonymization-anonymisation-execution-service internal] load .dockerignore                                                                                                                0.0s
+ => => transferring context: 2B                                                                                                                                                                            0.0s
+ => [distributed-anonymization-anonymisation-orchestration-service internal] load .dockerignore                                                                                                            0.0s
+ => => transferring context: 34B                                                                                                                                                                           0.0s
+ => [distributed-anonymization-anonymisation-execution-service internal] load metadata for docker.io/library/openjdk:17-jdk-slim                                                                           0.0s
+ => [distributed-anonymization-anonymisation-execution-service internal] load metadata for docker.io/library/maven:3.8.4-openjdk-17-slim                                                                   0.7s
+ => [distributed-anonymization-anonymisation-orchestration-service internal] load metadata for docker.io/library/python:3.11-slim                                                                          1.6s
+ => [distributed-anonymization-anonymisation-execution-service build 1/8] FROM docker.io/library/maven:3.8.4-openjdk-17-slim@sha256:150deb7b386bad685dcf0c781b9b9023a25896087b637c069a50c8019cab86f8       0.0s
+ => [distributed-anonymization-anonymisation-execution-service stage-1 1/4] FROM docker.io/library/openjdk:17-jdk-slim                                                                                     0.0s
+ => [distributed-anonymization-anonymisation-execution-service internal] load build context                                                                                                                0.0s
+ => => transferring context: 6.50kB                                                                                                                                                                        0.0s
+ => CACHED [distributed-anonymization-anonymisation-execution-service stage-1 2/4] RUN apt-get update && apt-get install -y postgresql-client  && rm -rf /var/lib/apt/lists/*                              0.0s
+ => CACHED [distributed-anonymization-anonymisation-execution-service stage-1 3/4] RUN apt-get update && apt-get install -y curl unzip  && curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zi  0.0s
+ => CACHED [distributed-anonymization-anonymisation-execution-service build 2/8] WORKDIR /app                                                                                                              0.0s
+ => CACHED [distributed-anonymization-anonymisation-execution-service build 3/8] COPY shared_libraries/*.jar /usr/share/maven/ref/                                                                         0.0s
+ => CACHED [distributed-anonymization-anonymisation-execution-service build 4/8] RUN mvn install:install-file -Dfile=/usr/share/maven/ref/shared-logging-library-1.0-SNAPSHOT.jar -DgroupId=com.wenox.ano  0.0s
+ => CACHED [distributed-anonymization-anonymisation-execution-service build 5/8] COPY pom.xml .                                                                                                            0.0s
+ => CACHED [distributed-anonymization-anonymisation-execution-service build 6/8] RUN mvn dependency:go-offline                                                                                             0.0s
+ => CACHED [distributed-anonymization-anonymisation-execution-service build 7/8] COPY src /app/src                                                                                                         0.0s
+ => CACHED [distributed-anonymization-anonymisation-execution-service build 8/8] RUN mvn clean package -DskipTests                                                                                         0.0s
+ => CACHED [distributed-anonymization-anonymisation-execution-service stage-1 4/4] COPY --from=build /app/target/*.jar app.jar                                                                             0.0s
+ => [distributed-anonymization-anonymisation-orchestration-service] exporting to image                                                                                                                     0.0s
+ => => exporting layers                                                                                                                                                                                    0.0s
+ => => writing image sha256:042312ac1383ebdbfc699f72c9caab36038eede14a17f4ae1bd36d9561f8448d                                                                                                               0.0s
+ => => naming to docker.io/library/distributed-anonymization-anonymisation-execution-service                                                                                                               0.0s
+ => => writing image sha256:fc00a4e6fa11bdc30b79205d7269f146a0a4a8ead07a818e04a31da2fb24a6b1                                                                                                               0.0s
+ => => naming to docker.io/library/distributed-anonymization-anonymisation-orchestration-service                                                                                                           0.0s
+ => [distributed-anonymization-anonymisation-orchestration-service internal] load build context                                                                                                            0.0s
+ => => transferring context: 1.02kB                                                                                                                                                                        0.0s
+ => [distributed-anonymization-anonymisation-orchestration-service 1/5] FROM docker.io/library/python:3.11-slim@sha256:53d6284a40eae6b625f22870f5faba6c54f2a28db9027408f4dee111f1e885a2                    0.0s
+ => CACHED [distributed-anonymization-anonymisation-orchestration-service 2/5] WORKDIR /usr/src/app                                                                                                        0.0s
+ => CACHED [distributed-anonymization-anonymisation-orchestration-service 3/5] COPY requirements.txt .                                                                                                     0.0s
+ => CACHED [distributed-anonymization-anonymisation-orchestration-service 4/5] RUN pip install --no-cache-dir -r requirements.txt                                                                          0.0s
+ => CACHED [distributed-anonymization-anonymisation-orchestration-service 5/5] COPY . .                                                                                                                    0.0s
+WARN[0002] Found orphan containers ([distributed-anonymization-worksheet-service-1 distributed-anonymization-spark-worker-1 cassandra-init distributed-anonymization-tasks-processing-service-1 distributed-anonymization-spark-master-1 cassandra redis redisinsight distributed-anonymization-database-restoration-service-1 distributed-anonymization-metadata-extraction-service-1 distributed-anonymization-blueprint-service-1 kafka-ui logstash kibana kafka grafana prometheus mongodb distributed-anonymization-eureka-server-1 zookeeper distributed-anonymization-api-gateway-1 distributed-anonymization-postgres-1 elasticsearch]) for this project. If you removed or renamed this service in your compose file, you can run this command with the --remove-orphans flag to clean it up.
+[+] Running 2/2
+ ⠿ Container distributed-anonymization-anonymisation-orchestration-service-1  Started                                                                                                                      0.7s
+ ⠿ Container distributed-anonymization-anonymisation-execution-service-1      Started                                                                                                                      0.6s
+-e 2024-02-04T14:43:20 -------- Waiting 45 seconds...
+-e 2024-02-04T14:44:05 -------- Starting exporting process...
+-e 2024-02-04T14:44:05 -------- Successfully retrieved outcome ID: 146aefdf-267b-4040-8973-617ae3eac69c
+-e 2024-02-04T14:44:05 -------- OK: Exporting process started successfully --- outcome ID: 146aefdf-267b-4040-8973-617ae3eac69c
+-e 2024-02-04T14:44:05 -------- Verifying exporting process...
+-e 2024-02-04T14:44:05 -------- Exporting process status: INITIALISED. Retrying in 3 seconds... (Attempt 1/20)
+-e 2024-02-04T14:44:08 -------- Exporting process status: INITIALISED. Retrying in 3 seconds... (Attempt 2/20)
+-e 2024-02-04T14:44:11 -------- Exporting process status: FRAGMENTS_READY. Retrying in 3 seconds... (Attempt 3/20)
+-e 2024-02-04T14:44:14 -------- OK: Exporting process succeeded with status: DUMP_GENERATED
+-e 2024-02-04T14:44:14 -------- Shutting down all platform services...
+[+] Running 2/2
+ ⠿ Container distributed-anonymization-anonymisation-orchestration-service-1  Removed                                                                                                                      1.7s
+ ⠿ Container distributed-anonymization-anonymisation-execution-service-1      Removed                                                                                                                      5.8s
+[+] Running 8/8
+ ⠿ Container redisinsight                                          Removed                                                                                                                                 0.9s
+ ⠿ Container distributed-anonymization-spark-worker-1              Removed                                                                                                                                 0.8s
+ ⠿ Container distributed-anonymization-tasks-processing-service-1  Removed                                                                                                                                 3.2s
+ ⠿ Container distributed-anonymization-worksheet-service-1         Removed                                                                                                                                10.3s
+ ⠿ Container distributed-anonymization-spark-master-1              Removed                                                                                                                                 0.6s
+ ⠿ Container redis                                                 Removed                                                                                                                                 0.2s
+ ⠿ Container cassandra-init                                        Removed                                                                                                                                 0.0s
+ ⠿ Container cassandra                                             Removed                                                                                                                                 7.1s
+[+] Running 3/3
+ ⠿ Container distributed-anonymization-database-restoration-service-1  Removed                                                                                                                            10.4s
+ ⠿ Container distributed-anonymization-metadata-extraction-service-1   Removed                                                                                                                             4.2s
+ ⠿ Container distributed-anonymization-blueprint-service-1             Removed                                                                                                                             6.2s
+[+] Running 13/13
+ ⠿ Container kafka-ui                                   Removed                                                                                                                                            2.8s
+ ⠿ Container distributed-anonymization-postgres-1       Removed                                                                                                                                            0.5s
+ ⠿ Container mongodb                                    Removed                                                                                                                                            0.5s
+ ⠿ Container kibana                                     Removed                                                                                                                                            1.9s
+ ⠿ Container distributed-anonymization-api-gateway-1    Removed                                                                                                                                            5.8s
+ ⠿ Container distributed-anonymization-eureka-server-1  Removed                                                                                                                                            0.7s
+ ⠿ Container logstash                                   Removed                                                                                                                                            6.0s
+ ⠿ Container prometheus                                 Removed                                                                                                                                            0.3s
+ ⠿ Container grafana                                    Removed                                                                                                                                            0.5s
+ ⠿ Container kafka                                      Removed                                                                                                                                            1.1s
+ ⠿ Container zookeeper                                  Removed                                                                                                                                            0.6s
+ ⠿ Container elasticsearch                              Removed                                                                                                                                            3.2s
+ ⠿ Network platform_network                             Removed                                                                                                                                            0.1s
+-e 2024-02-04T14:44:58 -------- OK: exporting API test succeeded
