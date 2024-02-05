@@ -2,9 +2,10 @@ version: '3.8'
 
 services:
   blueprint-service:
-    build:
-      context: ../../blueprint-service/
-      dockerfile: Dockerfile
+    image: openjdk:17-jdk-slim
+    volumes:
+      - ./builds/blueprint-service-simulation-10.jar:/app.jar
+    command: java -jar app.jar
     ports:
       - "8100:8100"
     environment:
@@ -15,9 +16,10 @@ services:
       - platform
 
   database-restoration-service:
-    build:
-      context: ../../database-restoration-service/
-      dockerfile: Dockerfile
+    image: openjdk:17-jdk-slim
+    volumes:
+      - ./builds/database-restoration-service-simulation-10.jar:/app.jar
+    command: java -jar app.jar
     ports:
       - "8200:8200"
     environment:
@@ -25,30 +27,28 @@ services:
       - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
       - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
       - AWS_REGION=${AWS_REGION}
+      - SHOULD_CRASH=true
     networks:
       - platform
 
   metadata-extraction-service:
-    build:
-      context: ../../metadata-extraction-service/
-      dockerfile: Dockerfile
+    image: openjdk:17-jdk-slim
+    volumes:
+      - ./builds/metadata-extraction-service-simulation-10.jar:/app.jar
+    command: java -jar app.jar
     ports:
       - "8300:8300"
     networks:
       - platform
 
   worksheet-service:
-    image: openjdk:17-jdk-slim
-    volumes:
-      - ./builds/worksheet-service-simulation-8.jar:/app.jar
-      - ../../worksheet-service:/worksheet-service
-      - cassandra_data:/var/lib/cassandra
-    command: /bin/bash -c "chmod +x /worksheet-service/entrypoint.sh && cd /worksheet-service && ./entrypoint.sh"
-    environment:
-      - MIN_DELAY_MS=1000
-      - MAX_DELAY_MS=5000
+    build:
+      context: ../../worksheet-service/
+      dockerfile: Dockerfile
     ports:
       - "8400:8400"
+    volumes:
+      - cassandra_data:/var/lib/cassandra
     networks:
       - platform
     depends_on:

@@ -1,0 +1,199 @@
+sh run_simulation.sh
+-e 2024-02-05T18:40:09 -------- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+-e 2024-02-05T18:40:09 -------- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+-e 2024-02-05T18:40:09 -------- Simulation 10
+-e 2024-02-05T18:40:09 -------- Testing: Failure in a transactional outbox consumer – messages should be redelivered
+-e 2024-02-05T18:40:09 -------- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+-e 2024-02-05T18:40:09 -------- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Cleaning up previous platform infrastructure components...
+Deleting network
+WARNING! This will remove all custom networks not used by at least one container.
+Are you sure you want to continue? [y/N] Deleting containers
+Deleting container: b8e3395d0620
+b8e3395d0620
+Deleting container: ba07a9b0ef59
+ba07a9b0ef59
+Deleting container: 546f60a7d6d5
+546f60a7d6d5
+Deleting container: 109faa26c04a
+109faa26c04a
+Deleting container: 02b628e056a8
+02b628e056a8
+Deleting container: 0564c6714194
+0564c6714194
+Deleting container: 351cd21be083
+351cd21be083
+Deleting container: cb0b320bd1aa
+cb0b320bd1aa
+Deleting container: 4dab2774d571
+4dab2774d571
+Deleting container: 4834a05c66ca
+4834a05c66ca
+Deleting container: 6e0ede9f2f3b
+6e0ede9f2f3b
+Deleting container: 11c1eaece723
+11c1eaece723
+Deleting container: ac846101c880
+ac846101c880
+Deleting container: 07bd7dc884ae
+07bd7dc884ae
+Deleting container: 385f40f2e48f
+385f40f2e48f
+Deleting container: 5e6dade1fad6
+5e6dade1fad6
+Deleting container: 572cc9e70ef7
+572cc9e70ef7
+Deleting container: be50531ab89a
+be50531ab89a
+Deleting container: bb578179f159
+bb578179f159
+Deleting container: 0e57a44309fd
+0e57a44309fd
+Deleting container: 79a29ed703b5
+79a29ed703b5
+Deleting container: c19b77b4a766
+c19b77b4a766
+Deleting container: 3bcb8b0d0d90
+3bcb8b0d0d90
+Deleting container: 649c479a59d9
+649c479a59d9
+Deleting volumes
+Deleting volume: d9bea5803cee306df0873057959c551cd0d3a1d8a9722040cb4809433b72b102
+d9bea5803cee306df0873057959c551cd0d3a1d8a9722040cb4809433b72b102
+Keeping volume: distributed-anonymization_elasticsearch-data
+Keeping volume: distributed-anonymization_grafana-data
+Deleting volume: ea11ed64ab80d0a79f8c26c0ad98a62e4bdbc05d44c09b8d560d6e54a8211f05
+ea11ed64ab80d0a79f8c26c0ad98a62e4bdbc05d44c09b8d560d6e54a8211f05
+Deleting volume: f13f280360c44eb0d47f414f780ede83fe1cb545ce746b0bf9aa06877826f763
+f13f280360c44eb0d47f414f780ede83fe1cb545ce746b0bf9aa06877826f763
+Deleting volume: simulation_10_cassandra_data
+simulation_10_cassandra_data
+Deleting volume: simulation_10_elasticsearch-data
+simulation_10_elasticsearch-data
+Deleting volume: simulation_10_grafana-data
+simulation_10_grafana-data
+Deleting volume: simulation_10_postgres-data
+simulation_10_postgres-data
+Deleting volume: simulation_10_redis_data
+simulation_10_redis_data
+Deleting volume: simulation_10_redis_insight
+simulation_10_redis_insight
+Deleting Spark checkpoint
+OK: Finished clean up
+-e 2024-02-05T18:40:21 -------- Deploying mandatory infrastructure components...
+[+] Building 1.1s (41/41) FINISHED
+ => [simulation_10-worksheet-service internal] load build definition from Dockerfile                                                                                                                       0.0s
+ => => transferring dockerfile: 32B                                                                                                                                                                        0.0s
+ => [simulation_10-tasks-processing-service internal] load build definition from Dockerfile                                                                                                                0.0s
+ => => transferring dockerfile: 32B                                                                                                                                                                        0.0s
+ => [simulation_10-eureka-server internal] load build definition from Dockerfile                                                                                                                           0.0s
+ => => transferring dockerfile: 32B                                                                                                                                                                        0.0s
+ => [simulation_10-api-gateway internal] load build definition from Dockerfile                                                                                                                             0.0s
+ => => transferring dockerfile: 32B                                                                                                                                                                        0.0s
+ => [simulation_10-worksheet-service internal] load .dockerignore                                                                                                                                          0.0s
+ => => transferring context: 2B                                                                                                                                                                            0.0s
+ => [simulation_10-tasks-processing-service internal] load .dockerignore                                                                                                                                   0.0s
+ => => transferring context: 2B                                                                                                                                                                            0.0s
+ => [simulation_10-eureka-server internal] load .dockerignore                                                                                                                                              0.0s
+ => => transferring context: 2B                                                                                                                                                                            0.0s
+ => [simulation_10-api-gateway internal] load .dockerignore                                                                                                                                                0.0s
+ => => transferring context: 2B                                                                                                                                                                            0.0s
+ => [simulation_10-api-gateway internal] load metadata for docker.io/library/openjdk:17-jdk-slim                                                                                                           0.0s
+ => [simulation_10-eureka-server internal] load metadata for docker.io/library/maven:3.8.4-openjdk-17-slim                                                                                                 0.8s
+ => [simulation_10-tasks-processing-service internal] load metadata for docker.io/library/sapmachine:17.0.10                                                                                               0.7s
+ => [simulation_10-tasks-processing-service internal] load build context                                                                                                                                   0.0s
+ => => transferring context: 9.28kB                                                                                                                                                                        0.0s
+ => [simulation_10-tasks-processing-service 1/3] FROM docker.io/library/sapmachine:17.0.10@sha256:3d44dbdf9fb37c54ff2eaa63f2872b4fda54655eb401064ecbadfedd6096860c                                         0.0s
+ => CACHED [simulation_10-tasks-processing-service 2/3] WORKDIR /app                                                                                                                                       0.0s
+ => CACHED [simulation_10-tasks-processing-service 3/3] COPY target /app                                                                                                                                   0.0s
+ => [simulation_10-worksheet-service] exporting to image                                                                                                                                                   0.0s
+ => => exporting layers                                                                                                                                                                                    0.0s
+ => => writing image sha256:f965e6cc730a84ffa1f9420c938b208384bf459d11b268c3d4c5344ce9393a98                                                                                                               0.0s
+ => => naming to docker.io/library/simulation_10-tasks-processing-service                                                                                                                                  0.0s
+ => => writing image sha256:66b4b43c69a36de4c2dbe39758ba6dd9e30a97de2d57e37c19edfa1ed1ab7969                                                                                                               0.0s
+ => => naming to docker.io/library/simulation_10-eureka-server                                                                                                                                             0.0s
+ => => writing image sha256:cef09afecbb4fde5388738e54827f196f8fd34a452280cf12ac5534d08b54c7c                                                                                                               0.0s
+ => => naming to docker.io/library/simulation_10-api-gateway                                                                                                                                               0.0s
+ => => writing image sha256:3122d5753257831f33638db5ad3bf793cb6ca3be5b1a34f2ce16769e97efe831                                                                                                               0.0s
+ => => naming to docker.io/library/simulation_10-worksheet-service                                                                                                                                         0.0s
+ => [simulation_10-api-gateway build 1/6] FROM docker.io/library/maven:3.8.4-openjdk-17-slim@sha256:150deb7b386bad685dcf0c781b9b9023a25896087b637c069a50c8019cab86f8                                       0.0s
+ => [simulation_10-api-gateway stage-1 1/2] FROM docker.io/library/openjdk:17-jdk-slim                                                                                                                     0.0s
+ => [simulation_10-eureka-server internal] load build context                                                                                                                                              0.0s
+ => => transferring context: 891B                                                                                                                                                                          0.0s
+ => [simulation_10-worksheet-service internal] load build context                                                                                                                                          0.0s
+ => => transferring context: 10.53kB                                                                                                                                                                       0.0s
+ => [simulation_10-api-gateway internal] load build context                                                                                                                                                0.0s
+ => => transferring context: 878B                                                                                                                                                                          0.0s
+ => CACHED [simulation_10-worksheet-service build 2/6] WORKDIR /app                                                                                                                                        0.0s
+ => CACHED [simulation_10-eureka-server build 3/6] COPY pom.xml .                                                                                                                                          0.0s
+ => CACHED [simulation_10-eureka-server build 4/6] RUN mvn dependency:go-offline                                                                                                                           0.0s
+ => CACHED [simulation_10-eureka-server build 5/6] COPY src /app/src                                                                                                                                       0.0s
+ => CACHED [simulation_10-eureka-server build 6/6] RUN mvn clean package -DskipTests -X                                                                                                                    0.0s
+ => CACHED [simulation_10-eureka-server stage-1 2/2] COPY --from=build /app/target/*.jar app.jar                                                                                                           0.0s
+ => CACHED [simulation_10-api-gateway build 3/6] COPY pom.xml .                                                                                                                                            0.0s
+ => CACHED [simulation_10-api-gateway build 4/6] RUN mvn dependency:go-offline                                                                                                                             0.0s
+ => CACHED [simulation_10-api-gateway build 5/6] COPY src /app/src                                                                                                                                         0.0s
+ => CACHED [simulation_10-api-gateway build 6/6] RUN mvn clean package -DskipTests -X                                                                                                                      0.0s
+ => CACHED [simulation_10-api-gateway stage-1 2/2] COPY --from=build /app/target/*.jar app.jar                                                                                                             0.0s
+ => CACHED [simulation_10-worksheet-service build 3/8] COPY shared_libraries/*.jar /usr/share/maven/ref/                                                                                                   0.0s
+ => CACHED [simulation_10-worksheet-service build 4/8] RUN mvn install:install-file -Dfile=/usr/share/maven/ref/shared-logging-library-1.0-SNAPSHOT.jar -DgroupId=com.wenox.anonymization -DartifactId=sh  0.0s
+ => CACHED [simulation_10-worksheet-service build 5/8] COPY pom.xml .                                                                                                                                      0.0s
+ => CACHED [simulation_10-worksheet-service build 6/8] RUN mvn dependency:go-offline                                                                                                                       0.0s
+ => CACHED [simulation_10-worksheet-service build 7/8] COPY src /app/src                                                                                                                                   0.0s
+ => CACHED [simulation_10-worksheet-service build 8/8] RUN mvn clean package -DskipTests                                                                                                                   0.0s
+ => CACHED [simulation_10-worksheet-service stage-1 2/4] COPY --from=build /app/target/*.jar app.jar                                                                                                       0.0s
+ => CACHED [simulation_10-worksheet-service stage-1 3/4] COPY entrypoint.sh /entrypoint.sh                                                                                                                 0.0s
+ => CACHED [simulation_10-worksheet-service stage-1 4/4] RUN chmod +x /entrypoint.sh                                                                                                                       0.0s
+[+] Running 29/29
+ ⠿ Volume "simulation_10_elasticsearch-data"               Created                                                                                                                                         0.0s
+ ⠿ Volume "simulation_10_redis_data"                       Created                                                                                                                                         0.0s
+ ⠿ Volume "simulation_10_cassandra_data"                   Created                                                                                                                                         0.0s
+ ⠿ Volume "simulation_10_grafana-data"                     Created                                                                                                                                         0.0s
+ ⠿ Volume "simulation_10_redis_insight"                    Created                                                                                                                                         0.0s
+ ⠿ Volume "simulation_10_postgres-data"                    Created                                                                                                                                         0.0s
+ ⠿ Container mongodb                                       Started                                                                                                                                         2.4s
+ ⠿ Container redis                                         Started                                                                                                                                         0.8s
+ ⠿ Container cassandra                                     Started                                                                                                                                         1.4s
+ ⠿ Container simulation_10-postgres-1                      Started                                                                                                                                         1.8s
+ ⠿ Container simulation_10-eureka-server-1                 Started                                                                                                                                         2.5s
+ ⠿ Container elasticsearch                                 Started                                                                                                                                         2.0s
+ ⠿ Container simulation_10-api-gateway-1                   Started                                                                                                                                         2.0s
+ ⠿ Container simulation_10-blueprint-service-1             Started                                                                                                                                         2.4s
+ ⠿ Container simulation_10-metadata-extraction-service-1   Started                                                                                                                                         2.5s
+ ⠿ Container simulation_10-database-restoration-service-1  Started                                                                                                                                         2.1s
+ ⠿ Container simulation_10-spark-master-1                  Started                                                                                                                                         1.0s
+ ⠿ Container grafana                                       Started                                                                                                                                         2.5s
+ ⠿ Container prometheus                                    Started                                                                                                                                         1.4s
+ ⠿ Container zookeeper                                     Started                                                                                                                                         1.8s
+ ⠿ Container redisinsight                                  Started                                                                                                                                         0.6s
+ ⠿ Container simulation_10-tasks-processing-service-1      Started                                                                                                                                         2.7s
+ ⠿ Container logstash                                      Started                                                                                                                                         2.9s
+ ⠿ Container kibana                                        Started                                                                                                                                         2.9s
+ ⠿ Container simulation_10-spark-worker-1                  Started                                                                                                                                         2.5s
+ ⠿ Container kafka                                         Started                                                                                                                                         2.7s
+ ⠿ Container cassandra-init                                Started                                                                                                                                         2.6s
+ ⠿ Container kafka-ui                                      Started                                                                                                                                         3.2s
+ ⠿ Container simulation_10-worksheet-service-1             Started                                                                                                                                         3.1s
+-e 2024-02-05T18:40:26 -------- Waiting 180 seconds for infrastructure to settle...
+-e 2024-02-05T18:42:26 -------- Initialising a new worksheet for blueprint_id: 1234
+-e 2024-02-05T18:42:26 -------- Received HTTP status 503. Retrying in 10 seconds... (Attempt 1/20)
+-e 2024-02-05T18:42:37 -------- Received HTTP status 503. Retrying in 10 seconds... (Attempt 2/20)
+-e 2024-02-05T18:42:47 -------- Received HTTP status 503. Retrying in 10 seconds... (Attempt 3/20)
+-e 2024-02-05T18:42:57 -------- Received HTTP status 503. Retrying in 10 seconds... (Attempt 4/20)
+-e 2024-02-05T18:43:08 -------- OK: Successfully initialised new worksheet with ID: c15b26bf-b478-44fc-b8cb-0d8e3f6183cf
+-e 2024-02-05T18:43:08 -------- Checking if outbox event was produced...
+-e 2024-02-05T18:43:08 -------- OK: received transactional outbox event : [{"worksheetId":"c15b26bf-b478-44fc-b8cb-0d8e3f6183cf","blueprintId":"1234","restoreMode":null,"createdAt":"2024-02-05T17:43:08.624"}]
+-e 2024-02-05T18:43:08 -------- Letting database restoration service crash while processing outbox message...
+-e 2024-02-05T18:43:08 -------- Waiting 30 seconds
+-e 2024-02-05T18:43:38 -------- Database restoration service should have crashed while processing outbox message...
+-e 2024-02-05T18:43:38 -------- Restarting it...
+-e 2024-02-05T18:43:38 -------- Stopping Docker container spanning the database-restoration-service...
+[+] Running 1/0
+ ⠿ Container simulation_10-database-restoration-service-1  Stopped                                                                                                                                         0.0s
+-e 2024-02-05T18:43:38 -------- OK: Docker container stopped
+-e 2024-02-05T18:43:38 -------- Starting Docker container spanning the database-restoration-service...
+b859e72e59ed455676d54b9750d15fbc5e6270f98a7d9df2c3aabbc2d6903d3e
+-e 2024-02-05T18:43:39 -------- OK: Docker container started: database-restoration-service restarted
+-e 2024-02-05T18:43:39 -------- Sleep 120... letting the outbox event be redelivered and reprocessed
+-e 2024-02-05T18:43:39 -------- OK: Simulation 10 finished successfully – check services.logs for redelivered outbox event
+-e 2024-02-05T18:43:39 -------- Tested: Failure in a transactional outbox consumer – messages should be redelivered
