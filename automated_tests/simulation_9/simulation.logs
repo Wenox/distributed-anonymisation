@@ -1,0 +1,248 @@
+sh run_simulation.sh
+-e 2024-02-05T19:49:02 -------- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+-e 2024-02-05T19:49:02 -------- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+-e 2024-02-05T19:49:02 -------- Simulation 9
+-e 2024-02-05T19:49:02 -------- Testing: Exporting process – Forward recovery – fragments not ready immediately
+-e 2024-02-05T19:49:02 -------- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+-e 2024-02-05T19:49:02 -------- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+Cleaning up previous platform infrastructure components...
+Deleting network
+WARNING! This will remove all custom networks not used by at least one container.
+Are you sure you want to continue? [y/N] Deleted Networks:
+platform_network
+
+Deleting containers
+Deleting volumes
+Keeping volume: distributed-anonymization_elasticsearch-data
+Keeping volume: distributed-anonymization_grafana-data
+Deleting Spark checkpoint
+OK: Finished clean up
+-e 2024-02-05T19:49:02 -------- Deploying mandatory infrastructure components...
+[+] Building 2.0s (91/91) FINISHED
+ => [simulation_9-eureka-server internal] load build definition from Dockerfile                                                                                                                            0.0s
+ => => transferring dockerfile: 32B                                                                                                                                                                        0.0s
+ => [simulation_9-worksheet-service internal] load build definition from Dockerfile                                                                                                                        0.0s
+ => => transferring dockerfile: 32B                                                                                                                                                                        0.0s
+ => [simulation_9-anonymisation-orchestration-service internal] load build definition from Dockerfile                                                                                                      0.0s
+ => => transferring dockerfile: 32B                                                                                                                                                                        0.0s
+ => [simulation_9-metadata-extraction-service internal] load build definition from Dockerfile                                                                                                              0.0s
+ => => transferring dockerfile: 32B                                                                                                                                                                        0.0s
+ => [simulation_9-api-gateway internal] load build definition from Dockerfile                                                                                                                              0.0s
+ => => transferring dockerfile: 32B                                                                                                                                                                        0.0s
+ => [simulation_9-database-restoration-service internal] load build definition from Dockerfile                                                                                                             0.0s
+ => => transferring dockerfile: 32B                                                                                                                                                                        0.0s
+ => [simulation_9-anonymisation-execution-service internal] load build definition from Dockerfile                                                                                                          0.0s
+ => => transferring dockerfile: 32B                                                                                                                                                                        0.0s
+ => [simulation_9-blueprint-service internal] load build definition from Dockerfile                                                                                                                        0.0s
+ => => transferring dockerfile: 32B                                                                                                                                                                        0.0s
+ => [simulation_9-eureka-server internal] load .dockerignore                                                                                                                                               0.0s
+ => => transferring context: 2B                                                                                                                                                                            0.0s
+ => [simulation_9-worksheet-service internal] load .dockerignore                                                                                                                                           0.0s
+ => => transferring context: 2B                                                                                                                                                                            0.0s
+ => [simulation_9-anonymisation-orchestration-service internal] load .dockerignore                                                                                                                         0.0s
+ => => transferring context: 34B                                                                                                                                                                           0.0s
+ => [simulation_9-metadata-extraction-service internal] load .dockerignore                                                                                                                                 0.0s
+ => => transferring context: 2B                                                                                                                                                                            0.0s
+ => [simulation_9-api-gateway internal] load .dockerignore                                                                                                                                                 0.0s
+ => => transferring context: 2B                                                                                                                                                                            0.0s
+ => [simulation_9-database-restoration-service internal] load .dockerignore                                                                                                                                0.0s
+ => => transferring context: 2B                                                                                                                                                                            0.0s
+ => [simulation_9-anonymisation-execution-service internal] load .dockerignore                                                                                                                             0.0s
+ => => transferring context: 2B                                                                                                                                                                            0.0s
+ => [simulation_9-blueprint-service internal] load .dockerignore                                                                                                                                           0.0s
+ => => transferring context: 2B                                                                                                                                                                            0.0s
+ => [simulation_9-blueprint-service internal] load metadata for docker.io/library/openjdk:17-jdk-slim                                                                                                      0.0s
+ => [simulation_9-api-gateway internal] load metadata for docker.io/library/maven:3.8.4-openjdk-17-slim                                                                                                    1.4s
+ => [simulation_9-anonymisation-orchestration-service internal] load metadata for docker.io/library/python:3.11-slim                                                                                       1.3s
+ => [simulation_9-anonymisation-execution-service internal] load metadata for docker.io/library/maven:3.8.4-openjdk-17-slim                                                                                1.3s
+ => [simulation_9-anonymisation-execution-service internal] load metadata for docker.io/library/openjdk:17-jdk-slim                                                                                        0.0s
+ => [simulation_9-eureka-server build 1/8] FROM docker.io/library/maven:3.8.4-openjdk-17-slim@sha256:150deb7b386bad685dcf0c781b9b9023a25896087b637c069a50c8019cab86f8                                      0.0s
+ => [simulation_9-database-restoration-service internal] load build context                                                                                                                                0.0s
+ => => transferring context: 21.32kB                                                                                                                                                                       0.0s
+ => [simulation_9-api-gateway internal] load build context                                                                                                                                                 0.1s
+ => => transferring context: 878B                                                                                                                                                                          0.0s
+ => [simulation_9-eureka-server stage-1 1/3] FROM docker.io/library/openjdk:17-jdk-slim                                                                                                                    0.0s
+ => [simulation_9-metadata-extraction-service internal] load build context                                                                                                                                 0.1s
+ => => transferring context: 7.57kB                                                                                                                                                                        0.0s
+ => [simulation_9-eureka-server internal] load build context                                                                                                                                               0.0s
+ => => transferring context: 891B                                                                                                                                                                          0.0s
+ => [simulation_9-worksheet-service internal] load build context                                                                                                                                           0.0s
+ => => transferring context: 10.53kB                                                                                                                                                                       0.0s
+ => [simulation_9-blueprint-service internal] load build context                                                                                                                                           0.1s
+ => => transferring context: 7.04kB                                                                                                                                                                        0.0s
+ => CACHED [simulation_9-worksheet-service build 2/8] WORKDIR /app                                                                                                                                         0.0s
+ => CACHED [simulation_9-eureka-server build 3/6] COPY pom.xml .                                                                                                                                           0.0s
+ => CACHED [simulation_9-eureka-server build 4/6] RUN mvn dependency:go-offline                                                                                                                            0.0s
+ => CACHED [simulation_9-eureka-server build 5/6] COPY src /app/src                                                                                                                                        0.0s
+ => CACHED [simulation_9-eureka-server build 6/6] RUN mvn clean package -DskipTests -X                                                                                                                     0.0s
+ => CACHED [simulation_9-eureka-server stage-1 2/2] COPY --from=build /app/target/*.jar app.jar                                                                                                            0.0s
+ => [simulation_9-anonymisation-execution-service] exporting to image                                                                                                                                      0.1s
+ => => exporting layers                                                                                                                                                                                    0.0s
+ => => writing image sha256:e4eed3d50d6beda4d4817a12410864179c1c153d682c2857d3d08cad4a55f1e2                                                                                                               0.0s
+ => => naming to docker.io/library/simulation_9-eureka-server                                                                                                                                              0.0s
+ => => writing image sha256:ae297b53592d4f0aed405ea840176dbd767a1f08bd921347ecce9e5fddc0267c                                                                                                               0.0s
+ => => naming to docker.io/library/simulation_9-database-restoration-service                                                                                                                               0.0s
+ => => writing image sha256:5c2b68351edcb692bb12974d93e5f86f3a76d08553f47d957317a3e9b1330420                                                                                                               0.0s
+ => => naming to docker.io/library/simulation_9-api-gateway                                                                                                                                                0.0s
+ => => writing image sha256:2780e4acfd260b5a88ede521fe7718d1a10b7b0739194758a61c87b030106e03                                                                                                               0.0s
+ => => writing image sha256:4d1061ec313809fb98649bfc98e1f8e30b4c427ad5c351a21c8a570a9d6eeff2                                                                                                               0.0s
+ => => naming to docker.io/library/simulation_9-metadata-extraction-service                                                                                                                                0.0s
+ => => naming to docker.io/library/simulation_9-blueprint-service                                                                                                                                          0.0s
+ => => writing image sha256:64414a60dbaffdb47a35a034c9383901e10acf0d3ec524730ffece6cea576b70                                                                                                               0.0s
+ => => naming to docker.io/library/simulation_9-anonymisation-orchestration-service                                                                                                                        0.0s
+ => => writing image sha256:981d3051b671149d65daecb00a4254beeb6a7e2bfd7c2791cccc5b4cb87c3878                                                                                                               0.0s
+ => => naming to docker.io/library/simulation_9-worksheet-service                                                                                                                                          0.0s
+ => => writing image sha256:d74f0ceb250dcbc6e6c5b995e4e15a1f5abe84f3f9b9114f4f463a71c8491a7f                                                                                                               0.0s
+ => => naming to docker.io/library/simulation_9-anonymisation-execution-service                                                                                                                            0.0s
+ => [simulation_9-anonymisation-orchestration-service 1/5] FROM docker.io/library/python:3.11-slim@sha256:53d6284a40eae6b625f22870f5faba6c54f2a28db9027408f4dee111f1e885a2                                 0.0s
+ => [simulation_9-anonymisation-orchestration-service internal] load build context                                                                                                                         0.0s
+ => => transferring context: 13.60kB                                                                                                                                                                       0.0s
+ => CACHED [simulation_9-database-restoration-service stage-1 2/3] RUN apt-get update && apt-get install -y postgresql-client && rm -rf /var/lib/apt/lists/*                                               0.0s
+ => CACHED [simulation_9-database-restoration-service build 3/8] COPY shared_libraries/*.jar /usr/share/maven/ref/                                                                                         0.0s
+ => CACHED [simulation_9-database-restoration-service build 4/8] RUN mvn install:install-file -Dfile=/usr/share/maven/ref/shared-logging-library-1.0-SNAPSHOT.jar -DgroupId=com.wenox.anonymization -Dart  0.0s
+ => CACHED [simulation_9-database-restoration-service build 5/8] COPY pom.xml .                                                                                                                            0.0s
+ => CACHED [simulation_9-database-restoration-service build 6/8] RUN mvn dependency:go-offline                                                                                                             0.0s
+ => CACHED [simulation_9-database-restoration-service build 7/8] COPY src /app/src                                                                                                                         0.0s
+ => CACHED [simulation_9-database-restoration-service build 8/8] RUN mvn clean package -DskipTests                                                                                                         0.0s
+ => CACHED [simulation_9-database-restoration-service stage-1 3/3] COPY --from=build /app/target/*.jar app.jar                                                                                             0.0s
+ => CACHED [simulation_9-api-gateway build 3/6] COPY pom.xml .                                                                                                                                             0.0s
+ => CACHED [simulation_9-api-gateway build 4/6] RUN mvn dependency:go-offline                                                                                                                              0.0s
+ => CACHED [simulation_9-api-gateway build 5/6] COPY src /app/src                                                                                                                                          0.0s
+ => CACHED [simulation_9-api-gateway build 6/6] RUN mvn clean package -DskipTests -X                                                                                                                       0.0s
+ => CACHED [simulation_9-api-gateway stage-1 2/2] COPY --from=build /app/target/*.jar app.jar                                                                                                              0.0s
+ => CACHED [simulation_9-anonymisation-orchestration-service 2/5] WORKDIR /usr/src/app                                                                                                                     0.0s
+ => CACHED [simulation_9-anonymisation-orchestration-service 3/5] COPY requirements.txt .                                                                                                                  0.0s
+ => CACHED [simulation_9-anonymisation-orchestration-service 4/5] RUN pip install --no-cache-dir -r requirements.txt                                                                                       0.0s
+ => CACHED [simulation_9-anonymisation-orchestration-service 5/5] COPY . .                                                                                                                                 0.0s
+ => CACHED [simulation_9-metadata-extraction-service build 3/8] COPY shared_libraries/*.jar /usr/share/maven/ref/                                                                                          0.0s
+ => CACHED [simulation_9-metadata-extraction-service build 4/8] RUN mvn install:install-file -Dfile=/usr/share/maven/ref/shared-logging-library-1.0-SNAPSHOT.jar -DgroupId=com.wenox.anonymization -Darti  0.0s
+ => CACHED [simulation_9-metadata-extraction-service build 5/8] COPY pom.xml .                                                                                                                             0.0s
+ => CACHED [simulation_9-metadata-extraction-service build 6/8] RUN mvn dependency:go-offline                                                                                                              0.0s
+ => CACHED [simulation_9-metadata-extraction-service build 7/8] COPY src /app/src                                                                                                                          0.0s
+ => CACHED [simulation_9-metadata-extraction-service build 8/8] RUN mvn clean package -DskipTests                                                                                                          0.0s
+ => CACHED [simulation_9-metadata-extraction-service stage-1 2/2] COPY --from=build /app/target/*.jar app.jar                                                                                              0.0s
+ => CACHED [simulation_9-blueprint-service build 3/8] COPY shared_libraries/*.jar /usr/share/maven/ref/                                                                                                    0.0s
+ => CACHED [simulation_9-blueprint-service build 4/8] RUN mvn install:install-file -Dfile=/usr/share/maven/ref/shared-logging-library-1.0-SNAPSHOT.jar -DgroupId=com.wenox.anonymization -DartifactId=sha  0.0s
+ => CACHED [simulation_9-blueprint-service build 5/8] COPY pom.xml .                                                                                                                                       0.0s
+ => CACHED [simulation_9-blueprint-service build 6/8] RUN mvn dependency:go-offline                                                                                                                        0.0s
+ => CACHED [simulation_9-blueprint-service build 7/8] COPY src /app/src                                                                                                                                    0.0s
+ => CACHED [simulation_9-blueprint-service build 8/8] RUN mvn clean package -DskipTests                                                                                                                    0.0s
+ => CACHED [simulation_9-blueprint-service stage-1 2/2] COPY --from=build /app/target/*.jar app.jar                                                                                                        0.0s
+ => CACHED [simulation_9-worksheet-service build 3/8] COPY shared_libraries/*.jar /usr/share/maven/ref/                                                                                                    0.0s
+ => CACHED [simulation_9-worksheet-service build 4/8] RUN mvn install:install-file -Dfile=/usr/share/maven/ref/shared-logging-library-1.0-SNAPSHOT.jar -DgroupId=com.wenox.anonymization -DartifactId=sha  0.0s
+ => CACHED [simulation_9-worksheet-service build 5/8] COPY pom.xml .                                                                                                                                       0.0s
+ => CACHED [simulation_9-worksheet-service build 6/8] RUN mvn dependency:go-offline                                                                                                                        0.0s
+ => CACHED [simulation_9-worksheet-service build 7/8] COPY src /app/src                                                                                                                                    0.0s
+ => CACHED [simulation_9-worksheet-service build 8/8] RUN mvn clean package -DskipTests                                                                                                                    0.0s
+ => CACHED [simulation_9-worksheet-service stage-1 2/4] COPY --from=build /app/target/*.jar app.jar                                                                                                        0.0s
+ => CACHED [simulation_9-worksheet-service stage-1 3/4] COPY entrypoint.sh /entrypoint.sh                                                                                                                  0.0s
+ => CACHED [simulation_9-worksheet-service stage-1 4/4] RUN chmod +x /entrypoint.sh                                                                                                                        0.0s
+ => [simulation_9-anonymisation-execution-service build 1/8] FROM docker.io/library/maven:3.8.4-openjdk-17-slim@sha256:150deb7b386bad685dcf0c781b9b9023a25896087b637c069a50c8019cab86f8                    0.0s
+ => [simulation_9-anonymisation-execution-service internal] load build context                                                                                                                             0.0s
+ => => transferring context: 2.13kB                                                                                                                                                                        0.0s
+ => [simulation_9-anonymisation-execution-service stage-1 1/4] FROM docker.io/library/openjdk:17-jdk-slim                                                                                                  0.0s
+ => CACHED [simulation_9-anonymisation-execution-service stage-1 2/4] RUN apt-get update && apt-get install -y postgresql-client  && rm -rf /var/lib/apt/lists/*                                           0.0s
+ => CACHED [simulation_9-anonymisation-execution-service stage-1 3/4] RUN apt-get update && apt-get install -y curl unzip  && curl "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscli  0.0s
+ => CACHED [simulation_9-anonymisation-execution-service build 2/8] WORKDIR /app                                                                                                                           0.0s
+ => CACHED [simulation_9-anonymisation-execution-service build 3/8] COPY shared_libraries/*.jar /usr/share/maven/ref/                                                                                      0.0s
+ => CACHED [simulation_9-anonymisation-execution-service build 4/8] RUN mvn install:install-file -Dfile=/usr/share/maven/ref/shared-logging-library-1.0-SNAPSHOT.jar -DgroupId=com.wenox.anonymization -D  0.0s
+ => CACHED [simulation_9-anonymisation-execution-service build 5/8] COPY pom.xml .                                                                                                                         0.0s
+ => CACHED [simulation_9-anonymisation-execution-service build 6/8] RUN mvn dependency:go-offline                                                                                                          0.0s
+ => CACHED [simulation_9-anonymisation-execution-service build 7/8] COPY src /app/src                                                                                                                      0.0s
+ => CACHED [simulation_9-anonymisation-execution-service build 8/8] RUN mvn clean package -DskipTests                                                                                                      0.0s
+ => CACHED [simulation_9-anonymisation-execution-service stage-1 4/4] COPY --from=build /app/target/*.jar app.jar                                                                                          0.0s
+[+] Running 32/32
+ ⠿ Network platform_network                                      Created                                                                                                                                   0.0s
+ ⠿ Volume "simulation_9_cassandra_data"                          Created                                                                                                                                   0.0s
+ ⠿ Volume "simulation_9_postgres-data"                           Created                                                                                                                                   0.0s
+ ⠿ Volume "simulation_9_redis_data"                              Created                                                                                                                                   0.0s
+ ⠿ Volume "simulation_9_redis_insight"                           Created                                                                                                                                   0.0s
+ ⠿ Volume "simulation_9_elasticsearch-data"                      Created                                                                                                                                   0.0s
+ ⠿ Volume "simulation_9_grafana-data"                            Created                                                                                                                                   0.0s
+ ⠿ Container simulation_9-spark-master-1                         Started                                                                                                                                   1.7s
+ ⠿ Container simulation_9-metadata-extraction-service-1          Started                                                                                                                                   2.2s
+ ⠿ Container zookeeper                                           Started                                                                                                                                   1.7s
+ ⠿ Container redisinsight                                        Started                                                                                                                                   1.0s
+ ⠿ Container simulation_9-anonymisation-execution-service-1      Started                                                                                                                                   1.9s
+ ⠿ Container simulation_9-api-gateway-1                          Started                                                                                                                                   2.2s
+ ⠿ Container prometheus                                          Started                                                                                                                                   2.3s
+ ⠿ Container mongodb                                             Started                                                                                                                                   1.3s
+ ⠿ Container grafana                                             Started                                                                                                                                   2.4s
+ ⠿ Container simulation_9-anonymisation-orchestration-service-1  Started                                                                                                                                   1.2s
+ ⠿ Container simulation_9-database-restoration-service-1         Started                                                                                                                                   1.3s
+ ⠿ Container cassandra                                           Started                                                                                                                                   2.6s
+ ⠿ Container elasticsearch                                       Started                                                                                                                                   2.1s
+ ⠿ Container redis                                               Started                                                                                                                                   1.0s
+ ⠿ Container simulation_9-blueprint-service-1                    Started                                                                                                                                   0.9s
+ ⠿ Container simulation_9-postgres-1                             Started                                                                                                                                   1.8s
+ ⠿ Container simulation_9-eureka-server-1                        Started                                                                                                                                   1.1s
+ ⠿ Container simulation_9-tasks-processing-service-1             Started                                                                                                                                   2.6s
+ ⠿ Container cassandra-init                                      Started                                                                                                                                   3.0s
+ ⠿ Container simulation_9-spark-worker-1                         Started                                                                                                                                   2.4s
+ ⠿ Container kafka                                               Started                                                                                                                                   2.6s
+ ⠿ Container logstash                                            Started                                                                                                                                   2.9s
+ ⠿ Container kibana                                              Started                                                                                                                                   2.7s
+ ⠿ Container simulation_9-worksheet-service-1                    Started                                                                                                                                   3.3s
+ ⠿ Container kafka-ui                                            Started                                                                                                                                   3.1s
+-e 2024-02-05T19:49:10 -------- Waiting 120 seconds for infrastructure to settle...
+-e 2024-02-05T19:51:10 -------- Starting importing process...
+-e 2024-02-05T19:51:10 -------- OK: Importing process started successfully --- blueprint ID: d7f07258-719c-406b-b34b-fa3362d3db6b
+-e 2024-02-05T19:51:10 -------- Waiting 15 seconds: letting the importing process complete
+-e 2024-02-05T19:51:25 -------- Verifying importing process is successful...
+-e 2024-02-05T19:51:25 -------- OK: Importing process completed successfully with status: METADATA_EXTRACTION_SUCCESS
+-e 2024-02-05T19:51:25 -------- Initialising a new worksheet for blueprint_id: d7f07258-719c-406b-b34b-fa3362d3db6b
+-e 2024-02-05T19:51:26 -------- OK: Successfully initialised new worksheet with ID: a28e5283-7e58-4438-8883-7cb2b0f53ac3
+-e 2024-02-05T19:51:26 -------- Adding 5 suppression operations to the worksheet...
+-e 2024-02-05T19:51:26 -------- OK: Successfully added suppression operation 1 to a worksheet
+-e 2024-02-05T19:51:26 -------- OK: Successfully added suppression operation 2 to a worksheet
+-e 2024-02-05T19:51:26 -------- OK: Successfully added suppression operation 3 to a worksheet
+-e 2024-02-05T19:51:26 -------- OK: Successfully added suppression operation 4 to a worksheet
+-e 2024-02-05T19:51:26 -------- OK: Successfully added suppression operation 5 to a worksheet
+-e 2024-02-05T19:51:26 -------- OK: added all suppression operations
+-e 2024-02-05T19:51:26 -------- Starting exporting process immediately...
+-e 2024-02-05T19:51:27 -------- Successfully retrieved outcome ID: 85bb9835-c8b2-442b-b444-3c509bb012c0
+-e 2024-02-05T19:51:27 -------- OK: Exporting process started successfully --- outcome ID: 85bb9835-c8b2-442b-b444-3c509bb012c0
+-e 2024-02-05T19:51:27 -------- Verifying exporting process... It should eventually succeed...
+-e 2024-02-05T19:51:27 -------- Exporting process status: INITIALISED. Retrying in 3 seconds... (Attempt 1/180)
+-e 2024-02-05T19:51:28 -------- Exporting process status: INITIALISED. Retrying in 3 seconds... (Attempt 2/180)
+-e 2024-02-05T19:51:29 -------- Exporting process status: INITIALISED. Retrying in 3 seconds... (Attempt 3/180)
+-e 2024-02-05T19:51:30 -------- Exporting process status: INITIALISED. Retrying in 3 seconds... (Attempt 4/180)
+-e 2024-02-05T19:51:31 -------- Exporting process status: INITIALISED. Retrying in 3 seconds... (Attempt 5/180)
+-e 2024-02-05T19:51:32 -------- Exporting process status: INITIALISED. Retrying in 3 seconds... (Attempt 6/180)
+-e 2024-02-05T19:51:33 -------- Exporting process status: FRAGMENTS_NOT_READY. Retrying in 3 seconds... (Attempt 7/180)
+-e 2024-02-05T19:51:34 -------- Exporting process status: FRAGMENTS_NOT_READY. Retrying in 3 seconds... (Attempt 8/180)
+-e 2024-02-05T19:51:35 -------- Exporting process status: FRAGMENTS_NOT_READY. Retrying in 3 seconds... (Attempt 9/180)
+-e 2024-02-05T19:51:36 -------- Exporting process status: FRAGMENTS_NOT_READY. Retrying in 3 seconds... (Attempt 10/180)
+-e 2024-02-05T19:51:38 -------- Exporting process status: FRAGMENTS_NOT_READY. Retrying in 3 seconds... (Attempt 11/180)
+-e 2024-02-05T19:51:39 -------- Exporting process status: FRAGMENTS_NOT_READY. Retrying in 3 seconds... (Attempt 12/180)
+-e 2024-02-05T19:51:40 -------- Exporting process status: FRAGMENTS_NOT_READY. Retrying in 3 seconds... (Attempt 13/180)
+-e 2024-02-05T19:51:41 -------- Exporting process status: FRAGMENTS_NOT_READY. Retrying in 3 seconds... (Attempt 14/180)
+-e 2024-02-05T19:51:42 -------- Exporting process status: FRAGMENTS_NOT_READY. Retrying in 3 seconds... (Attempt 15/180)
+-e 2024-02-05T19:51:43 -------- Exporting process status: FRAGMENTS_NOT_READY. Retrying in 3 seconds... (Attempt 16/180)
+-e 2024-02-05T19:51:44 -------- Exporting process status: FRAGMENTS_NOT_READY. Retrying in 3 seconds... (Attempt 17/180)
+-e 2024-02-05T19:51:45 -------- Exporting process status: FRAGMENTS_NOT_READY. Retrying in 3 seconds... (Attempt 18/180)
+-e 2024-02-05T19:51:46 -------- Exporting process status: FRAGMENTS_NOT_READY. Retrying in 3 seconds... (Attempt 19/180)
+-e 2024-02-05T19:51:47 -------- Exporting process status: FRAGMENTS_NOT_READY. Retrying in 3 seconds... (Attempt 20/180)
+-e 2024-02-05T19:51:48 -------- Exporting process status: FRAGMENTS_NOT_READY. Retrying in 3 seconds... (Attempt 21/180)
+-e 2024-02-05T19:51:49 -------- Exporting process status: FRAGMENTS_NOT_READY. Retrying in 3 seconds... (Attempt 22/180)
+-e 2024-02-05T19:51:50 -------- Exporting process status: FRAGMENTS_NOT_READY. Retrying in 3 seconds... (Attempt 23/180)
+-e 2024-02-05T19:51:52 -------- Exporting process status: FRAGMENTS_NOT_READY. Retrying in 3 seconds... (Attempt 24/180)
+-e 2024-02-05T19:51:53 -------- Exporting process status: FRAGMENTS_NOT_READY. Retrying in 3 seconds... (Attempt 25/180)
+-e 2024-02-05T19:51:54 -------- Exporting process status: FRAGMENTS_NOT_READY. Retrying in 3 seconds... (Attempt 26/180)
+-e 2024-02-05T19:51:55 -------- Exporting process status: FRAGMENTS_NOT_READY. Retrying in 3 seconds... (Attempt 27/180)
+-e 2024-02-05T19:51:56 -------- Exporting process status: FRAGMENTS_NOT_READY. Retrying in 3 seconds... (Attempt 28/180)
+-e 2024-02-05T19:51:57 -------- Exporting process status: FRAGMENTS_NOT_READY. Retrying in 3 seconds... (Attempt 29/180)
+-e 2024-02-05T19:51:58 -------- Exporting process status: FRAGMENTS_NOT_READY. Retrying in 3 seconds... (Attempt 30/180)
+-e 2024-02-05T19:51:59 -------- Exporting process status: FRAGMENTS_NOT_READY. Retrying in 3 seconds... (Attempt 31/180)
+-e 2024-02-05T19:52:00 -------- Exporting process status: FRAGMENTS_NOT_READY. Retrying in 3 seconds... (Attempt 32/180)
+-e 2024-02-05T19:52:01 -------- Exporting process status: FRAGMENTS_NOT_READY. Retrying in 3 seconds... (Attempt 33/180)
+-e 2024-02-05T19:52:02 -------- Exporting process status: FRAGMENTS_NOT_READY. Retrying in 3 seconds... (Attempt 34/180)
+-e 2024-02-05T19:52:03 -------- Exporting process status: FRAGMENTS_NOT_READY. Retrying in 3 seconds... (Attempt 35/180)
+-e 2024-02-05T19:52:04 -------- Exporting process status: FRAGMENTS_NOT_READY. Retrying in 3 seconds... (Attempt 36/180)
+-e 2024-02-05T19:52:06 -------- Exporting process status: FRAGMENTS_READY. Retrying in 3 seconds... (Attempt 37/180)
+-e 2024-02-05T19:52:07 -------- Exporting process status: FRAGMENTS_MERGED. Retrying in 3 seconds... (Attempt 38/180)
+-e 2024-02-05T19:52:08 -------- Exporting process status: FRAGMENTS_MERGED. Retrying in 3 seconds... (Attempt 39/180)
+-e 2024-02-05T19:52:09 -------- Exporting process status: SCRIPT_EXECUTED. Retrying in 3 seconds... (Attempt 40/180)
+-e 2024-02-05T19:52:10 -------- OK: Exporting process succeeded with status: DUMP_GENERATED
+-e 2024-02-05T19:52:10 -------- OK: Simulation 9 finished successfully
+-e 2024-02-05T19:52:10 -------- Tested: Exporting process – Forward recovery – fragments not ready immediately
