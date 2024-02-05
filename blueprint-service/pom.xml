@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.wenox.anonymization</groupId>
 	<artifactId>blueprint-service</artifactId>
-	<version>1-0-SNAPSHOT</version>
+	<version>simulation-10</version>
 	<name>Blueprint Service</name>
 	<description>Blueprint Service</description>
 	<properties>
