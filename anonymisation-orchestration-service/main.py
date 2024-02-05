@@ -86,7 +86,7 @@ def check_fragments_readiness(outcome: Outcome):
         return False
 
 
-@retry(tries=5, delay=1.0, max_delay=1.0, backoff=1, jitter=(0, 0), logger=logger)
+@retry(tries=20, delay=1.0, max_delay=30.0, backoff=1.5, jitter=(0, 0), logger=logger)
 def check_fragments_readiness_delegate(outcome: Outcome):
     logger.info(f"-----> Step 3: Checking fragments readiness for worksheet: {outcome.outcome_id}...")
     response, success = get_tasks_statuses(outcome.worksheet_id)
